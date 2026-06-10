@@ -5,6 +5,7 @@ const BENJAMIN_LINKEDIN =
 const CONTACT_EMAIL = "vicente@talentxrecruiting.com";
 const CONTACT_PHONE = "+1 929 737 0194";
 const CONTACT_PHONE_HREF = "tel:+19297370194";
+const RESUMEX_URL = "https://resume-x-rose.vercel.app";
 
 function LinkedInIcon({ className }: { className?: string }) {
   return (
@@ -208,7 +209,15 @@ export default function Home() {
             </p>
             <p className="text-xs text-zinc-400">Recruiting</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <a
+              href={RESUMEX_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-zinc-400 transition hover:text-cyan-200"
+            >
+              ResumeX
+            </a>
             <a
               href={TALENTX_LINKEDIN}
               target="_blank"
@@ -461,6 +470,30 @@ export default function Home() {
               </li>
             ))}
           </ul>
+        </section>
+
+        {/* ResumeX */}
+        <section id="resumex" className="mx-auto max-w-6xl px-6 py-20">
+          <div className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/10 via-blue-600/10 to-transparent p-8 text-center sm:p-14">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+              AI RESUME REVIEW
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Try ResumeX
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-zinc-300">
+              Upload a resume and get instant AI-powered feedback on structure,
+              clarity, keywords, and role alignment.
+            </p>
+            <a
+              href={RESUMEX_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-4 text-sm font-semibold text-[#050816] shadow-lg shadow-cyan-500/20 transition hover:scale-[1.02] hover:shadow-cyan-500/30"
+            >
+              Try ResumeX Free
+            </a>
+          </div>
         </section>
 
         {/* Contact */}
