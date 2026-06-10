@@ -485,6 +485,24 @@ export default function Home() {
               Upload a resume and get instant AI-powered feedback on structure,
               clarity, keywords, and role alignment.
             </p>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-zinc-500">
+              Built by TalentX Recruiting to help candidates improve their
+              resumes before applying.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+              {[
+                "AI-powered analysis",
+                "Instant feedback",
+                "Free to use",
+              ].map((badge) => (
+                <span
+                  key={badge}
+                  className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-200"
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
             <a
               href={RESUMEX_URL}
               target="_blank"
