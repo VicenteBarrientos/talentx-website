@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
-import HeroInteractiveBackground from "@/components/HeroInteractiveBackground";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
@@ -79,7 +77,6 @@ function SectionIntro({
 
 export default function TalentXHome() {
   const { t } = useLocale();
-  const heroRef = useRef<HTMLElement>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-white to-white text-zinc-900 dark:bg-[#050816] dark:bg-none dark:text-white">
@@ -129,12 +126,7 @@ export default function TalentXHome() {
       </header>
 
       <main className="relative z-10">
-        <section
-          ref={heroRef}
-          className="relative overflow-hidden [--hero-px:0] [--hero-py:0]"
-        >
-          <HeroInteractiveBackground containerRef={heroRef} />
-          <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
+        <section className="mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
           <div className="max-w-4xl">
             <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
               {t.hero.badge}
@@ -170,7 +162,6 @@ export default function TalentXHome() {
             <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
               {t.hero.trustFootnote}
             </p>
-          </div>
           </div>
         </section>
 
