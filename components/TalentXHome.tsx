@@ -1,11 +1,22 @@
 "use client";
 
 import Image from "next/image";
+import { motion, useReducedMotion } from "motion/react";
 import AccordionSection from "@/components/AccordionSection";
 import LanguageToggle from "@/components/LanguageToggle";
+import MotionLink from "@/components/MotionLink";
+import RevealOnScroll from "@/components/RevealOnScroll";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
 import { useLocale } from "@/components/LocaleProvider";
+import {
+  cardHover,
+  easeOut,
+  fadeInUp,
+  floatKeyframes,
+  floatTransition,
+  revealViewport,
+} from "@/lib/motion-presets";
 import { RESUMEX_URL } from "@/lib/site-urls";
 
 const TALENTX_LINKEDIN = "https://www.linkedin.com/company/talentxrecruiting";
@@ -78,6 +89,7 @@ function SectionIntro({
 
 export default function TalentXHome() {
   const { t } = useLocale();
+  const reduced = useReducedMotion() ?? false;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-white to-white text-zinc-900 dark:bg-[#050816] dark:bg-none dark:text-white">
@@ -116,54 +128,112 @@ export default function TalentXHome() {
             >
               <LinkedInIcon className="h-4 w-4" />
             </a>
-            <a
+            <MotionLink
               href="#contact"
+              variant="secondary"
               className="rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-400/20"
             >
               {t.nav.getInTouch}
-            </a>
+            </MotionLink>
           </div>
         </div>
       </header>
 
       <main className="relative z-10">
         <section className="mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-          <div className="max-w-4xl">
-            <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
-              {t.hero.badge}
-            </p>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-              <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
-                {t.hero.headline}
-              </span>
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
-              {t.hero.subheadline}
-            </p>
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <a
-                href="#contact"
-                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:scale-[1.02] dark:hover:shadow-cyan-500/30"
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(220px,280px)] xl:grid-cols-[minmax(0,1fr)_320px]">
+            <motion.div
+              className="max-w-4xl"
+              variants={{
+                hidden: {},
+                visible: {
+                  transition: { staggerChildren: reduced ? 0 : 0.08, delayChildren: 0.05 },
+                },
+              }}
+              initial={reduced ? "visible" : "hidden"}
+              animate="visible"
+            >
+              <motion.p
+                variants={fadeInUp}
+                transition={easeOut}
+                className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200"
               >
-                {t.hero.bookCall}
-              </a>
-              <a
-                href="#services"
-                className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-4 text-sm font-semibold text-zinc-800 transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10"
+                {t.hero.badge}
+              </motion.p>
+              <motion.h1
+                variants={fadeInUp}
+                transition={easeOut}
+                className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl"
               >
-                {t.hero.exploreServices}
-              </a>
-            </div>
+                <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
+                  {t.hero.headline}
+                </span>
+              </motion.h1>
+              <motion.p
+                variants={fadeInUp}
+                transition={easeOut}
+                className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300"
+              >
+                {t.hero.subheadline}
+              </motion.p>
+              <motion.div
+                variants={fadeInUp}
+                transition={easeOut}
+                className="mt-10 flex flex-col gap-4 sm:flex-row"
+              >
+                <MotionLink
+                  href="#contact"
+                  variant="primary"
+                  className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
+                >
+                  {t.hero.bookCall}
+                </MotionLink>
+                <MotionLink
+                  href="#services"
+                  variant="secondary"
+                  className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-4 text-sm font-semibold text-zinc-800 transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10"
+                >
+                  {t.hero.exploreServices}
+                </MotionLink>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className="mx-auto w-full max-w-[220px] sm:max-w-[260px] lg:max-w-none lg:justify-self-end"
+              initial={reduced ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...easeOut, delay: reduced ? 0 : 0.2 }}
+            >
+              <motion.div
+                animate={floatKeyframes(reduced)}
+                transition={floatTransition(reduced)}
+                className="relative aspect-square w-full"
+              >
+                <Image
+                  src="/images/talentx-hero.png"
+                  alt=""
+                  fill
+                  priority
+                  className="object-contain drop-shadow-lg dark:drop-shadow-[0_20px_40px_rgba(34,211,238,0.12)]"
+                  sizes="(max-width: 1024px) 260px, 320px"
+                />
+              </motion.div>
+            </motion.div>
           </div>
 
-          <div className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10">
+          <motion.div
+            className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10"
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ ...easeOut, delay: reduced ? 0 : 0.35 }}
+          >
             <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 sm:text-sm">
               {t.hero.trustStrip.join(" • ")}
             </p>
             <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
               {t.hero.trustFootnote}
             </p>
-          </div>
+          </motion.div>
         </section>
 
         <AccordionSection
@@ -198,8 +268,13 @@ export default function TalentXHome() {
           />
           <div className="grid gap-6 lg:grid-cols-2">
             {t.leadership.partners.map((partner, index) => (
-              <article
+              <motion.article
                 key={partner.name}
+                initial={reduced ? false : { opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={revealViewport}
+                transition={{ ...easeOut, delay: reduced ? 0 : index * 0.08 }}
+                whileHover={cardHover(reduced)}
                 className="group flex flex-col rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.06] dark:to-white/[0.02] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:shadow-none dark:hover:shadow-lg dark:hover:shadow-cyan-500/10"
               >
                 <div className="flex items-start gap-5">
@@ -224,28 +299,30 @@ export default function TalentXHome() {
                     {partner.regions}
                   </p>
                 )}
-                <a
+                <MotionLink
                   href={PARTNER_LINKEDIN[index]}
                   target="_blank"
                   rel="noopener noreferrer"
+                  variant="secondary"
                   className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-5 py-2.5 text-sm font-semibold text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-400/20"
                 >
                   <LinkedInIcon className="h-4 w-4" />
                   {t.leadership.viewLinkedIn}
-                </a>
-              </article>
+                </MotionLink>
+              </motion.article>
             ))}
           </div>
           <div className="mt-6 flex justify-center">
-            <a
+            <MotionLink
               href={TALENTX_LINKEDIN}
               target="_blank"
               rel="noopener noreferrer"
+              variant="secondary"
               className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-700 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 dark:border-white/15 dark:bg-white/5 dark:text-zinc-200 dark:hover:border-cyan-400/30 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-100"
             >
               <LinkedInIcon className="h-4 w-4" />
               {t.leadership.talentxLinkedIn}
-            </a>
+            </MotionLink>
           </div>
         </section>
 
@@ -347,15 +424,17 @@ export default function TalentXHome() {
               target="_blank"
               rel="noopener noreferrer"
               fallbackTheme="dark"
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:scale-[1.02] dark:hover:shadow-cyan-500/30"
+              variant="primary"
+              className="mt-8 inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
             >
               {t.resumex.cta}
             </ThemedExternalLink>
           </div>
         </section>
 
-        <section id="contact" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
+        <RevealOnScroll>
+          <section id="contact" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+            <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
               {t.contact.eyebrow}
             </p>
@@ -404,14 +483,16 @@ export default function TalentXHome() {
               </a>
             </div>
 
-            <a
+            <MotionLink
               href={`mailto:${CONTACT_EMAIL}`}
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:scale-[1.02] dark:hover:shadow-cyan-500/30"
+              variant="primary"
+              className="mt-8 inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
             >
               {t.contact.cta}
-            </a>
-          </div>
-        </section>
+            </MotionLink>
+            </div>
+          </section>
+        </RevealOnScroll>
       </main>
 
       <footer className="relative z-10 border-t border-zinc-200 bg-white/60 backdrop-blur-sm dark:border-white/10 dark:bg-transparent dark:backdrop-blur-none">

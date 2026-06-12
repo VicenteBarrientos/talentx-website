@@ -1,6 +1,8 @@
 "use client";
 
+import { motion, useReducedMotion } from "motion/react";
 import { useId, useState, type ReactNode } from "react";
+import { accordionTransition } from "@/lib/motion-presets";
 
 function ChevronIcon({ className }: { className?: string }) {
   return (
@@ -36,6 +38,7 @@ export default function AccordionSection({
 }: AccordionSectionProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const reduced = useReducedMotion() ?? false;
 
   return (
     <section id={id} className="mx-auto max-w-6xl px-6 py-5 sm:py-6">
@@ -60,30 +63,34 @@ export default function AccordionSection({
               </p>
             )}
           </div>
-          <ChevronIcon
-            className={`mt-1 h-5 w-5 shrink-0 text-zinc-400 transition-transform duration-300 motion-reduce:transition-none dark:text-zinc-500 ${
-              open ? "rotate-180" : ""
-            }`}
-          />
+          <motion.span
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={accordionTransition(reduced)}
+            className="mt-1 shrink-0 text-zinc-400 dark:text-zinc-500"
+          >
+            <ChevronIcon className="h-5 w-5" />
+          </motion.span>
         </button>
 
-        <div
+        <motion.div
           id={panelId}
-          className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none ${
-            open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-          }`}
+          initial={false}
+          animate={{
+            height: open ? "auto" : 0,
+            opacity: open ? 1 : 0,
+          }}
+          transition={accordionTransition(reduced)}
+          className="overflow-hidden"
         >
-          <div className="overflow-hidden">
-            <div className="border-t border-zinc-200 px-6 pb-6 pt-6 dark:border-white/10">
-              {description && (
-                <p className="mb-8 max-w-3xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  {description}
-                </p>
-              )}
-              {children}
-            </div>
+          <div className="border-t border-zinc-200 px-6 pb-6 pt-6 dark:border-white/10">
+            {description && (
+              <p className="mb-8 max-w-3xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                {description}
+              </p>
+            )}
+            {children}
           </div>
-        </div>
+        </motion.div>
       </article>
     </section>
   );
