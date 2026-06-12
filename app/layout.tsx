@@ -4,6 +4,7 @@ import LocaleProvider from "@/components/LocaleProvider";
 import LocaleSync from "@/components/LocaleSync";
 import ThemeProvider from "@/components/ThemeProvider";
 import ThemeSync from "@/components/ThemeSync";
+import { TALENTX_URL } from "@/lib/site-urls";
 import { localeInitScript } from "@/lib/locale-sync";
 import { themeInitScript } from "@/lib/theme-sync";
 import "./globals.css";
@@ -18,10 +19,34 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteDescription =
+  "Senior, hands-on recruiting for high-growth teams across the U.S., LATAM, and Europe.";
+
+const ogImageAlt = "TalentX Recruiting global talent acquisition illustration";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(TALENTX_URL),
   title: "TalentX Recruiting — Global Talent Acquisition",
-  description:
-    "Senior, hands-on recruiting for high-growth teams across the U.S., LATAM, and Europe.",
+  description: siteDescription,
+  openGraph: {
+    title: "TalentX Recruiting — Global Talent Acquisition",
+    description: siteDescription,
+    type: "website",
+    images: [
+      {
+        url: "/images/talentx-hero.png",
+        width: 1024,
+        height: 1024,
+        alt: ogImageAlt,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TalentX Recruiting — Global Talent Acquisition",
+    description: siteDescription,
+    images: ["/images/talentx-hero.png"],
+  },
 };
 
 export default function RootLayout({

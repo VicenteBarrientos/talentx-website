@@ -75,6 +75,34 @@ function SectionIntro({
   );
 }
 
+function HeroIllustration() {
+  return (
+    <figure className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none lg:justify-self-end">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -inset-5 rounded-[1.75rem] bg-indigo-300/20 blur-3xl dark:bg-cyan-500/15"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-6 top-1/2 hidden h-40 w-40 -translate-y-1/2 rounded-full bg-indigo-400/10 blur-3xl dark:bg-blue-500/15 lg:block"
+      />
+      <div className="relative overflow-hidden rounded-2xl border border-indigo-200/70 bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 p-1 shadow-xl shadow-indigo-200/25 dark:border-white/10 dark:from-white/[0.04] dark:via-white/[0.02] dark:to-cyan-500/10 dark:shadow-cyan-500/10">
+        <div className="overflow-hidden rounded-[0.875rem] ring-1 ring-indigo-100/80 dark:ring-white/5">
+          <Image
+            src="/images/talentx-hero.png"
+            alt="TalentX Recruiting global talent acquisition illustration"
+            width={1024}
+            height={1024}
+            priority
+            className="h-auto w-full object-cover"
+            sizes="(max-width: 1024px) min(100vw - 3rem, 28rem), 26rem"
+          />
+        </div>
+      </div>
+    </figure>
+  );
+}
+
 export default function TalentXHome() {
   const { t } = useLocale();
 
@@ -127,32 +155,36 @@ export default function TalentXHome() {
 
       <main className="relative z-10">
         <section className="mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-          <div className="max-w-4xl">
-            <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
-              {t.hero.badge}
-            </p>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-              <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
-                {t.hero.headline}
-              </span>
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
-              {t.hero.subheadline}
-            </p>
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <a
-                href="#contact"
-                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:scale-[1.02] dark:hover:shadow-cyan-500/30"
-              >
-                {t.hero.bookCall}
-              </a>
-              <a
-                href="#services"
-                className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-4 text-sm font-semibold text-zinc-800 transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10"
-              >
-                {t.hero.exploreServices}
-              </a>
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10 xl:gap-14">
+            <div className="max-w-4xl">
+              <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
+                {t.hero.badge}
+              </p>
+              <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+                <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
+                  {t.hero.headline}
+                </span>
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
+                {t.hero.subheadline}
+              </p>
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <a
+                  href="#contact"
+                  className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:scale-[1.02] dark:hover:shadow-cyan-500/30"
+                >
+                  {t.hero.bookCall}
+                </a>
+                <a
+                  href="#services"
+                  className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-4 text-sm font-semibold text-zinc-800 transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10"
+                >
+                  {t.hero.exploreServices}
+                </a>
+              </div>
             </div>
+
+            <HeroIllustration />
           </div>
 
           <div className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10">
