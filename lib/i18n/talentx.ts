@@ -186,6 +186,7 @@ const en = {
       "Ready to discuss a search, sourcing support, or a broader hiring strategy? Reach out directly.",
     email: "Email",
     phone: "Phone",
+    whatsapp: "WhatsApp",
     linkedin: "LinkedIn",
     linkedinValue: "TalentX Recruiting",
     cta: "Schedule a Consultation",
@@ -193,6 +194,7 @@ const en = {
   footer: {
     tagline: "Technical Recruiting | Business Recruiting | Executive Search",
     linkedin: "LinkedIn",
+    whatsapp: "WhatsApp",
     copyright: "© 2026 TalentX Recruiting. All rights reserved.",
   },
 } as const;
@@ -383,6 +385,7 @@ const es = {
       "¿Listo para hablar de una búsqueda, soporte de sourcing o una estrategia de contratación más amplia? Escríbenos directamente.",
     email: "Email",
     phone: "Teléfono",
+    whatsapp: "WhatsApp",
     linkedin: "LinkedIn",
     linkedinValue: "TalentX Recruiting",
     cta: "Agendar una consulta",
@@ -390,6 +393,7 @@ const es = {
   footer: {
     tagline: "Reclutamiento técnico | Reclutamiento de negocios | Búsqueda ejecutiva",
     linkedin: "LinkedIn",
+    whatsapp: "WhatsApp",
     copyright: "© 2026 TalentX Recruiting. Todos los derechos reservados.",
   },
 } as const;

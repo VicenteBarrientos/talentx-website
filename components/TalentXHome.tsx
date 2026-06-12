@@ -25,6 +25,10 @@ const BENJAMIN_LINKEDIN =
 const CONTACT_EMAIL = "vicente@talentxrecruiting.com";
 const CONTACT_PHONE = "+1 929 737 0194";
 const CONTACT_PHONE_HREF = "tel:+19297370194";
+const CONTACT_WHATSAPP = "+56 9 3371 3285";
+const CONTACT_WHATSAPP_HREF = "https://wa.me/56933713285";
+const SCHEDULER_URL =
+  "https://scheduler.zoom.us/vicente-barrientos/initial-contact";
 
 const PARTNER_PHOTOS = [
   "/partners/vicente-barrientos.png",
@@ -128,7 +132,9 @@ export default function TalentXHome() {
               <LinkedInIcon className="h-4 w-4" />
             </a>
             <MotionLink
-              href="#contact"
+              href={SCHEDULER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               variant="secondary"
               className="rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-400/20"
             >
@@ -182,7 +188,9 @@ export default function TalentXHome() {
                 className="mt-10 flex flex-col gap-4 sm:flex-row"
               >
                 <MotionLink
-                  href="#contact"
+                  href={SCHEDULER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   variant="primary"
                   className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
                 >
@@ -423,7 +431,7 @@ export default function TalentXHome() {
               {t.contact.description}
             </p>
 
-            <div className="mx-auto mt-8 grid w-full max-w-3xl gap-3 text-left sm:grid-cols-3">
+            <div className="mx-auto mt-8 grid w-full max-w-4xl gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
                 className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none"
@@ -447,6 +455,19 @@ export default function TalentXHome() {
                 </p>
               </a>
               <a
+                href={CONTACT_WHATSAPP_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-cyan-300">
+                  {t.contact.whatsapp}
+                </p>
+                <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">
+                  {CONTACT_WHATSAPP}
+                </p>
+              </a>
+              <a
                 href={TALENTX_LINKEDIN}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -462,7 +483,9 @@ export default function TalentXHome() {
             </div>
 
             <MotionLink
-              href={`mailto:${CONTACT_EMAIL}`}
+              href={SCHEDULER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               variant="primary"
               className="mt-8 inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
             >
@@ -509,6 +532,14 @@ export default function TalentXHome() {
                 className="transition hover:text-indigo-600 dark:hover:text-cyan-300"
               >
                 {t.leadership.partners[1].name}
+              </a>
+              <a
+                href={CONTACT_WHATSAPP_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-indigo-600 dark:hover:text-cyan-300"
+              >
+                {t.footer.whatsapp}
               </a>
             </div>
           </div>
