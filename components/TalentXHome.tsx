@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import AccordionSection from "@/components/AccordionSection";
+import HeroNetworkBackground from "@/components/HeroNetworkBackground";
 import LanguageToggle from "@/components/LanguageToggle";
 import MotionLink from "@/components/MotionLink";
 import RevealOnScroll from "@/components/RevealOnScroll";
@@ -13,8 +14,6 @@ import {
   cardHover,
   easeOut,
   fadeInUp,
-  floatKeyframes,
-  floatTransition,
   revealViewport,
 } from "@/lib/motion-presets";
 import { RESUMEX_URL } from "@/lib/site-urls";
@@ -140,8 +139,9 @@ export default function TalentXHome() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(220px,280px)] xl:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="relative isolate overflow-hidden">
+          <HeroNetworkBackground />
+          <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
             <motion.div
               className="max-w-4xl"
               variants={{
@@ -199,41 +199,19 @@ export default function TalentXHome() {
             </motion.div>
 
             <motion.div
-              className="mx-auto w-full max-w-[220px] sm:max-w-[260px] lg:max-w-none lg:justify-self-end"
-              initial={reduced ? false : { opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...easeOut, delay: reduced ? 0 : 0.2 }}
+              className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10"
+              initial={reduced ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ...easeOut, delay: reduced ? 0 : 0.35 }}
             >
-              <motion.div
-                animate={floatKeyframes(reduced)}
-                transition={floatTransition(reduced)}
-                className="relative aspect-square w-full"
-              >
-                <Image
-                  src="/images/talentx-hero.png"
-                  alt=""
-                  fill
-                  priority
-                  className="object-contain drop-shadow-lg dark:drop-shadow-[0_20px_40px_rgba(34,211,238,0.12)]"
-                  sizes="(max-width: 1024px) 260px, 320px"
-                />
-              </motion.div>
+              <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 sm:text-sm">
+                {t.hero.trustStrip.join(" • ")}
+              </p>
+              <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
+                {t.hero.trustFootnote}
+              </p>
             </motion.div>
           </div>
-
-          <motion.div
-            className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10"
-            initial={reduced ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ ...easeOut, delay: reduced ? 0 : 0.35 }}
-          >
-            <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 sm:text-sm">
-              {t.hero.trustStrip.join(" • ")}
-            </p>
-            <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
-              {t.hero.trustFootnote}
-            </p>
-          </motion.div>
         </section>
 
         <AccordionSection
