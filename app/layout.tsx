@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import LocaleProvider from "@/components/LocaleProvider";
+import LocaleSync from "@/components/LocaleSync";
 import ThemeProvider from "@/components/ThemeProvider";
 import ThemeSync from "@/components/ThemeSync";
+import { localeInitScript } from "@/lib/locale-sync";
 import { themeInitScript } from "@/lib/theme-sync";
 import "./globals.css";
 
@@ -34,11 +37,15 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: localeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider defaultTheme="dark">
-          <ThemeSync />
-          {children}
+          <LocaleProvider defaultLocale="en">
+            <ThemeSync />
+            <LocaleSync />
+            {children}
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>
