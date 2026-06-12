@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import AccordionSection from "@/components/AccordionSection";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
@@ -165,17 +166,18 @@ export default function TalentXHome() {
           </div>
         </section>
 
-        <section id="why" className="mx-auto max-w-6xl px-6 py-20">
-          <SectionIntro
-            eyebrow={t.why.eyebrow}
-            title={t.why.title}
-            description={t.why.description}
-          />
+        <AccordionSection
+          id="why"
+          eyebrow={t.why.eyebrow}
+          title={t.why.title}
+          summary={t.why.summary}
+          description={t.why.description}
+        >
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {t.why.items.map((item) => (
               <article
                 key={item.title}
-                className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.05] dark:to-transparent dark:shadow-none dark:hover:border-cyan-400/20 dark:hover:shadow-none dark:hover:-translate-y-1"
+                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/20"
               >
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-inherit">
                   {item.title}
@@ -186,9 +188,9 @@ export default function TalentXHome() {
               </article>
             ))}
           </div>
-        </section>
+        </AccordionSection>
 
-        <section id="leadership" className="mx-auto max-w-6xl px-6 py-20">
+        <section id="leadership" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
           <SectionIntro
             eyebrow={t.leadership.eyebrow}
             title={t.leadership.title}
@@ -247,13 +249,17 @@ export default function TalentXHome() {
           </div>
         </section>
 
-        <section id="services" className="mx-auto max-w-6xl px-6 py-20">
-          <SectionIntro eyebrow={t.services.eyebrow} title={t.services.title} />
+        <AccordionSection
+          id="services"
+          eyebrow={t.services.eyebrow}
+          title={t.services.title}
+          summary={t.services.summary}
+        >
           <div className="grid gap-6 md:grid-cols-2">
             {t.services.items.map((service) => (
               <article
                 key={service.title}
-                className="group rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:border-cyan-400/30 dark:hover:bg-white/[0.06] dark:hover:shadow-lg dark:hover:shadow-cyan-500/10"
+                className="group rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25"
               >
                 <div className="mb-4 h-1 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 transition group-hover:w-16 dark:from-cyan-400 dark:to-blue-500" />
                 <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
@@ -265,33 +271,38 @@ export default function TalentXHome() {
               </article>
             ))}
           </div>
-        </section>
+        </AccordionSection>
 
-        <section id="expertise" className="mx-auto max-w-6xl px-6 py-20">
-          <SectionIntro eyebrow={t.expertise.eyebrow} title={t.expertise.title} />
+        <AccordionSection
+          id="expertise"
+          eyebrow={t.expertise.eyebrow}
+          title={t.expertise.title}
+          summary={t.expertise.summary}
+        >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {t.expertise.areas.map((area) => (
               <article
                 key={area}
-                className="rounded-2xl border border-zinc-200 bg-white px-5 py-4 text-sm font-medium text-zinc-700 shadow-sm transition hover:border-indigo-300 hover:text-zinc-900 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-200 dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 text-sm font-medium text-zinc-700 transition hover:border-indigo-300 hover:text-zinc-900 dark:border-white/10 dark:bg-[#050816]/40 dark:text-zinc-200 dark:hover:border-cyan-400/25 dark:hover:text-white"
               >
                 {area}
               </article>
             ))}
           </div>
-        </section>
+        </AccordionSection>
 
-        <section id="process" className="mx-auto max-w-6xl px-6 py-20">
-          <SectionIntro
-            eyebrow={t.process.eyebrow}
-            title={t.process.title}
-            description={t.process.description}
-          />
+        <AccordionSection
+          id="process"
+          eyebrow={t.process.eyebrow}
+          title={t.process.title}
+          summary={t.process.summary}
+          description={t.process.description}
+        >
           <div className="grid gap-5 lg:grid-cols-5">
             {t.process.steps.map((item) => (
               <article
                 key={item.step}
-                className="relative rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none dark:hover:shadow-lg dark:hover:shadow-cyan-500/5"
+                className="relative rounded-2xl border border-zinc-200 bg-zinc-50/80 p-5 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25"
               >
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-xs font-bold text-indigo-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-300">
                   {item.step}
@@ -305,47 +316,9 @@ export default function TalentXHome() {
               </article>
             ))}
           </div>
-        </section>
+        </AccordionSection>
 
-        <section className="mx-auto max-w-6xl px-6 py-20">
-          <div className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm sm:p-12 dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none">
-            <SectionIntro
-              eyebrow={t.commitments.eyebrow}
-              title={t.commitments.title}
-            />
-            <ul className="grid gap-4 sm:grid-cols-2">
-              {t.commitments.items.map((commitment) => (
-                <li
-                  key={commitment}
-                  className="flex gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm leading-relaxed text-zinc-700 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:text-zinc-300 dark:hover:border-cyan-400/20 dark:hover:shadow-none"
-                >
-                  <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500" />
-                  <span>{commitment}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-6 py-20">
-          <SectionIntro
-            eyebrow={t.socialProof.eyebrow}
-            title={t.socialProof.title}
-          />
-          <ul className="grid gap-4 sm:grid-cols-2">
-            {t.socialProof.items.map((item) => (
-              <li
-                key={item}
-                className="flex gap-3 rounded-2xl border border-zinc-200 bg-white p-5 text-sm leading-relaxed text-zinc-700 shadow-sm transition hover:border-indigo-300 dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-transparent dark:text-zinc-300 dark:shadow-none dark:hover:border-cyan-400/20 dark:hover:shadow-none"
-              >
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500 dark:bg-cyan-400/80" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section id="resumex" className="mx-auto max-w-6xl px-6 py-20">
+        <section id="resumex" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
           <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
               {t.resumex.eyebrow}
@@ -381,7 +354,7 @@ export default function TalentXHome() {
           </div>
         </section>
 
-        <section id="contact" className="mx-auto max-w-6xl px-6 py-20">
+        <section id="contact" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
           <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
               {t.contact.eyebrow}

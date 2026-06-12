@@ -34,6 +34,7 @@ const en = {
   why: {
     eyebrow: "Why TalentX",
     title: "Built for teams that need results, not bureaucracy",
+    summary: "5 reasons companies choose TalentX",
     description:
       "TalentX gives growing companies the speed, judgment, and access of a senior recruiting partner — without the overhead, handoffs, or generic playbooks of a large agency.",
     items: [
@@ -90,32 +91,34 @@ const en = {
   services: {
     eyebrow: "Services",
     title: "Recruiting built for modern teams",
+    summary: "4 recruiting solutions",
     items: [
       {
         title: "Technical Recruiting",
         description:
-          "Full-stack, backend, data, DevOps, and product engineering hires across competitive global markets.",
+          "Software engineering, data, AI, DevOps, infrastructure, and product talent for fast-growing teams.",
       },
       {
         title: "Business, Operations, Finance & Legal",
         description:
-          "Operators, finance leaders, legal counsel, and cross-functional talent that helps scale high-growth teams.",
+          "Business-critical hires across operations, finance, legal, people, and corporate functions.",
       },
       {
         title: "Sourcing-as-a-Service",
         description:
-          "Dedicated pipeline development, outreach, and candidate engagement without full-cycle overhead.",
+          "Targeted candidate sourcing, outreach, and pipeline development without full-cycle recruiting overhead.",
       },
       {
         title: "Remote & Contractor Hiring",
         description:
-          "Flexible hiring models for distributed teams across the U.S., LATAM, Europe, and beyond.",
+          "Flexible hiring solutions for distributed teams operating across multiple markets and time zones.",
       },
     ],
   },
   expertise: {
     eyebrow: "Areas of Expertise",
-    title: "Specialized recruiting across technical and business functions",
+    title: "Deep recruiting experience across the functions that power modern companies.",
+    summary: "8 functional specializations",
     areas: [
       "Software Engineering",
       "Data & AI",
@@ -130,7 +133,9 @@ const en = {
   process: {
     eyebrow: "Recruiting Process",
     title: "A clear path from brief to hire",
-    description: "A structured, transparent process designed to deliver quality and speed.",
+    summary: "5-step hiring process",
+    description:
+      "A proven search process designed to balance speed, quality, and candidate experience.",
     steps: [
       {
         step: "01",
@@ -162,28 +167,6 @@ const en = {
         description:
           "Support offer negotiation and a smooth start for candidates joining your team.",
       },
-    ],
-  },
-  commitments: {
-    eyebrow: "Commitments",
-    title: "How we work with every client",
-    items: [
-      "Clear communication at every stage of the search",
-      "Confidential, professional handling of sensitive hiring needs",
-      "Data-informed sourcing with a human, relationship-driven touch",
-      "Flexible engagement models tailored to your hiring velocity",
-      "Partnership built on trust, accountability, and results",
-    ],
-  },
-  socialProof: {
-    eyebrow: "Why Companies Work With TalentX",
-    title: "Credibility built on experience and execution",
-    items: [
-      "Global recruiting experience across multiple continents",
-      "Experience supporting startups and scaling organizations",
-      "Hands-on partner involvement in every search",
-      "Specialized expertise across technical and business functions",
-      "Flexible recruiting and sourcing models",
     ],
   },
   resumex: {
@@ -248,6 +231,7 @@ const es = {
   why: {
     eyebrow: "Por qué TalentX",
     title: "Hecho para equipos que necesitan resultados, no burocracia",
+    summary: "5 razones por las que las empresas eligen TalentX",
     description:
       "TalentX ofrece a las empresas en crecimiento la velocidad, el criterio y el acceso de un socio senior de reclutamiento, sin la burocracia, los traspasos ni los playbooks genéricos de una agencia grande.",
     items: [
@@ -304,32 +288,34 @@ const es = {
   services: {
     eyebrow: "Servicios",
     title: "Reclutamiento diseñado para equipos modernos",
+    summary: "4 soluciones de reclutamiento",
     items: [
       {
         title: "Reclutamiento técnico",
         description:
-          "Contrataciones full-stack, backend, data, DevOps e ingeniería de producto en mercados globales competitivos.",
+          "Talento en ingeniería de software, data, IA, DevOps, infraestructura y producto para equipos en crecimiento.",
       },
       {
         title: "Negocios, operaciones, finanzas y legal",
         description:
-          "Operadores, líderes de finanzas, counsel legal y talento cross-funcional para escalar equipos en crecimiento.",
+          "Contrataciones críticas en operaciones, finanzas, legal, people y funciones corporativas.",
       },
       {
         title: "Sourcing-as-a-Service",
         description:
-          "Desarrollo de pipeline, outreach y engagement de candidatos sin la sobrecarga de un ciclo completo.",
+          "Sourcing de candidatos, outreach y desarrollo de pipeline sin la sobrecarga de un ciclo completo.",
       },
       {
         title: "Contratación remota y por contrato",
         description:
-          "Modelos flexibles para equipos distribuidos en EE. UU., LATAM, Europa y más allá.",
+          "Soluciones flexibles para equipos distribuidos en múltiples mercados y zonas horarias.",
       },
     ],
   },
   expertise: {
     eyebrow: "Áreas de expertise",
-    title: "Reclutamiento especializado en funciones técnicas y de negocio",
+    title: "Experiencia profunda en reclutamiento en las funciones que impulsan las empresas modernas.",
+    summary: "8 especializaciones funcionales",
     areas: [
       "Ingeniería de software",
       "Data e IA",
@@ -344,7 +330,9 @@ const es = {
   process: {
     eyebrow: "Proceso de reclutamiento",
     title: "Un camino claro del brief a la contratación",
-    description: "Un proceso estructurado y transparente diseñado para entregar calidad y velocidad.",
+    summary: "Proceso de contratación en 5 pasos",
+    description:
+      "Un proceso de búsqueda probado diseñado para equilibrar velocidad, calidad y experiencia del candidato.",
     steps: [
       {
         step: "01",
@@ -376,28 +364,6 @@ const es = {
         description:
           "Apoyo en negociación de oferta y un inicio fluido para candidatos que se unen al equipo.",
       },
-    ],
-  },
-  commitments: {
-    eyebrow: "Compromisos",
-    title: "Cómo trabajamos con cada cliente",
-    items: [
-      "Comunicación clara en cada etapa de la búsqueda",
-      "Manejo confidencial y profesional de necesidades de contratación sensibles",
-      "Sourcing basado en datos con un enfoque humano y relacional",
-      "Modelos de engagement flexibles adaptados a tu velocidad de contratación",
-      "Partnership basado en confianza, responsabilidad y resultados",
-    ],
-  },
-  socialProof: {
-    eyebrow: "Por qué las empresas trabajan con TalentX",
-    title: "Credibilidad basada en experiencia y ejecución",
-    items: [
-      "Experiencia global en reclutamiento en múltiples continentes",
-      "Experiencia apoyando startups y organizaciones en crecimiento",
-      "Participación directa de socios en cada búsqueda",
-      "Expertise especializado en funciones técnicas y de negocio",
-      "Modelos flexibles de reclutamiento y sourcing",
     ],
   },
   resumex: {
