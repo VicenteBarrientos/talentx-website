@@ -75,32 +75,6 @@ function SectionIntro({
   );
 }
 
-function HeroArtwork() {
-  return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-y-0 right-0 w-full sm:w-[92%] lg:w-[min(68rem,72vw)]">
-        <div className="absolute inset-0 opacity-[0.38] saturate-[0.85] sm:opacity-[0.48] lg:opacity-[0.55] dark:opacity-[0.72] dark:saturate-100 lg:dark:opacity-[0.88]">
-          <Image
-            src="/images/talentx-hero.png"
-            alt=""
-            fill
-            priority
-            className="object-cover object-[72%_42%] sm:object-[68%_40%] lg:object-[62%_38%]"
-            sizes="100vw"
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-indigo-50/95 dark:to-[#050816]/95" />
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/80 via-indigo-50/20 to-transparent dark:from-[#050816]/90 dark:via-[#050816]/35 dark:to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/90 via-transparent to-white dark:from-[#050816]/85 dark:via-transparent dark:to-[#050816]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_25%_40%,rgba(238,242,255,0.92)_0%,rgba(238,242,255,0.55)_38%,transparent_68%)] dark:bg-[radial-gradient(ellipse_at_28%_42%,rgba(5,8,22,0.96)_0%,rgba(5,8,22,0.72)_42%,transparent_72%)]" />
-        <div className="absolute inset-0 [mask-image:linear-gradient(to_left,transparent_0%,black_22%,black_72%,transparent_100%),linear-gradient(to_bottom,transparent_0%,black_18%,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_left,transparent_0%,black_22%,black_72%,transparent_100%),linear-gradient(to_bottom,transparent_0%,black_18%,black_78%,transparent_100%)]" />
-      </div>
-      <div className="absolute -right-16 top-[18%] h-56 w-56 rounded-full bg-indigo-300/15 blur-3xl dark:bg-cyan-500/10 lg:h-72 lg:w-72" />
-      <div className="absolute right-[8%] top-[28%] h-40 w-40 rounded-full bg-blue-400/10 blur-3xl dark:bg-blue-600/15" />
-    </div>
-  );
-}
-
 export default function TalentXHome() {
   const { t } = useLocale();
 
@@ -152,45 +126,42 @@ export default function TalentXHome() {
       </header>
 
       <main className="relative z-10">
-        <section className="relative overflow-hidden">
-          <HeroArtwork />
-          <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-            <div className="max-w-4xl">
-              <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
-                {t.hero.badge}
-              </p>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-                <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
-                  {t.hero.headline}
-                </span>
-              </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
-                {t.hero.subheadline}
-              </p>
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:scale-[1.02] dark:hover:shadow-cyan-500/30"
-                >
-                  {t.hero.bookCall}
-                </a>
-                <a
-                  href="#services"
-                  className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-4 text-sm font-semibold text-zinc-800 transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10"
-                >
-                  {t.hero.exploreServices}
-                </a>
-              </div>
+        <section className="mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
+          <div className="max-w-4xl">
+            <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
+              {t.hero.badge}
+            </p>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+              <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
+                {t.hero.headline}
+              </span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
+              {t.hero.subheadline}
+            </p>
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <a
+                href="#contact"
+                className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:scale-[1.02] dark:hover:shadow-cyan-500/30"
+              >
+                {t.hero.bookCall}
+              </a>
+              <a
+                href="#services"
+                className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-4 text-sm font-semibold text-zinc-800 transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10"
+              >
+                {t.hero.exploreServices}
+              </a>
             </div>
+          </div>
 
-            <div className="relative mt-14 border-t border-zinc-200 pt-8 dark:border-white/10">
+          <div className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10">
             <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 sm:text-sm">
               {t.hero.trustStrip.join(" • ")}
             </p>
             <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
               {t.hero.trustFootnote}
             </p>
-            </div>
           </div>
         </section>
 
