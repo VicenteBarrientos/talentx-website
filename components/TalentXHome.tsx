@@ -222,11 +222,6 @@ export default function TalentXHome() {
                     {partner.regions}
                   </p>
                 )}
-                {"sectors" in partner && partner.sectors && (
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                    {partner.sectors}
-                  </p>
-                )}
                 <a
                   href={PARTNER_LINKEDIN[index]}
                   target="_blank"

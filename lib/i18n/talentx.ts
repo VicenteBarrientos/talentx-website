@@ -75,15 +75,15 @@ const en = {
     partners: [
       {
         name: "Vicente Barrientos",
-        bio: "Global talent acquisition professional with experience recruiting across the U.S., Canada, LATAM, Europe, and Australia, specializing in technical, business, finance, legal, and startup recruiting.",
+        bio: "Global talent acquisition professional with experience recruiting across the U.S., Canada, LATAM, Europe, and Australia. Specialized in technical, business, finance, legal, and startup hiring for high-growth companies.",
+        regions:
+          "Experienced partnering with founders, executives, and hiring managers to build engineering, data, operations, and commercial teams in competitive talent markets.",
       },
       {
         name: "Benjamín Mahave Cornejo",
-        bio: "Global recruiter and talent acquisition professional with experience across Latin America, executive search, organizational development, people strategy, and consulting environments. Former BCG recruiting specialist with experience at Turner & Townsend, Cencosud, BCG, and EY.",
+        bio: "Global recruiter and talent acquisition professional with experience across Latin America, executive search, organizational development, and people strategy. Former BCG recruiting specialist with experience at Turner & Townsend, Cencosud, EY, and other leading organizations.",
         regions:
-          "Regional experience across Chile, Argentina, Uruguay, and Colombia.",
-        sectors:
-          "Talent acquisition for real estate, infrastructure, natural resources, consulting, technology, and executive search roles.",
+          "Specialized in consulting, infrastructure, real estate, natural resources, corporate functions, and leadership hiring across Chile, Argentina, Uruguay, and Colombia.",
       },
     ],
   },
@@ -289,15 +289,15 @@ const es = {
     partners: [
       {
         name: "Vicente Barrientos",
-        bio: "Profesional global de adquisición de talento con experiencia reclutando en EE. UU., Canadá, LATAM, Europa y Australia, especializado en reclutamiento técnico, de negocios, finanzas, legal y startups.",
+        bio: "Profesional global de adquisición de talento con experiencia reclutando en EE. UU., Canadá, LATAM, Europa y Australia. Especializado en contratación técnica, de negocios, finanzas, legal y startups para empresas en crecimiento.",
+        regions:
+          "Experiencia trabajando con founders, ejecutivos y hiring managers para construir equipos de ingeniería, data, operaciones y comercial en mercados de talento competitivos.",
       },
       {
         name: "Benjamín Mahave Cornejo",
-        bio: "Reclutador global y profesional de adquisición de talento con experiencia en América Latina, executive search, desarrollo organizacional, estrategia de personas y entornos de consultoría. Ex especialista de reclutamiento en BCG con experiencia en Turner & Townsend, Cencosud, BCG y EY.",
+        bio: "Reclutador global y profesional de adquisición de talento con experiencia en América Latina, executive search, desarrollo organizacional y estrategia de personas. Ex especialista de reclutamiento en BCG con experiencia en Turner & Townsend, Cencosud, EY y otras organizaciones líderes.",
         regions:
-          "Experiencia regional en Chile, Argentina, Uruguay y Colombia.",
-        sectors:
-          "Adquisición de talento para real estate, infraestructura, recursos naturales, consultoría, tecnología y roles de executive search.",
+          "Especializado en consultoría, infraestructura, real estate, recursos naturales, funciones corporativas y contratación de liderazgo en Chile, Argentina, Uruguay y Colombia.",
       },
     ],
   },
