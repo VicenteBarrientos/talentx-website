@@ -75,31 +75,29 @@ function SectionIntro({
   );
 }
 
-function HeroIllustration() {
+function HeroArtwork() {
   return (
-    <figure className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none lg:justify-self-end">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-5 rounded-[1.75rem] bg-indigo-300/20 blur-3xl dark:bg-cyan-500/15"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-6 top-1/2 hidden h-40 w-40 -translate-y-1/2 rounded-full bg-indigo-400/10 blur-3xl dark:bg-blue-500/15 lg:block"
-      />
-      <div className="relative overflow-hidden rounded-2xl border border-indigo-200/70 bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 p-1 shadow-xl shadow-indigo-200/25 dark:border-white/10 dark:from-white/[0.04] dark:via-white/[0.02] dark:to-cyan-500/10 dark:shadow-cyan-500/10">
-        <div className="overflow-hidden rounded-[0.875rem] ring-1 ring-indigo-100/80 dark:ring-white/5">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="absolute inset-y-0 right-0 w-full sm:w-[92%] lg:w-[min(68rem,72vw)]">
+        <div className="absolute inset-0 opacity-[0.38] saturate-[0.85] sm:opacity-[0.48] lg:opacity-[0.55] dark:opacity-[0.72] dark:saturate-100 lg:dark:opacity-[0.88]">
           <Image
             src="/images/talentx-hero.png"
-            alt="TalentX Recruiting global talent acquisition illustration"
-            width={1024}
-            height={1024}
+            alt=""
+            fill
             priority
-            className="h-auto w-full object-cover"
-            sizes="(max-width: 1024px) min(100vw - 3rem, 28rem), 26rem"
+            className="object-cover object-[72%_42%] sm:object-[68%_40%] lg:object-[62%_38%]"
+            sizes="100vw"
           />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-indigo-50/95 dark:to-[#050816]/95" />
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/80 via-indigo-50/20 to-transparent dark:from-[#050816]/90 dark:via-[#050816]/35 dark:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/90 via-transparent to-white dark:from-[#050816]/85 dark:via-transparent dark:to-[#050816]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_25%_40%,rgba(238,242,255,0.92)_0%,rgba(238,242,255,0.55)_38%,transparent_68%)] dark:bg-[radial-gradient(ellipse_at_28%_42%,rgba(5,8,22,0.96)_0%,rgba(5,8,22,0.72)_42%,transparent_72%)]" />
+        <div className="absolute inset-0 [mask-image:linear-gradient(to_left,transparent_0%,black_22%,black_72%,transparent_100%),linear-gradient(to_bottom,transparent_0%,black_18%,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_left,transparent_0%,black_22%,black_72%,transparent_100%),linear-gradient(to_bottom,transparent_0%,black_18%,black_78%,transparent_100%)]" />
       </div>
-    </figure>
+      <div className="absolute -right-16 top-[18%] h-56 w-56 rounded-full bg-indigo-300/15 blur-3xl dark:bg-cyan-500/10 lg:h-72 lg:w-72" />
+      <div className="absolute right-[8%] top-[28%] h-40 w-40 rounded-full bg-blue-400/10 blur-3xl dark:bg-blue-600/15" />
+    </div>
   );
 }
 
@@ -154,8 +152,9 @@ export default function TalentXHome() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10 xl:gap-14">
+        <section className="relative overflow-hidden">
+          <HeroArtwork />
+          <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
             <div className="max-w-4xl">
               <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
                 {t.hero.badge}
@@ -184,16 +183,14 @@ export default function TalentXHome() {
               </div>
             </div>
 
-            <HeroIllustration />
-          </div>
-
-          <div className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10">
+            <div className="relative mt-14 border-t border-zinc-200 pt-8 dark:border-white/10">
             <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 sm:text-sm">
               {t.hero.trustStrip.join(" • ")}
             </p>
             <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
               {t.hero.trustFootnote}
             </p>
+            </div>
           </div>
         </section>
 
