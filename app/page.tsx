@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
 import { RESUMEX_URL } from "@/lib/site-urls";
@@ -23,10 +24,22 @@ function LinkedInIcon({ className }: { className?: string }) {
   );
 }
 
-function HeadshotPlaceholder({ initials }: { initials: string }) {
+function PartnerHeadshot({
+  name,
+  photo,
+}: {
+  name: string;
+  photo: string;
+}) {
   return (
-    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-100 to-indigo-50 text-lg font-semibold tracking-wide text-indigo-700 dark:border-white/10 dark:from-cyan-400/20 dark:to-blue-600/20 dark:text-cyan-100">
-      {initials}
+    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-indigo-200 dark:border-white/10">
+      <Image
+        src={photo}
+        alt={name}
+        fill
+        className="object-cover object-top"
+        sizes="80px"
+      />
     </div>
   );
 }
@@ -61,13 +74,13 @@ export default function Home() {
   const partners = [
     {
       name: "Vicente Barrientos",
-      initials: "VB",
+      photo: "/partners/vicente-barrientos.png",
       bio: "Global talent acquisition professional with experience recruiting across the U.S., Canada, LATAM, Europe, and Australia, specializing in technical, business, finance, legal, and startup recruiting.",
       linkedin: VICENTE_LINKEDIN,
     },
     {
       name: "Benjamín Mahave Cornejo",
-      initials: "BM",
+      photo: "/partners/benjamin-mahave-cornejo.png",
       bio: "Global recruiter and talent acquisition professional with experience across Latin America, executive search, organizational development, people strategy, and consulting environments. Former BCG recruiting specialist with experience at Turner & Townsend, Cencosud, BCG, and EY.",
       regions:
         "Regional experience across Chile, Argentina, Uruguay, and Colombia.",
@@ -324,7 +337,7 @@ export default function Home() {
                 className="group flex flex-col rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.06] dark:to-white/[0.02] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:shadow-none dark:hover:shadow-lg dark:hover:shadow-cyan-500/10"
               >
                 <div className="flex items-start gap-5">
-                  <HeadshotPlaceholder initials={partner.initials} />
+                  <PartnerHeadshot name={partner.name} photo={partner.photo} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium uppercase tracking-wide text-indigo-600 dark:text-cyan-300">
                       Partner
