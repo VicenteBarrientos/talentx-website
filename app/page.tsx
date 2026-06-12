@@ -45,7 +45,7 @@ function SectionIntro({
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
         {eyebrow}
       </p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
+      <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-inherit sm:text-4xl">
         {title}
       </h2>
       {description && (
@@ -197,7 +197,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-white to-white text-zinc-900 dark:bg-[#050816] dark:text-white">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-white to-white text-zinc-900 dark:bg-[#050816] dark:bg-none dark:text-white">
       <div className="pointer-events-none fixed inset-0 hidden overflow-hidden dark:block">
         <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl" />
         <div className="absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-blue-600/20 blur-3xl" />
@@ -249,9 +249,11 @@ export default function Home() {
             <p className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
               Global Talent Acquisition for High-Growth Teams
             </p>
-            <h1 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
-              We help U.S. and international companies hire exceptional
-              technical and business talent across the U.S., LATAM, and Europe.
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+              <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
+                We help U.S. and international companies hire exceptional
+                technical and business talent across the U.S., LATAM, and Europe.
+              </span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
               Fast, strategic, and human-centered recruiting designed for modern
@@ -295,9 +297,9 @@ export default function Home() {
             {whyTalentX.map((item) => (
               <article
                 key={item.title}
-                className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-gradient-to-b dark:from-white/[0.05] dark:to-transparent dark:shadow-none dark:hover:border-cyan-400/20 dark:hover:-translate-y-1"
+                className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.05] dark:to-transparent dark:shadow-none dark:hover:border-cyan-400/20 dark:hover:shadow-none dark:hover:-translate-y-1"
               >
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-inherit">
                   {item.title}
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
@@ -319,7 +321,7 @@ export default function Home() {
             {partners.map((partner) => (
               <article
                 key={partner.name}
-                className="group flex flex-col rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-gradient-to-b dark:from-white/[0.06] dark:to-white/[0.02] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:shadow-lg dark:hover:shadow-cyan-500/10"
+                className="group flex flex-col rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.06] dark:to-white/[0.02] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:shadow-none dark:hover:shadow-lg dark:hover:shadow-cyan-500/10"
               >
                 <div className="flex items-start gap-5">
                   <HeadshotPlaceholder initials={partner.initials} />
@@ -423,12 +425,12 @@ export default function Home() {
             {process.map((item) => (
               <article
                 key={item.step}
-                className="relative rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-lg dark:hover:shadow-cyan-500/5"
+                className="relative rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none dark:hover:shadow-lg dark:hover:shadow-cyan-500/5"
               >
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-xs font-bold text-indigo-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-300">
                   {item.step}
                 </div>
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-inherit">
                   {item.title}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
@@ -450,7 +452,7 @@ export default function Home() {
               {commitments.map((commitment) => (
                 <li
                   key={commitment}
-                  className="flex gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm leading-relaxed text-zinc-700 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:text-zinc-300 dark:hover:border-cyan-400/20"
+                  className="flex gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm leading-relaxed text-zinc-700 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:text-zinc-300 dark:hover:border-cyan-400/20 dark:hover:shadow-none"
                 >
                   <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500" />
                   <span>{commitment}</span>
@@ -470,7 +472,7 @@ export default function Home() {
             {socialProof.map((item) => (
               <li
                 key={item}
-                className="flex gap-3 rounded-2xl border border-zinc-200 bg-white p-5 text-sm leading-relaxed text-zinc-700 shadow-sm transition hover:border-indigo-300 dark:border-white/10 dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-transparent dark:text-zinc-300 dark:shadow-none dark:hover:border-cyan-400/20"
+                className="flex gap-3 rounded-2xl border border-zinc-200 bg-white p-5 text-sm leading-relaxed text-zinc-700 shadow-sm transition hover:border-indigo-300 dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.04] dark:to-transparent dark:text-zinc-300 dark:shadow-none dark:hover:border-cyan-400/20 dark:hover:shadow-none"
               >
                 <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500 dark:bg-cyan-400/80" />
                 <span>{item}</span>
@@ -481,11 +483,11 @@ export default function Home() {
 
         {/* ResumeX */}
         <section id="resumex" className="mx-auto max-w-6xl px-6 py-20">
-          <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
+          <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
               AI RESUME REVIEW
             </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-inherit">
               Try ResumeX
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
@@ -524,11 +526,11 @@ export default function Home() {
 
         {/* Contact */}
         <section id="contact" className="mx-auto max-w-6xl px-6 py-20">
-          <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
+          <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
               Contact
             </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-inherit">
               Let&apos;s Build Your Next Great Hire
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
@@ -539,7 +541,7 @@ export default function Home() {
             <div className="mx-auto mt-8 grid w-full max-w-3xl gap-3 text-left sm:grid-cols-3">
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06]"
+                className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none"
               >
                 <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-cyan-300">
                   Email
@@ -550,7 +552,7 @@ export default function Home() {
               </a>
               <a
                 href={CONTACT_PHONE_HREF}
-                className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06]"
+                className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none"
               >
                 <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-cyan-300">
                   Phone
@@ -563,7 +565,7 @@ export default function Home() {
                 href={TALENTX_LINKEDIN}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06]"
+                className="min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none"
               >
                 <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-cyan-300">
                   LinkedIn
@@ -585,7 +587,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-zinc-200 bg-white/60 backdrop-blur-sm dark:border-white/10 dark:bg-transparent">
+      <footer className="relative z-10 border-t border-zinc-200 bg-white/60 backdrop-blur-sm dark:border-white/10 dark:bg-transparent dark:backdrop-blur-none">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div>
