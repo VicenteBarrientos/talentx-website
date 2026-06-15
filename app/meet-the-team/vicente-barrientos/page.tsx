@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import PartnerProfilePage from "@/components/PartnerProfilePage";
+import VicenteProfilePage from "@/components/VicenteProfilePage";
 
 export const metadata: Metadata = {
   title: "Vicente Barrientos — TalentX Recruiting",
   description:
-    "Vicente Barrientos, Founder and Talent Partner at TalentX Recruiting.",
+    "Vicente Barrientos is a recruiting leader and entrepreneur. Recruiting Partner at Goodwin Recruiting and Founder of TalentX Recruiting.",
 };
 
 export default function VicenteBarrientosPage() {
-  return <PartnerProfilePage partner="vicente" />;
+  return <VicenteProfilePage />;
 }

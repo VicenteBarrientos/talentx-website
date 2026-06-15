@@ -266,6 +266,77 @@ const en = {
     whatsapp: "WhatsApp",
     copyright: "© 2026 TalentX Recruiting. All rights reserved.",
   },
+  vicenteProfile: {
+    eyebrow: "Meet the Team",
+    subtitle: "Recruiting Partner · Goodwin Recruiting",
+    subtitleSub: "Founder, TalentX Recruiting",
+    visitProject: "Visit project",
+    sections: {
+      summary: { eyebrow: "Summary", title: "About Vicente" },
+      projects: { eyebrow: "Tech Projects", title: "Products & Builds" },
+      career: { eyebrow: "Professional Journey", title: "Career" },
+      education: { eyebrow: "Education", title: "Academic Background" },
+    },
+    summary: [
+      "Vicente Barrientos is a dedicated and tech-savvy talent acquisition professional and entrepreneur focused on helping organizations build exceptional teams and scale effectively. With experience spanning global technology startups, professional services, and executive search, he has recruited talent across engineering, data, AI, operations, finance, and business functions throughout the Americas, Europe, and APAC.",
+      "Throughout his career, Vicente has partnered with companies ranging from fast-growing startups to global organizations, helping them attract and retain high-impact talent while strengthening employer branding, recruitment operations, and candidate experience.",
+      "Today, in addition to his work in executive and professional recruiting, he is actively building AI-powered products and digital experiences that combine technology, education, and talent acquisition.",
+    ],
+    projects: {
+      talentx: {
+        tagline: "Recruiting brand and digital platform",
+        description:
+          "The digital home of TalentX, built to showcase recruiting services, leadership profiles, and AI-driven recruiting capabilities. Developed as a modern, responsive platform focused on employer branding, business development, and demonstrating how AI can enhance talent acquisition.",
+      },
+      resumex: {
+        tagline: "AI-powered resume analysis",
+        description:
+          "An AI-powered resume analysis platform that compares resumes against job descriptions, identifies strengths and gaps, generates screening questions, and helps candidates and recruiters evaluate fit more effectively. Built using modern AI workflows and designed to streamline hiring decisions.",
+      },
+      mapulengua: {
+        tagline: "Indigenous language learning app",
+        description:
+          "A mobile-first language learning platform designed to help people learn Mapudungun through interactive lessons, gamification, spaced repetition, and a journey across Chile. The app combines cultural preservation, education, and modern product design to make indigenous language learning accessible and engaging.",
+      },
+    },
+    career: [
+      {
+        company: "Goodwin Recruiting",
+        title: "Recruiting Partner",
+        period: "2026 – Present",
+        description:
+          "Partnering with organizations across the United States to identify, attract, and secure high-impact talent through contingent and retained search engagements.",
+      },
+      {
+        company: "TalentX Recruiting",
+        title: "Founder",
+        period: "2025 – 2026",
+        description:
+          "Founded and operated a U.S.-based recruiting and talent advisory business focused on helping startups and growing organizations access exceptional talent across the United States and Latin America.",
+      },
+      {
+        company: "Topsort",
+        title: "Talent Acquisition",
+        period: "2025",
+        description:
+          "Supported global hiring for one of the fastest-growing AdTech companies in the retail media industry. Recruited technical talent across Data Science, AI/ML, Software Engineering, DevOps, Data Engineering, and Operations functions throughout North America, Latin America, Europe, and APAC.",
+      },
+      {
+        company: "KPMG Chile",
+        title: "Senior Talent Acquisition Lead & Senior HR Analyst",
+        period: "2022 – 2025",
+        description:
+          "Led talent acquisition, employer branding, internship programs, diversity initiatives, and recruitment operations. Served as Interim Head of Talent Acquisition and helped drive record applicant volumes, improved internship rankings, and expanded international recruiting efforts.",
+      },
+    ],
+    education: [
+      {
+        institution: "Pontificia Universidad Católica de Chile",
+        degree: "Bachelor of Arts (B.A.), Industrial & Organizational Psychology",
+        note: "Graduated with distinction from one of Latin America's leading universities, with a focus on organizational behavior, talent management, leadership, assessment, and workforce development.",
+      },
+    ],
+  },
 } as const;
 
 const es = {
@@ -533,6 +604,77 @@ const es = {
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
     copyright: "© 2026 TalentX Recruiting. Todos los derechos reservados.",
+  },
+  vicenteProfile: {
+    eyebrow: "Conoce al equipo",
+    subtitle: "Recruiting Partner · Goodwin Recruiting",
+    subtitleSub: "Fundador, TalentX Recruiting",
+    visitProject: "Ver proyecto",
+    sections: {
+      summary: { eyebrow: "Resumen", title: "Sobre Vicente" },
+      projects: { eyebrow: "Proyectos tecnológicos", title: "Productos y desarrollos" },
+      career: { eyebrow: "Trayectoria profesional", title: "Carrera" },
+      education: { eyebrow: "Educación", title: "Formación académica" },
+    },
+    summary: [
+      "Vicente Barrientos es un profesional de adquisición de talento dedicado y con sólidos conocimientos tecnológicos, enfocado en ayudar a las organizaciones a construir equipos excepcionales y escalar de manera efectiva. Con experiencia en startups tecnológicas globales, servicios profesionales y búsqueda ejecutiva, ha reclutado talento en funciones de ingeniería, datos, IA, operaciones, finanzas y negocios en las Américas, Europa y APAC.",
+      "A lo largo de su carrera, Vicente ha trabajado con empresas de rápido crecimiento y organizaciones globales, ayudándolas a atraer y retener talento de alto impacto, al mismo tiempo que fortalece el employer branding, las operaciones de reclutamiento y la experiencia del candidato.",
+      "Hoy, además de su trabajo en reclutamiento ejecutivo y profesional, está desarrollando activamente productos impulsados por IA y experiencias digitales que combinan tecnología, educación y adquisición de talento.",
+    ],
+    projects: {
+      talentx: {
+        tagline: "Marca de reclutamiento y plataforma digital",
+        description:
+          "La casa digital de TalentX, creada para mostrar servicios de reclutamiento, perfiles de liderazgo y capacidades de reclutamiento impulsadas por IA. Desarrollada como una plataforma moderna y responsiva enfocada en employer branding, desarrollo de negocios y cómo la IA puede potenciar la adquisición de talento.",
+      },
+      resumex: {
+        tagline: "Análisis de CV con IA",
+        description:
+          "Una plataforma de análisis de CV impulsada por IA que compara currículums con descripciones de cargo, identifica fortalezas y brechas, genera preguntas de screening y ayuda a candidatos y reclutadores a evaluar el encaje de forma más efectiva. Construida con flujos modernos de IA para agilizar las decisiones de contratación.",
+      },
+      mapulengua: {
+        tagline: "App de aprendizaje de lengua indígena",
+        description:
+          "Una plataforma de aprendizaje de idiomas mobile-first diseñada para ayudar a las personas a aprender Mapudungun a través de lecciones interactivas, gamificación, repetición espaciada y un viaje por Chile. La app combina preservación cultural, educación y diseño de producto moderno para hacer el aprendizaje del idioma indígena accesible y entretenido.",
+      },
+    },
+    career: [
+      {
+        company: "Goodwin Recruiting",
+        title: "Recruiting Partner",
+        period: "2026 – Presente",
+        description:
+          "Colaborando con organizaciones en todo Estados Unidos para identificar, atraer y asegurar talento de alto impacto a través de búsquedas contingentes y retained.",
+      },
+      {
+        company: "TalentX Recruiting",
+        title: "Fundador",
+        period: "2025 – 2026",
+        description:
+          "Fundó y operó una empresa de reclutamiento y asesoría de talento con base en EE. UU., enfocada en ayudar a startups y organizaciones en crecimiento a acceder a talento excepcional en Estados Unidos y América Latina.",
+      },
+      {
+        company: "Topsort",
+        title: "Talent Acquisition",
+        period: "2025",
+        description:
+          "Apoyó la contratación global de una de las empresas AdTech de más rápido crecimiento en la industria de retail media. Reclutó talento técnico en Data Science, IA/ML, Ingeniería de Software, DevOps, Data Engineering y Operaciones en Norteamérica, América Latina, Europa y APAC.",
+      },
+      {
+        company: "KPMG Chile",
+        title: "Senior Talent Acquisition Lead & Senior Analista RRHH",
+        period: "2022 – 2025",
+        description:
+          "Lideró la adquisición de talento, employer branding, programas de práctica, iniciativas de diversidad y operaciones de reclutamiento. Se desempeñó como Head de Talent Acquisition interino y contribuyó a récords de postulantes, mejoras en rankings de prácticas y expansión del reclutamiento internacional.",
+      },
+    ],
+    education: [
+      {
+        institution: "Pontificia Universidad Católica de Chile",
+        degree: "Licenciatura en Psicología Industrial y Organizacional",
+        note: "Egresado con distinción de una de las universidades líderes de América Latina, con énfasis en comportamiento organizacional, gestión del talento, liderazgo, evaluación y desarrollo de personas.",
+      },
+    ],
   },
 } as const;
 
