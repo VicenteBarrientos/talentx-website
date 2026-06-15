@@ -4,10 +4,9 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import AccordionSection from "@/components/AccordionSection";
 import HeroNetworkBackground from "@/components/HeroNetworkBackground";
-import LanguageToggle from "@/components/LanguageToggle";
 import MotionLink from "@/components/MotionLink";
+import TopNav from "@/components/TopNav";
 import RevealOnScroll from "@/components/RevealOnScroll";
-import ThemeToggle from "@/components/ThemeToggle";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
 import { useLocale } from "@/components/LocaleProvider";
 import {
@@ -121,50 +120,10 @@ export default function TalentXHome() {
         <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl" />
       </div>
 
-      <header className="relative z-10 border-b border-zinc-200/80 bg-white/80 backdrop-blur-md dark:border-white/10 dark:bg-[#050816]/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <div>
-            <p className="text-sm font-semibold tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
-              TALENTX
-            </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.nav.recruiting}</p>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4">
-            <ThemedExternalLink
-              href={RESUMEX_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              fallbackTheme="dark"
-              className="text-sm font-medium text-zinc-600 transition hover:text-indigo-700 dark:text-zinc-400 dark:hover:text-cyan-200"
-            >
-              {t.nav.resumeX}
-            </ThemedExternalLink>
-            <LanguageToggle />
-            <ThemeToggle />
-            <a
-              href={TALENTX_LINKEDIN}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t.nav.linkedInAria}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-zinc-600 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 dark:border-white/15 dark:text-zinc-300 dark:hover:border-cyan-400/40 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-200"
-            >
-              <LinkedInIcon className="h-4 w-4" />
-            </a>
-            <MotionLink
-              href={SCHEDULER_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="secondary"
-              className="rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-400/20"
-            >
-              {t.nav.getInTouch}
-            </MotionLink>
-          </div>
-        </div>
-      </header>
+      <TopNav />
 
-      <main className="relative z-10">
-        <section className="relative isolate overflow-hidden">
+      <main className="relative z-10 pt-20 sm:pt-24">
+        <section id="home" className="relative isolate overflow-hidden">
           <HeroNetworkBackground />
           <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
             <motion.div
@@ -436,6 +395,30 @@ export default function TalentXHome() {
             </ThemedExternalLink>
           </div>
         </section>
+
+        <AccordionSection
+          id="faq"
+          eyebrow={t.faq.eyebrow}
+          title={t.faq.title}
+          summary={t.faq.summary}
+          description={t.faq.description}
+        >
+          <div className="space-y-4">
+            {t.faq.items.map((item) => (
+              <article
+                key={item.question}
+                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-5 dark:border-white/10 dark:bg-[#050816]/40"
+              >
+                <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
+                  {item.question}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  {item.answer}
+                </p>
+              </article>
+            ))}
+          </div>
+        </AccordionSection>
 
         <RevealOnScroll>
           <section id="contact" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">

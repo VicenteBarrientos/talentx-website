@@ -6,6 +6,15 @@ const en = {
     resumeX: "ResumeX",
     getInTouch: "Get in touch",
     linkedInAria: "TalentX on LinkedIn",
+    menu: "Menu",
+    menuAria: "Site navigation",
+    items: {
+      home: "Home",
+      why: "Why TalentX",
+      team: "Meet the Team",
+      faq: "FAQ",
+      contact: "Contact",
+    },
   },
   language: {
     switchToSpanish: "Switch to Spanish",
@@ -64,6 +73,32 @@ const en = {
           "Choose full-cycle search, sourcing support, or project-based hiring based on your needs.",
       },
     ],
+  },
+  meetTheTeam: {
+    eyebrow: "Team",
+    title: "Meet the Team",
+    hint: "Hover to meet our partners",
+    vicente: {
+      name: "Vicente Barrientos",
+      subtitle: "Founder / Talent Partner",
+    },
+    benjamin: {
+      name: "Benjamin Mahave",
+      subtitle: "Co-Founder / Talent Partner",
+    },
+  },
+  profile: {
+    backHome: "Back to homepage",
+    vicente: {
+      title: "Vicente Barrientos",
+      subtitle: "Founder / Talent Partner",
+      bio: "Vicente Barrientos is a global talent acquisition professional with deep experience recruiting across the U.S., Canada, LATAM, Europe, and Australia. He partners with founders and hiring leaders to build high-impact technical, business, and executive teams for fast-growing companies. At TalentX, Vicente leads search strategy, client partnerships, and hands-on recruiting execution.",
+    },
+    benjamin: {
+      title: "Benjamin Mahave",
+      subtitle: "Co-Founder / Talent Partner",
+      bio: "Benjamin Mahave is a global recruiter and talent acquisition professional with experience across Latin America, executive search, organizational development, and people strategy. He has supported hiring for consulting, infrastructure, real estate, natural resources, and corporate functions at leading organizations. At TalentX, Benjamin brings market insight, rigorous candidate assessment, and regional expertise across Chile, Argentina, Uruguay, and Colombia.",
+    },
   },
   leadership: {
     eyebrow: "Leadership",
@@ -169,6 +204,40 @@ const en = {
       },
     ],
   },
+  faq: {
+    eyebrow: "FAQ",
+    title: "Common questions",
+    summary: "5 answers about working with TalentX",
+    description:
+      "Quick answers about how we work, who you work with, and what to expect from a TalentX engagement.",
+    items: [
+      {
+        question: "Who will I work with directly?",
+        answer:
+          "You work directly with TalentX partners throughout the search — not junior coordinators or account layers.",
+      },
+      {
+        question: "What types of roles do you recruit for?",
+        answer:
+          "We support technical, business, finance, legal, operations, and executive hiring across the U.S., LATAM, and Europe.",
+      },
+      {
+        question: "Do you offer sourcing-only support?",
+        answer:
+          "Yes. We offer full-cycle search, sourcing-as-a-service, and flexible project-based hiring models.",
+      },
+      {
+        question: "How quickly can we get started?",
+        answer:
+          "After an initial discovery call, we can typically begin market mapping and outreach within days.",
+      },
+      {
+        question: "How do we get in touch?",
+        answer:
+          "Book a consultation, email us, call, message on WhatsApp, or connect via LinkedIn from the contact section.",
+      },
+    ],
+  },
   resumex: {
     eyebrow: "AI RESUME REVIEW",
     title: "Try ResumeX",
@@ -205,6 +274,15 @@ const es = {
     resumeX: "ResumeX",
     getInTouch: "Contáctanos",
     linkedInAria: "TalentX en LinkedIn",
+    menu: "Menú",
+    menuAria: "Navegación del sitio",
+    items: {
+      home: "Inicio",
+      why: "Por qué TalentX",
+      team: "Conoce al equipo",
+      faq: "FAQ",
+      contact: "Contacto",
+    },
   },
   language: {
     switchToSpanish: "Cambiar a español",
@@ -263,6 +341,32 @@ const es = {
           "Elige búsqueda full-cycle, soporte de sourcing o contratación por proyecto según tus necesidades.",
       },
     ],
+  },
+  meetTheTeam: {
+    eyebrow: "Equipo",
+    title: "Conoce al equipo",
+    hint: "Pasa el cursor para conocer a nuestros socios",
+    vicente: {
+      name: "Vicente Barrientos",
+      subtitle: "Founder / Talent Partner",
+    },
+    benjamin: {
+      name: "Benjamin Mahave",
+      subtitle: "Co-Founder / Talent Partner",
+    },
+  },
+  profile: {
+    backHome: "Volver al inicio",
+    vicente: {
+      title: "Vicente Barrientos",
+      subtitle: "Founder / Talent Partner",
+      bio: "Vicente Barrientos es un profesional global de adquisición de talento con amplia experiencia reclutando en EE. UU., Canadá, LATAM, Europa y Australia. Trabaja con founders y líderes de contratación para construir equipos técnicos, de negocios y ejecutivos de alto impacto en empresas en crecimiento. En TalentX, Vicente lidera la estrategia de búsqueda, las relaciones con clientes y la ejecución práctica del reclutamiento.",
+    },
+    benjamin: {
+      title: "Benjamin Mahave",
+      subtitle: "Co-Founder / Talent Partner",
+      bio: "Benjamin Mahave es un reclutador global y profesional de adquisición de talento con experiencia en América Latina, executive search, desarrollo organizacional y estrategia de personas. Ha apoyado contrataciones en consultoría, infraestructura, real estate, recursos naturales y funciones corporativas en organizaciones líderes. En TalentX, Benjamin aporta conocimiento de mercado, evaluación rigurosa de candidatos y expertise regional en Chile, Argentina, Uruguay y Colombia.",
+    },
   },
   leadership: {
     eyebrow: "Liderazgo",
@@ -365,6 +469,40 @@ const es = {
         title: "Cierre y onboarding",
         description:
           "Apoyo en negociación de oferta y un inicio fluido para candidatos que se unen al equipo.",
+      },
+    ],
+  },
+  faq: {
+    eyebrow: "FAQ",
+    title: "Preguntas frecuentes",
+    summary: "5 respuestas sobre trabajar con TalentX",
+    description:
+      "Respuestas rápidas sobre cómo trabajamos, con quién trabajarás y qué esperar de un engagement con TalentX.",
+    items: [
+      {
+        question: "¿Con quién trabajaré directamente?",
+        answer:
+          "Trabajas directamente con los socios de TalentX durante toda la búsqueda, no con coordinadores junior ni capas de cuenta.",
+      },
+      {
+        question: "¿Qué tipos de roles reclutan?",
+        answer:
+          "Apoyamos contratación técnica, de negocios, finanzas, legal, operaciones y ejecutiva en EE. UU., LATAM y Europa.",
+      },
+      {
+        question: "¿Ofrecen soporte solo de sourcing?",
+        answer:
+          "Sí. Ofrecemos búsqueda full-cycle, sourcing-as-a-service y modelos flexibles de contratación por proyecto.",
+      },
+      {
+        question: "¿Qué tan rápido podemos empezar?",
+        answer:
+          "Después de una llamada inicial de discovery, normalmente podemos comenzar el mapeo de mercado y outreach en pocos días.",
+      },
+      {
+        question: "¿Cómo nos contactamos?",
+        answer:
+          "Agenda una consulta, escríbenos por email, llama, envía un WhatsApp o conéctate por LinkedIn desde la sección de contacto.",
       },
     ],
   },
