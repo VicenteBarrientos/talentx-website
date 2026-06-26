@@ -10,6 +10,7 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
 import ScrollProgress from "@/components/ScrollProgress";
 import CursorGlow from "@/components/CursorGlow";
+import FloatingAstronaut from "@/components/FloatingAstronaut";
 import { useLocale } from "@/components/LocaleProvider";
 import {
   cardHover,
@@ -130,8 +131,9 @@ export default function TalentXHome() {
         <section id="home" className="relative isolate overflow-hidden">
           <HeroNetworkBackground />
           <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
+            <div className="flex items-center justify-between gap-8">
             <motion.div
-              className="max-w-4xl"
+              className="max-w-2xl flex-1"
               variants={{
                 hidden: {},
                 visible: {
@@ -187,6 +189,16 @@ export default function TalentXHome() {
                 </MotionLink>
               </motion.div>
             </motion.div>
+
+            <motion.div
+              className="hidden lg:block shrink-0"
+              initial={reduced ? false : { opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...easeOut, delay: reduced ? 0 : 0.3 }}
+            >
+              <FloatingAstronaut className="w-64 xl:w-80" />
+            </motion.div>
+            </div>
 
             <motion.div
               className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10"
