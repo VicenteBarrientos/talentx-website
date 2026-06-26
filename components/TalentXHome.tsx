@@ -8,6 +8,9 @@ import MotionLink from "@/components/MotionLink";
 import TopNav from "@/components/TopNav";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
+import ScrollProgress from "@/components/ScrollProgress";
+import AnimatedCounter from "@/components/AnimatedCounter";
+import CursorGlow from "@/components/CursorGlow";
 import { useLocale } from "@/components/LocaleProvider";
 import {
   cardHover,
@@ -120,6 +123,8 @@ export default function TalentXHome() {
         <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl" />
       </div>
 
+      <ScrollProgress />
+      <CursorGlow />
       <TopNav />
 
       <main className="relative z-10 pt-20 sm:pt-24">
@@ -197,6 +202,29 @@ export default function TalentXHome() {
                 {t.hero.trustFootnote}
               </p>
             </motion.div>
+
+            <motion.div
+              className="mt-12 grid grid-cols-2 gap-4 border-t border-zinc-200 pt-10 sm:grid-cols-4 dark:border-white/10"
+              initial={reduced ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...easeOut, delay: reduced ? 0 : 0.5 }}
+            >
+              {[
+                { value: 500, suffix: "+", label: "Placements" },
+                { value: 3, suffix: "", label: "Continents" },
+                { value: 50, suffix: "+", label: "Companies" },
+                { value: 10, suffix: "+", label: "Years" },
+              ].map(({ value, suffix, label }) => (
+                <div key={label} className="text-center">
+                  <p className="text-3xl font-bold tracking-tight text-zinc-900 dark:bg-gradient-to-r dark:from-cyan-300 dark:to-blue-400 dark:bg-clip-text dark:text-transparent sm:text-4xl">
+                    {reduced ? `${value}${suffix}` : <AnimatedCounter target={value} suffix={suffix} />}
+                  </p>
+                  <p className="mt-1 text-xs font-medium uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
@@ -207,11 +235,20 @@ export default function TalentXHome() {
           summary={t.why.summary}
           description={t.why.description}
         >
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.07 } } }}
+            initial={reduced ? "visible" : "hidden"}
+            whileInView="visible"
+            viewport={revealViewport}
+          >
             {t.why.items.map((item) => (
-              <article
+              <motion.article
                 key={item.title}
-                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/20"
+                variants={fadeInUp}
+                transition={easeOut}
+                whileHover={cardHover(reduced)}
+                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/20 dark:hover:shadow-cyan-500/5"
               >
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-inherit">
                   {item.title}
@@ -219,9 +256,9 @@ export default function TalentXHome() {
                 <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {item.description}
                 </p>
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </AccordionSection>
 
         <section id="leadership" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
@@ -296,22 +333,31 @@ export default function TalentXHome() {
           title={t.services.title}
           summary={t.services.summary}
         >
-          <div className="grid gap-6 md:grid-cols-2">
+          <motion.div
+            className="grid gap-6 md:grid-cols-2"
+            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.08 } } }}
+            initial={reduced ? "visible" : "hidden"}
+            whileInView="visible"
+            viewport={revealViewport}
+          >
             {t.services.items.map((service) => (
-              <article
+              <motion.article
                 key={service.title}
-                className="group rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25"
+                variants={fadeInUp}
+                transition={easeOut}
+                whileHover={cardHover(reduced)}
+                className="group rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25 dark:hover:shadow-cyan-500/5"
               >
-                <div className="mb-4 h-1 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 transition group-hover:w-16 dark:from-cyan-400 dark:to-blue-500" />
+                <div className="mb-4 h-1 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 transition-all duration-500 group-hover:w-20 dark:from-cyan-400 dark:to-blue-500" />
                 <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
                   {service.title}
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {service.description}
                 </p>
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </AccordionSection>
 
         <AccordionSection
@@ -320,16 +366,25 @@ export default function TalentXHome() {
           title={t.expertise.title}
           summary={t.expertise.summary}
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <motion.div
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.05 } } }}
+            initial={reduced ? "visible" : "hidden"}
+            whileInView="visible"
+            viewport={revealViewport}
+          >
             {t.expertise.areas.map((area) => (
-              <article
+              <motion.article
                 key={area}
-                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 text-sm font-medium text-zinc-700 transition hover:border-indigo-300 hover:text-zinc-900 dark:border-white/10 dark:bg-[#050816]/40 dark:text-zinc-200 dark:hover:border-cyan-400/25 dark:hover:text-white"
+                variants={fadeInUp}
+                transition={easeOut}
+                whileHover={{ y: -3, scale: 1.02 }}
+                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 text-sm font-medium text-zinc-700 transition hover:border-indigo-300 hover:text-zinc-900 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:text-zinc-200 dark:hover:border-cyan-400/25 dark:hover:text-white"
               >
                 {area}
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </AccordionSection>
 
         <AccordionSection
@@ -339,11 +394,20 @@ export default function TalentXHome() {
           summary={t.process.summary}
           description={t.process.description}
         >
-          <div className="grid gap-5 lg:grid-cols-5">
+          <motion.div
+            className="grid gap-5 lg:grid-cols-5"
+            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.09 } } }}
+            initial={reduced ? "visible" : "hidden"}
+            whileInView="visible"
+            viewport={revealViewport}
+          >
             {t.process.steps.map((item) => (
-              <article
+              <motion.article
                 key={item.step}
-                className="relative rounded-2xl border border-zinc-200 bg-zinc-50/80 p-5 transition hover:border-indigo-300 dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25"
+                variants={fadeInUp}
+                transition={easeOut}
+                whileHover={cardHover(reduced)}
+                className="relative rounded-2xl border border-zinc-200 bg-zinc-50/80 p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25"
               >
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-xs font-bold text-indigo-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-300">
                   {item.step}
@@ -354,9 +418,9 @@ export default function TalentXHome() {
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {item.description}
                 </p>
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </AccordionSection>
 
         <section id="resumex" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
@@ -403,10 +467,18 @@ export default function TalentXHome() {
           summary={t.faq.summary}
           description={t.faq.description}
         >
-          <div className="space-y-4">
+          <motion.div
+            className="space-y-4"
+            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.07 } } }}
+            initial={reduced ? "visible" : "hidden"}
+            whileInView="visible"
+            viewport={revealViewport}
+          >
             {t.faq.items.map((item) => (
-              <article
+              <motion.article
                 key={item.question}
+                variants={fadeInUp}
+                transition={easeOut}
                 className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-5 dark:border-white/10 dark:bg-[#050816]/40"
               >
                 <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
@@ -415,9 +487,9 @@ export default function TalentXHome() {
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {item.answer}
                 </p>
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </AccordionSection>
 
         <RevealOnScroll>
