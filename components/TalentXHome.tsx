@@ -9,7 +9,6 @@ import TopNav from "@/components/TopNav";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import ThemedExternalLink from "@/components/ThemedExternalLink";
 import ScrollProgress from "@/components/ScrollProgress";
-import AnimatedCounter from "@/components/AnimatedCounter";
 import CursorGlow from "@/components/CursorGlow";
 import { useLocale } from "@/components/LocaleProvider";
 import {
@@ -203,28 +202,6 @@ export default function TalentXHome() {
               </p>
             </motion.div>
 
-            <motion.div
-              className="mt-12 grid grid-cols-2 gap-4 border-t border-zinc-200 pt-10 sm:grid-cols-4 dark:border-white/10"
-              initial={reduced ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...easeOut, delay: reduced ? 0 : 0.5 }}
-            >
-              {[
-                { value: 500, suffix: "+", label: "Placements" },
-                { value: 3, suffix: "", label: "Continents" },
-                { value: 50, suffix: "+", label: "Companies" },
-                { value: 10, suffix: "+", label: "Years" },
-              ].map(({ value, suffix, label }) => (
-                <div key={label} className="text-center">
-                  <p className="text-3xl font-bold tracking-tight text-zinc-900 dark:bg-gradient-to-r dark:from-cyan-300 dark:to-blue-400 dark:bg-clip-text dark:text-transparent sm:text-4xl">
-                    {reduced ? `${value}${suffix}` : <AnimatedCounter target={value} suffix={suffix} />}
-                  </p>
-                  <p className="mt-1 text-xs font-medium uppercase tracking-[0.15em] text-zinc-500 dark:text-zinc-400">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </motion.div>
           </div>
         </section>
 
