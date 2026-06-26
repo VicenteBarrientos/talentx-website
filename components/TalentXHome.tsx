@@ -131,9 +131,17 @@ export default function TalentXHome() {
         <section id="home" className="relative isolate overflow-hidden">
           <HeroNetworkBackground />
           <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-            <div className="flex items-center justify-between gap-8">
             <motion.div
-              className="max-w-2xl flex-1"
+              className="hidden lg:block absolute right-6 top-20 xl:top-24"
+              initial={reduced ? false : { opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...easeOut, delay: reduced ? 0 : 0.3 }}
+            >
+              <FloatingAstronaut className="w-32 xl:w-40" />
+            </motion.div>
+            <div>
+            <motion.div
+              className="max-w-4xl"
               variants={{
                 hidden: {},
                 visible: {
@@ -188,15 +196,6 @@ export default function TalentXHome() {
                   {t.hero.exploreServices}
                 </MotionLink>
               </motion.div>
-            </motion.div>
-
-            <motion.div
-              className="hidden lg:block shrink-0"
-              initial={reduced ? false : { opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...easeOut, delay: reduced ? 0 : 0.3 }}
-            >
-              <FloatingAstronaut className="w-32 xl:w-40" />
             </motion.div>
             </div>
 
