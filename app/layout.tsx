@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 const siteDescription =
   "Senior, hands-on recruiting for high-growth teams across the U.S., LATAM, and Europe.";
 
-const ogImageAlt = "TalentX Recruiting global talent acquisition illustration";
+const ogImageAlt = "TalentX Recruiting logo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(TALENTX_URL),
@@ -34,18 +34,18 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/talentx-hero.png",
-        width: 1024,
-        height: 1024,
+        url: "/images/talentx-og.png",
+        width: 400,
+        height: 400,
         alt: ogImageAlt,
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "TalentX Recruiting — Global Talent Acquisition",
     description: siteDescription,
-    images: ["/images/talentx-hero.png"],
+    images: ["/images/talentx-og.png"],
   },
 };
 
