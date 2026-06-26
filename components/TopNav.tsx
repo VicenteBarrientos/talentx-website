@@ -68,7 +68,7 @@ const NAV_LINK_ITEMS = [
   { key: "contact", href: "/#contact" },
 ] as const;
 
-const RESUMEX_URL = "https://resume-x-yixz.vercel.app";
+const RESUMEX_URL = "/resumex";
 
 const TEAM_MEMBERS = [
   { key: "vicente", href: "/meet-the-team/vicente-barrientos" },
@@ -273,18 +273,9 @@ export default function TopNav() {
                 ))}
 
                 <li>
-                  <a
-                    href={RESUMEX_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={closeMenu}
-                    className={linkClassName + " flex items-center justify-between"}
-                  >
-                    <span>{t.nav.resumeX}</span>
-                    <svg className="h-3.5 w-3.5 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </a>
+                  <Link href={RESUMEX_URL} onClick={closeMenu} className={linkClassName}>
+                    {t.nav.resumeX}
+                  </Link>
                 </li>
               </ul>
             </motion.div>

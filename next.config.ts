@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         destination: "/meet-the-team/benjamin-mahave",
         permanent: true,
       },
+      {
+        source: "/resumex",
+        destination: "https://resume-x-yixz.vercel.app",
+        permanent: false,
+      },
     ];
   },
 };
