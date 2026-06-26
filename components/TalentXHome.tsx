@@ -196,7 +196,7 @@ export default function TalentXHome() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ ...easeOut, delay: reduced ? 0 : 0.3 }}
             >
-              <FloatingAstronaut className="w-64 xl:w-80" />
+              <FloatingAstronaut className="w-32 xl:w-40" />
             </motion.div>
             </div>
 
