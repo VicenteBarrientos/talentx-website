@@ -4,6 +4,15 @@ import { isLocale } from "@/lib/locale-sync";
 import { isThemeMode } from "@/lib/theme-sync";
 
 export function middleware(request: NextRequest) {
+  const host = request.headers.get("host") ?? "";
+  if (host.includes("vercel.app")) {
+    const url = request.nextUrl.clone();
+    url.host = "talentxrecruiting.com";
+    url.protocol = "https:";
+    url.port = "";
+    return NextResponse.redirect(url, 308);
+  }
+
   const theme = request.nextUrl.searchParams.get("theme");
   const lang = request.nextUrl.searchParams.get("lang");
 
