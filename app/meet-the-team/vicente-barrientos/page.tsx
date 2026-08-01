@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import VicenteProfilePage from "@/components/VicenteProfilePage";
+import VicentePortfolioPage from "@/components/VicentePortfolioPage";
 
 export const metadata: Metadata = {
-  title: "Vicente Barrientos — TalentX Recruiting",
+  title: "Portfolio — Vicente Barrientos | TalentX Recruiting",
   description:
-    "Vicente Barrientos is a recruiting leader and entrepreneur. Recruiting Partner at Goodwin Recruiting and Founder of TalentX Recruiting.",
+    "Tech portfolio of Vicente Barrientos: FundoSmart, CondoSync, TalentX, ResumeX, OsornoFactory and Mapulengua.",
 };
 
 export default function VicenteBarrientosPage() {
-  return <VicenteProfilePage />;
+  return <VicentePortfolioPage />;
 }
