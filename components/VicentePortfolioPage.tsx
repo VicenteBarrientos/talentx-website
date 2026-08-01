@@ -251,17 +251,32 @@ export default function VicentePortfolioPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-white to-white text-zinc-900 dark:bg-[#050816] dark:bg-none dark:text-white">
-      {/* Ambient blobs */}
-      <div className="pointer-events-none fixed inset-0 hidden overflow-hidden dark:block">
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-blue-600/20 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl" />
+    <div className="relative min-h-screen text-zinc-900 dark:text-white">
+      {/* Fixed video backdrop — the page scrolls over it */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-white dark:bg-[#050816]"
+        aria-hidden="true"
+      >
+        <video
+          className="h-full w-full object-cover"
+          poster="/videos/portfolio-bg.jpg"
+          autoPlay={!reduced}
+          loop
+          muted
+          playsInline
+          preload="auto"
+        >
+          <source src="/videos/portfolio-bg.webm" type="video/webm" />
+          <source src="/videos/portfolio-bg.mp4" type="video/mp4" />
+        </video>
+        {/* Scrim: keeps text readable and tunes how much video shows per theme */}
+        <div className="absolute inset-0 bg-white/85 dark:bg-[#050816]/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-transparent to-white/75 dark:from-[#050816]/85 dark:via-transparent dark:to-[#050816]/85" />
       </div>
 
       <TopNav />
 
-      <main className="relative z-10 mx-auto max-w-5xl px-6 pb-24 pt-24 sm:pt-28">
+      <main className="relative z-10 mx-auto max-w-3xl px-6 pb-24 pt-24 sm:pt-28">
 
         {/* ── Hero header ── */}
         <motion.div
@@ -336,17 +351,17 @@ export default function VicentePortfolioPage() {
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            {PROJECTS.map((project, index) => (
+          <div className="grid gap-5">
+            {PROJECTS.map((project) => (
               <motion.div
                 key={project.id}
                 initial={reduced ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={revealViewport}
-                transition={{ ...easeOut, delay: reduced ? 0 : (index % 2) * 0.07 }}
+                transition={easeOut}
                 className="h-full"
               >
-                <div className="flex h-full flex-col rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition-colors hover:border-indigo-200 dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/20 sm:p-7">
+                <div className="flex h-full flex-col rounded-3xl border border-zinc-200 bg-white/75 p-6 shadow-sm backdrop-blur-xl transition-colors hover:border-indigo-200 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-cyan-400/20 sm:p-7">
                   <div className="flex items-start gap-4">
                     <div className="h-11 w-11 shrink-0 overflow-hidden rounded-2xl">
                       {project.icon}
