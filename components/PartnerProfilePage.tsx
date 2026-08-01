@@ -4,11 +4,10 @@ import Image from "next/image";
 import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
 
-type PartnerSlug = "vicente" | "benjamin";
+type PartnerSlug = "vicente";
 
 const PARTNER_PHOTOS: Record<PartnerSlug, string> = {
   vicente: "/partners/vicente-barrientos.png",
-  benjamin: "/partners/benjamin-mahave-cornejo.png",
 };
 
 export default function PartnerProfilePage({ partner }: { partner: PartnerSlug }) {

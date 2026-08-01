@@ -2,603 +2,203 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
-import AccordionSection from "@/components/AccordionSection";
-import HeroNetworkBackground from "@/components/HeroNetworkBackground";
-import MotionLink from "@/components/MotionLink";
-import TopNav from "@/components/TopNav";
-import RevealOnScroll from "@/components/RevealOnScroll";
-import ThemedExternalLink from "@/components/ThemedExternalLink";
-import ScrollProgress from "@/components/ScrollProgress";
+import { useEffect, useState } from "react";
+import ConnectedGlobe from "@/components/ConnectedGlobe";
 import CursorGlow from "@/components/CursorGlow";
-import FloatingAstronaut from "@/components/FloatingAstronaut";
+import MotionLink from "@/components/MotionLink";
+import RevealOnScroll from "@/components/RevealOnScroll";
+import ScrollProgress from "@/components/ScrollProgress";
+import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
-import {
-  cardHover,
-  easeOut,
-  fadeInUp,
-  revealViewport,
-} from "@/lib/motion-presets";
 import { RESUMEX_URL } from "@/lib/site-urls";
 
 const TALENTX_LINKEDIN = "https://www.linkedin.com/company/talentxrecruiting";
 const VICENTE_LINKEDIN = "https://www.linkedin.com/in/vicente-barrientos/";
-const BENJAMIN_LINKEDIN =
-  "https://www.linkedin.com/in/benjam%C3%ADn-mahave-cornejo-39b2aa129/";
 const CONTACT_EMAIL = "vicente@talentxrecruiting.com";
 const CONTACT_PHONE = "+1 929 737 0194";
 const CONTACT_PHONE_HREF = "tel:+19297370194";
 const CONTACT_WHATSAPP = "+56 9 3371 3285";
 const CONTACT_WHATSAPP_HREF = "https://wa.me/56933713285";
-const SCHEDULER_URL =
-  "https://scheduler.zoom.us/vicente-barrientos/initial-contact";
+const SCHEDULER_URL = "https://scheduler.zoom.us/vicente-barrientos/initial-contact";
 
-const PARTNER_PHOTOS = [
-  "/partners/vicente-barrientos.png",
-  "/partners/benjamin-mahave-cornejo.png",
-] as const;
-
-const PARTNER_LINKEDIN = [VICENTE_LINKEDIN, BENJAMIN_LINKEDIN] as const;
-
-function LinkedInIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
+function Arrow({ left = false }: { left?: boolean }) {
+  return <span aria-hidden="true">{left ? "←" : "→"}</span>;
 }
 
-function WhatsAppIcon({ className }: { className?: string }) {
+function SectionHeading({ eyebrow, title, description }: { eyebrow: string; title: string; description?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.435 9.884-9.883 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" />
-    </svg>
-  );
-}
-
-const contactCardClassName =
-  "block min-w-0 rounded-xl border border-zinc-200 bg-white p-4 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-cyan-400/25 dark:hover:bg-white/[0.06] dark:hover:shadow-none";
-
-const contactLabelClassName =
-  "text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-cyan-300";
-
-function PartnerHeadshot({ name, photo }: { name: string; photo: string }) {
-  return (
-    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-indigo-200 dark:border-white/10">
-      <Image
-        src={photo}
-        alt={name}
-        fill
-        className="object-cover object-top"
-        sizes="80px"
-      />
-    </div>
-  );
-}
-
-function SectionIntro({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="mb-12 max-w-3xl">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
-        {eyebrow}
-      </p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 dark:text-inherit sm:text-4xl">
+    <div className="mx-auto mb-14 max-w-3xl text-center">
+      <p className="tx-eyebrow">{eyebrow}</p>
+      <h2 className="mt-4 text-balance text-4xl font-semibold tracking-[-0.045em] text-zinc-950 dark:text-white sm:text-5xl lg:text-6xl">
         {title}
       </h2>
-      {description && (
-        <p className="mt-4 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-          {description}
-        </p>
-      )}
+      {description && <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-8 text-zinc-600 dark:text-zinc-400 sm:text-lg">{description}</p>}
     </div>
   );
+}
+
+function OrbitalGlobe() {
+  return <ConnectedGlobe />;
 }
 
 export default function TalentXHome() {
   const { t } = useLocale();
   const reduced = useReducedMotion() ?? false;
+  const [serviceIndex, setServiceIndex] = useState(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  useEffect(() => {
+    if (reduced) return;
+    const timer = window.setInterval(() => setServiceIndex((current) => (current + 1) % t.services.items.length), 6000);
+    return () => window.clearInterval(timer);
+  }, [reduced, t.services.items.length]);
+
+  const service = t.services.items[serviceIndex];
+  const duplicatedExpertise = [...t.expertise.areas, ...t.expertise.areas];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-white to-white text-zinc-900 dark:bg-[#050816] dark:bg-none dark:text-white">
-      <div className="pointer-events-none fixed inset-0 hidden overflow-hidden dark:block">
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-[28rem] w-[28rem] rounded-full bg-blue-600/20 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl" />
-      </div>
-
+    <div className="tx-site min-h-screen overflow-hidden bg-[#f7f7f2] text-zinc-950 dark:bg-[#05070d] dark:text-white">
       <ScrollProgress />
       <CursorGlow />
       <TopNav />
 
-      <main className="relative z-10 pt-20 sm:pt-24">
-        <section id="home" className="relative isolate overflow-hidden">
-          <HeroNetworkBackground />
-          <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-            <motion.div
-              className="hidden lg:block absolute right-6 top-20 xl:top-24"
-              initial={reduced ? false : { opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...easeOut, delay: reduced ? 0 : 0.3 }}
-            >
-              <FloatingAstronaut className="w-32 xl:w-40" />
-            </motion.div>
-            <div>
-            <motion.div
-              className="max-w-4xl"
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: { staggerChildren: reduced ? 0 : 0.08, delayChildren: 0.05 },
-                },
-              }}
-              initial={reduced ? "visible" : "hidden"}
-              animate="visible"
-            >
-              <motion.p
-                variants={fadeInUp}
-                transition={easeOut}
-                className="mb-4 inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200"
-              >
-                {t.hero.badge}
-              </motion.p>
-              <motion.h1
-                variants={fadeInUp}
-                transition={easeOut}
-                className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl"
-              >
-                <span className="text-zinc-900 dark:bg-gradient-to-r dark:from-white dark:via-cyan-100 dark:to-blue-300 dark:bg-clip-text dark:text-transparent">
-                  {t.hero.headline}
-                </span>
-              </motion.h1>
-              <motion.p
-                variants={fadeInUp}
-                transition={easeOut}
-                className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300"
-              >
-                {t.hero.subheadline}
-              </motion.p>
-              <motion.div
-                variants={fadeInUp}
-                transition={easeOut}
-                className="mt-10 flex flex-col gap-4 sm:flex-row"
-              >
-                <MotionLink
-                  href={SCHEDULER_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="primary"
-                  className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
-                >
-                  {t.hero.bookCall}
+      <main>
+        <section id="home" className="relative flex min-h-[94svh] items-center overflow-hidden px-6 pb-20 pt-32 sm:pt-36">
+          <div className="tx-grid absolute inset-0 opacity-60 dark:opacity-35" />
+          <div className="absolute -left-40 top-10 h-[34rem] w-[34rem] rounded-full bg-indigo-400/15 blur-3xl dark:bg-cyan-400/10" />
+          <div className="absolute -right-40 bottom-0 h-[38rem] w-[38rem] rounded-full bg-cyan-300/20 blur-3xl dark:bg-blue-600/10" />
+          <div className="relative mx-auto w-full max-w-7xl">
+            <motion.div initial={reduced ? false : { opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+              <p className="tx-eyebrow inline-flex rounded-full border border-indigo-300/50 bg-white/70 px-4 py-2 backdrop-blur dark:border-cyan-300/20 dark:bg-white/[0.04]">{t.hero.badge}</p>
+              <h1 className="mt-7 max-w-5xl text-balance text-[clamp(3.2rem,7vw,7rem)] font-semibold leading-[0.91] tracking-[-0.07em]">
+                <span className="tx-gradient-text">Global talent.</span><br />
+                <span>{t.hero.subheadline}</span>
+              </h1>
+              <p className="mt-8 max-w-2xl text-pretty text-lg leading-8 text-zinc-600 dark:text-zinc-300 sm:text-xl">{t.hero.headline}</p>
+              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+                <MotionLink href={SCHEDULER_URL} target="_blank" rel="noopener noreferrer" variant="primary" className="tx-primary-button">
+                  {t.hero.bookCall} <Arrow />
                 </MotionLink>
-                <MotionLink
-                  href="#services"
-                  variant="secondary"
-                  className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-8 py-4 text-sm font-semibold text-zinc-800 transition hover:border-indigo-400 hover:bg-indigo-50 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10"
-                >
-                  {t.hero.exploreServices}
-                </MotionLink>
-              </motion.div>
+                <MotionLink href="#services" variant="secondary" className="tx-secondary-button">{t.hero.exploreServices}</MotionLink>
+              </div>
             </motion.div>
+          </div>
+        </section>
+
+        <section className="border-y border-zinc-900/10 bg-white/60 py-5 backdrop-blur dark:border-white/10 dark:bg-white/[0.02]" aria-label={t.hero.trustFootnote}>
+          <div className="tx-marquee">
+            <div className="tx-marquee-track">
+              {[...t.hero.trustStrip, ...t.hero.trustStrip].map((item, index) => <span key={`${item}-${index}`} className="flex items-center gap-5 whitespace-nowrap text-xs font-semibold uppercase tracking-[0.22em] text-zinc-600 dark:text-zinc-300"><i className="h-1.5 w-1.5 rounded-full bg-indigo-500 dark:bg-cyan-300" />{item}</span>)}
             </div>
-
-            <motion.div
-              className="mt-14 border-t border-zinc-200 pt-8 dark:border-white/10"
-              initial={reduced ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ ...easeOut, delay: reduced ? 0 : 0.35 }}
-            >
-              <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 sm:text-sm">
-                {t.hero.trustStrip.join(" • ")}
-              </p>
-              <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
-                {t.hero.trustFootnote}
-              </p>
-            </motion.div>
-
           </div>
         </section>
 
-        <AccordionSection
-          id="why"
-          eyebrow={t.why.eyebrow}
-          title={t.why.title}
-          summary={t.why.summary}
-          description={t.why.description}
-        >
-          <motion.div
-            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.07 } } }}
-            initial={reduced ? "visible" : "hidden"}
-            whileInView="visible"
-            viewport={revealViewport}
-          >
-            {t.why.items.map((item) => (
-              <motion.article
-                key={item.title}
-                variants={fadeInUp}
-                transition={easeOut}
-                whileHover={cardHover(reduced)}
-                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/20 dark:hover:shadow-cyan-500/5"
-              >
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-inherit">
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  {item.description}
-                </p>
-              </motion.article>
-            ))}
-          </motion.div>
-        </AccordionSection>
-
-        <section id="leadership" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <SectionIntro
-            eyebrow={t.leadership.eyebrow}
-            title={t.leadership.title}
-            description={t.leadership.description}
-          />
-          <div className="grid gap-6 lg:grid-cols-2">
-            {t.leadership.partners.map((partner, index) => (
-              <motion.article
-                key={partner.name}
-                initial={reduced ? false : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={revealViewport}
-                transition={{ ...easeOut, delay: reduced ? 0 : index * 0.08 }}
-                whileHover={cardHover(reduced)}
-                className="group flex flex-col rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm transition hover:border-indigo-300 hover:shadow-md dark:border-white/10 dark:bg-transparent dark:bg-gradient-to-b dark:from-white/[0.06] dark:to-white/[0.02] dark:shadow-none dark:hover:border-cyan-400/25 dark:hover:shadow-none dark:hover:shadow-lg dark:hover:shadow-cyan-500/10"
-              >
-                <div className="flex items-start gap-5">
-                  <PartnerHeadshot
-                    name={partner.name}
-                    photo={PARTNER_PHOTOS[index]}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium uppercase tracking-wide text-indigo-600 dark:text-cyan-300">
-                      {t.leadership.partner}
-                    </p>
-                    <h3 className="mt-1 text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                      {partner.name}
-                    </h3>
-                  </div>
-                </div>
-                <p className="mt-5 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-                  {partner.bio}
-                </p>
-                {"regions" in partner && partner.regions && (
-                  <p className="mt-4 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                    {partner.regions}
-                  </p>
-                )}
-                <MotionLink
-                  href={PARTNER_LINKEDIN[index]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="secondary"
-                  className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-5 py-2.5 text-sm font-semibold text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-100 dark:hover:border-cyan-300/50 dark:hover:bg-cyan-400/20"
-                >
-                  <LinkedInIcon className="h-4 w-4" />
-                  {t.leadership.viewLinkedIn}
-                </MotionLink>
-              </motion.article>
-            ))}
-          </div>
-          <div className="mt-6 flex justify-center">
-            <MotionLink
-              href={TALENTX_LINKEDIN}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="secondary"
-              className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-6 py-3 text-sm font-semibold text-zinc-700 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 dark:border-white/15 dark:bg-white/5 dark:text-zinc-200 dark:hover:border-cyan-400/30 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-100"
-            >
-              <LinkedInIcon className="h-4 w-4" />
-              {t.leadership.talentxLinkedIn}
-            </MotionLink>
-          </div>
-        </section>
-
-        <AccordionSection
-          id="services"
-          eyebrow={t.services.eyebrow}
-          title={t.services.title}
-          summary={t.services.summary}
-        >
-          <motion.div
-            className="grid gap-6 md:grid-cols-2"
-            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.08 } } }}
-            initial={reduced ? "visible" : "hidden"}
-            whileInView="visible"
-            viewport={revealViewport}
-          >
-            {t.services.items.map((service) => (
-              <motion.article
-                key={service.title}
-                variants={fadeInUp}
-                transition={easeOut}
-                whileHover={cardHover(reduced)}
-                className="group rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25 dark:hover:shadow-cyan-500/5"
-              >
-                <div className="mb-4 h-1 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 transition-all duration-500 group-hover:w-20 dark:from-cyan-400 dark:to-blue-500" />
-                <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
-                  {service.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  {service.description}
-                </p>
-              </motion.article>
-            ))}
-          </motion.div>
-        </AccordionSection>
-
-        <AccordionSection
-          id="expertise"
-          eyebrow={t.expertise.eyebrow}
-          title={t.expertise.title}
-          summary={t.expertise.summary}
-        >
-          <motion.div
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.05 } } }}
-            initial={reduced ? "visible" : "hidden"}
-            whileInView="visible"
-            viewport={revealViewport}
-          >
-            {t.expertise.areas.map((area) => (
-              <motion.article
-                key={area}
-                variants={fadeInUp}
-                transition={easeOut}
-                whileHover={{ y: -3, scale: 1.02 }}
-                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 text-sm font-medium text-zinc-700 transition hover:border-indigo-300 hover:text-zinc-900 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:text-zinc-200 dark:hover:border-cyan-400/25 dark:hover:text-white"
-              >
-                {area}
-              </motion.article>
-            ))}
-          </motion.div>
-        </AccordionSection>
-
-        <AccordionSection
-          id="process"
-          eyebrow={t.process.eyebrow}
-          title={t.process.title}
-          summary={t.process.summary}
-          description={t.process.description}
-        >
-          <motion.div
-            className="grid gap-5 lg:grid-cols-5"
-            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.09 } } }}
-            initial={reduced ? "visible" : "hidden"}
-            whileInView="visible"
-            viewport={revealViewport}
-          >
-            {t.process.steps.map((item) => (
-              <motion.article
-                key={item.step}
-                variants={fadeInUp}
-                transition={easeOut}
-                whileHover={cardHover(reduced)}
-                className="relative rounded-2xl border border-zinc-200 bg-zinc-50/80 p-5 transition hover:border-indigo-300 hover:shadow-sm dark:border-white/10 dark:bg-[#050816]/40 dark:hover:border-cyan-400/25"
-              >
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-xs font-bold text-indigo-700 dark:border-cyan-400/30 dark:bg-cyan-400/10 dark:text-cyan-300">
-                  {item.step}
-                </div>
-                <h3 className="text-lg font-semibold text-zinc-900 dark:text-inherit">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  {item.description}
-                </p>
-              </motion.article>
-            ))}
-          </motion.div>
-        </AccordionSection>
-
-        <section id="resumex" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-          <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
-              {t.resumex.eyebrow}
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-inherit">
-              {t.resumex.title}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
-              {t.resumex.description}
-            </p>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-zinc-500">
-              {t.resumex.attribution}
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-              {t.resumex.badges.map((badge) => (
-                <span
-                  key={badge}
-                  className="inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200"
-                >
-                  {badge}
-                </span>
+        <section id="why" className="relative px-6 py-28 sm:py-36">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow={t.why.eyebrow} title={t.why.title} description={t.why.description} />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+              {t.why.items.map((item, index) => (
+                <RevealOnScroll key={item.title} delay={index * 0.05} className={index === 0 || index === 3 ? "lg:col-span-2" : ""}>
+                  <article className="tx-card group h-full min-h-64 p-7">
+                    <span className="text-sm font-medium text-indigo-500 dark:text-cyan-300">0{index + 1}</span>
+                    <h3 className="mt-16 text-2xl font-semibold tracking-[-0.035em]">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{item.description}</p>
+                  </article>
+                </RevealOnScroll>
               ))}
             </div>
-            <ThemedExternalLink
-              href={RESUMEX_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              fallbackTheme="dark"
-              variant="primary"
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
-            >
-              {t.resumex.cta}
-            </ThemedExternalLink>
           </div>
         </section>
 
-        <AccordionSection
-          id="faq"
-          eyebrow={t.faq.eyebrow}
-          title={t.faq.title}
-          summary={t.faq.summary}
-          description={t.faq.description}
-        >
-          <motion.div
-            className="space-y-4"
-            variants={{ visible: { transition: { staggerChildren: reduced ? 0 : 0.07 } } }}
-            initial={reduced ? "visible" : "hidden"}
-            whileInView="visible"
-            viewport={revealViewport}
-          >
-            {t.faq.items.map((item) => (
-              <motion.article
-                key={item.question}
-                variants={fadeInUp}
-                transition={easeOut}
-                className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-5 dark:border-white/10 dark:bg-[#050816]/40"
-              >
-                <h3 className="text-base font-semibold text-zinc-900 dark:text-white">
-                  {item.question}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  {item.answer}
-                </p>
-              </motion.article>
-            ))}
-          </motion.div>
-        </AccordionSection>
+        <section className="relative overflow-hidden border-y border-zinc-900/10 bg-white/55 px-6 py-28 dark:border-white/10 dark:bg-white/[0.02] sm:py-36">
+          <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
+            <div><p className="tx-eyebrow">{t.hero.trustFootnote}</p><h2 className="mt-5 text-balance text-4xl font-semibold tracking-[-0.05em] sm:text-6xl">Talent has no borders.<br /><span className="tx-gradient-text">Neither do we.</span></h2></div>
+            <OrbitalGlobe />
+          </div>
+        </section>
 
-        <RevealOnScroll>
-          <section id="contact" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-            <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 p-8 text-center shadow-sm sm:p-14 dark:border-cyan-400/20 dark:bg-none dark:bg-gradient-to-br dark:from-cyan-500/10 dark:via-blue-600/10 dark:to-transparent dark:shadow-none">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-cyan-300">
-              {t.contact.eyebrow}
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-inherit">
-              {t.contact.title}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
-              {t.contact.description}
-            </p>
-
-            <div className="mx-auto mt-8 grid w-full max-w-5xl grid-cols-1 gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
-              <a href={`mailto:${CONTACT_EMAIL}`} className={contactCardClassName}>
-                <p className={contactLabelClassName}>{t.contact.email}</p>
-                <p className="mt-2 break-words text-xs leading-snug text-zinc-700 sm:text-sm dark:text-zinc-200">
-                  {CONTACT_EMAIL}
-                </p>
-              </a>
-              <a href={CONTACT_PHONE_HREF} className={contactCardClassName}>
-                <p className={contactLabelClassName}>{t.contact.phone}</p>
-                <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">
-                  {CONTACT_PHONE}
-                </p>
-              </a>
-              <a
-                href={TALENTX_LINKEDIN}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={contactCardClassName}
-              >
-                <p className={contactLabelClassName}>{t.contact.linkedin}</p>
-                <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">
-                  {t.contact.linkedinValue}
-                </p>
-              </a>
-              <a
-                href={CONTACT_WHATSAPP_HREF}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={contactCardClassName}
-              >
-                <div className="flex items-center gap-2">
-                  <WhatsAppIcon className="h-4 w-4 shrink-0 text-indigo-600 dark:text-cyan-300" />
-                  <p className={contactLabelClassName}>{t.contact.whatsapp}</p>
+        <section id="leadership" className="px-6 py-28 sm:py-36">
+          <div className="mx-auto max-w-6xl">
+            <SectionHeading eyebrow={t.leadership.eyebrow} title={t.leadership.title} description={t.leadership.description} />
+            <RevealOnScroll>
+              <article className="tx-card mx-auto grid max-w-4xl overflow-hidden p-3 md:grid-cols-[.65fr_1.35fr]">
+                <div className="flex min-h-[350px] flex-col items-center justify-center rounded-[1.6rem] bg-gradient-to-br from-indigo-100 to-cyan-50 p-7 text-center dark:from-indigo-950 dark:to-cyan-950">
+                  <div className="relative h-52 w-52 overflow-hidden rounded-full border-4 border-white/70 shadow-xl shadow-indigo-500/15 dark:border-white/10 sm:h-56 sm:w-56">
+                    <Image src="/partners/vicente-barrientos.png" alt={t.leadership.partners[0].name} fill className="object-cover object-top" sizes="224px" />
+                  </div>
+                  <p className="mt-6 text-2xl font-semibold">{t.leadership.partners[0].name}</p>
+                  <p className="mt-1 text-sm text-indigo-600 dark:text-cyan-200">{t.meetTheTeam.vicente.subtitle}</p>
                 </div>
-                <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-200">
-                  {CONTACT_WHATSAPP}
-                </p>
-              </a>
-            </div>
+                <div className="flex flex-col justify-center p-7 sm:p-10">
+                  <p className="tx-eyebrow">{t.meetTheTeam.eyebrow}</p>
+                  <p className="mt-7 text-xl leading-9 text-zinc-700 dark:text-zinc-200">{t.leadership.partners[0].bio}</p>
+                  <p className="mt-5 leading-8 text-zinc-600 dark:text-zinc-400">{t.leadership.partners[0].regions}</p>
+                  <MotionLink href={VICENTE_LINKEDIN} target="_blank" rel="noopener noreferrer" variant="secondary" className="tx-secondary-button mt-8 w-fit">{t.leadership.viewLinkedIn} <Arrow /></MotionLink>
+                </div>
+              </article>
+            </RevealOnScroll>
+          </div>
+        </section>
 
-            <MotionLink
-              href={SCHEDULER_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="primary"
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-indigo-600 px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 dark:bg-gradient-to-r dark:from-cyan-400 dark:to-blue-500 dark:text-[#050816] dark:shadow-lg dark:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30"
-            >
-              {t.contact.cta}
-            </MotionLink>
-            </div>
-          </section>
-        </RevealOnScroll>
-      </main>
-
-      <footer className="relative z-10 border-t border-zinc-200 bg-white/60 backdrop-blur-sm dark:border-white/10 dark:bg-transparent dark:backdrop-blur-none">
-        <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className="font-semibold text-zinc-900 dark:text-white">
-                TalentX Recruiting
-              </p>
-              <p className="mt-2 text-sm text-zinc-500">{t.footer.tagline}</p>
-            </div>
-            <div className="flex flex-col gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                {t.footer.linkedin}
-              </p>
-              <a
-                href={TALENTX_LINKEDIN}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-indigo-600 dark:hover:text-cyan-300"
-              >
-                TalentX
-              </a>
-              <a
-                href={VICENTE_LINKEDIN}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-indigo-600 dark:hover:text-cyan-300"
-              >
-                {t.leadership.partners[0].name}
-              </a>
-              <a
-                href={BENJAMIN_LINKEDIN}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-indigo-600 dark:hover:text-cyan-300"
-              >
-                {t.leadership.partners[1].name}
-              </a>
-              <a
-                href={CONTACT_WHATSAPP_HREF}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-indigo-600 dark:hover:text-cyan-300"
-              >
-                {t.footer.whatsapp}
-              </a>
+        <section id="services" className="relative overflow-hidden bg-indigo-50 px-6 py-28 text-zinc-950 dark:bg-black dark:text-white sm:py-36">
+          <div className="tx-grid absolute inset-0 opacity-40 dark:opacity-20" />
+          <div className="relative mx-auto max-w-7xl">
+            <SectionHeading eyebrow={t.services.eyebrow} title={t.services.title} />
+            <div className="mx-auto grid max-w-5xl items-stretch gap-5 md:grid-cols-[1fr_2fr]">
+              <div className="space-y-2">
+                {t.services.items.map((item, index) => <button key={item.title} type="button" onClick={() => setServiceIndex(index)} className={`w-full rounded-2xl px-5 py-4 text-left text-sm transition ${index === serviceIndex ? "bg-zinc-950 text-white shadow-lg shadow-indigo-500/15 dark:bg-white dark:text-zinc-950" : "border border-indigo-100 bg-white/75 text-zinc-600 hover:border-indigo-300 hover:bg-white hover:text-indigo-700 dark:border-transparent dark:bg-white/[0.05] dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"}`}><span className="mr-4 text-xs opacity-60">0{index + 1}</span>{item.title}</button>)}
+              </div>
+              <motion.article key={service.title} initial={reduced ? false : { opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="relative flex min-h-[390px] flex-col justify-between overflow-hidden rounded-[2rem] border border-indigo-200 bg-gradient-to-br from-white via-indigo-50 to-cyan-50 p-8 shadow-xl shadow-indigo-500/10 sm:p-12 dark:border-white/10 dark:bg-gradient-to-br dark:from-indigo-500/20 dark:via-white/[0.06] dark:to-cyan-400/10 dark:shadow-none">
+                <span className="text-sm font-medium text-indigo-600 dark:text-cyan-300">0{serviceIndex + 1} / 0{t.services.items.length}</span>
+                <div><h3 className="text-balance text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">{service.title}</h3><p className="mt-5 max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">{service.description}</p></div>
+              </motion.article>
             </div>
           </div>
-          <p className="mt-8 text-xs text-zinc-400 dark:text-zinc-600">
-            {t.footer.copyright}
-          </p>
-        </div>
-      </footer>
+        </section>
+
+        <section className="overflow-hidden py-24 sm:py-28">
+          <SectionHeading eyebrow={t.expertise.eyebrow} title={t.expertise.title} />
+          <div className="tx-marquee tx-marquee-reverse border-y border-zinc-900/10 py-7 dark:border-white/10">
+            <div className="tx-marquee-track">
+              {duplicatedExpertise.map((area, index) => <span key={`${area}-${index}`} className="whitespace-nowrap text-3xl font-semibold tracking-[-0.04em] text-zinc-400 dark:text-zinc-600 sm:text-5xl">{area}<i className="ml-8 inline-block h-2 w-2 rounded-full bg-indigo-500 dark:bg-cyan-300" /></span>)}
+            </div>
+          </div>
+        </section>
+
+        <section id="process" className="px-6 py-28 sm:py-36">
+          <div className="mx-auto max-w-6xl">
+            <SectionHeading eyebrow={t.process.eyebrow} title={t.process.title} description={t.process.description} />
+            <div className="relative mx-auto max-w-4xl before:absolute before:bottom-0 before:left-[1.35rem] before:top-0 before:w-px before:bg-gradient-to-b before:from-indigo-500 before:via-cyan-400 before:to-transparent sm:before:left-1/2">
+              {t.process.steps.map((step, index) => <RevealOnScroll key={step.step} className={`relative mb-8 flex gap-6 sm:w-1/2 ${index % 2 ? "sm:ml-auto sm:pl-12" : "sm:pr-12 sm:text-right"}`}><span className={`absolute left-3 top-6 grid h-5 w-5 -translate-x-1/2 place-items-center rounded-full border-4 border-[#f7f7f2] bg-indigo-500 dark:border-[#05070d] dark:bg-cyan-300 sm:left-auto ${index % 2 ? "sm:-left-2.5" : "sm:-right-2.5"}`} /><article className="tx-card ml-10 w-full p-6 sm:ml-0"><span className="text-xs font-semibold text-indigo-500 dark:text-cyan-300">{step.step}</span><h3 className="mt-2 text-xl font-semibold">{step.title}</h3><p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{step.description}</p></article></RevealOnScroll>)}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-6 py-20 sm:py-28">
+          <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 p-8 text-white shadow-2xl shadow-indigo-500/20 sm:p-14 lg:p-20">
+            <div className="tx-grid absolute inset-0 opacity-20" />
+            <div className="relative grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+              <div><p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-100">{t.resumex.eyebrow}</p><h2 className="mt-4 text-5xl font-semibold tracking-[-0.055em] sm:text-7xl">{t.resumex.title}</h2><p className="mt-5 max-w-2xl text-lg leading-8 text-blue-50">{t.resumex.description}</p><div className="mt-6 flex flex-wrap gap-2">{t.resumex.badges.map((badge) => <span key={badge} className="rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs">{badge}</span>)}</div></div>
+              <MotionLink href={RESUMEX_URL} target="_blank" rel="noopener noreferrer" variant="primary" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 font-semibold text-indigo-700 transition hover:scale-105">{t.resumex.cta} <Arrow /></MotionLink>
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" className="px-6 py-28 sm:py-36">
+          <div className="mx-auto max-w-4xl"><SectionHeading eyebrow={t.faq.eyebrow} title={t.faq.title} description={t.faq.description} />
+            <div className="divide-y divide-zinc-900/10 border-y border-zinc-900/10 dark:divide-white/10 dark:border-white/10">{t.faq.items.map((item, index) => <div key={item.question}><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)} className="flex w-full items-center justify-between gap-6 py-6 text-left text-lg font-medium"><span>{item.question}</span><span className={`text-2xl font-light transition ${openFaq === index ? "rotate-45" : ""}`}>+</span></button>{openFaq === index && <motion.p initial={reduced ? false : { opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl pb-7 leading-8 text-zinc-600 dark:text-zinc-400">{item.answer}</motion.p>}</div>)}</div>
+          </div>
+        </section>
+
+        <section id="contact" className="relative overflow-hidden bg-indigo-50 px-6 py-28 text-zinc-950 dark:bg-black dark:text-white sm:py-36">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(99,102,241,.18),transparent_45%)] dark:bg-[radial-gradient(circle_at_50%_20%,rgba(34,211,238,.16),transparent_45%)]" />
+          <div className="relative mx-auto max-w-6xl text-center"><p className="tx-eyebrow">{t.contact.eyebrow}</p><h2 className="mx-auto mt-5 max-w-5xl text-balance text-5xl font-semibold tracking-[-0.06em] sm:text-7xl lg:text-8xl">{t.contact.title}</h2><p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">{t.contact.description}</p><MotionLink href={SCHEDULER_URL} target="_blank" rel="noopener noreferrer" variant="primary" className="tx-primary-button mt-10">{t.contact.cta} <Arrow /></MotionLink>
+            <div className="mt-16 grid gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">{[[t.contact.email, CONTACT_EMAIL, `mailto:${CONTACT_EMAIL}`],[t.contact.phone, CONTACT_PHONE, CONTACT_PHONE_HREF],[t.contact.whatsapp, CONTACT_WHATSAPP, CONTACT_WHATSAPP_HREF],[t.contact.linkedin, t.contact.linkedinValue, TALENTX_LINKEDIN]].map(([label,value,href]) => <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noopener noreferrer" : undefined} className="rounded-2xl border border-indigo-200 bg-white/75 p-5 shadow-sm shadow-indigo-500/5 transition hover:border-indigo-400 hover:bg-white dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none dark:hover:border-cyan-300/30 dark:hover:bg-white/[0.08]"><span className="block text-xs font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-cyan-300">{label}</span><span className="mt-2 block break-words text-sm text-zinc-600 dark:text-zinc-300">{value}</span></a>)}</div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-indigo-200 bg-white px-6 py-10 text-zinc-600 dark:border-white/10 dark:bg-black dark:text-zinc-400"><div className="mx-auto flex max-w-7xl flex-col gap-5 text-sm sm:flex-row sm:items-center sm:justify-between"><div><span className="font-semibold tracking-[0.22em] text-zinc-950 dark:text-white">TALENTX</span><p className="mt-2">{t.footer.tagline}</p></div><div className="flex gap-5"><a className="transition hover:text-indigo-600 dark:hover:text-cyan-300" href={TALENTX_LINKEDIN} target="_blank" rel="noopener noreferrer">{t.footer.linkedin}</a><a className="transition hover:text-indigo-600 dark:hover:text-cyan-300" href={CONTACT_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer">{t.footer.whatsapp}</a></div><p>{t.footer.copyright}</p></div></footer>
     </div>
   );
 }

@@ -72,7 +72,6 @@ const RESUMEX_URL = "/resumex";
 
 const TEAM_MEMBERS = [
   { key: "vicente", href: "/meet-the-team/vicente-barrientos" },
-  { key: "benjamin", href: "/meet-the-team/benjamin-mahave" },
 ] as const;
 
 const linkClassName =
@@ -133,7 +132,6 @@ export default function TopNav() {
 
   const memberLabels: Record<(typeof TEAM_MEMBERS)[number]["key"], string> = {
     vicente: t.meetTheTeam.vicente.name,
-    benjamin: t.meetTheTeam.benjamin.name,
   };
 
   const handleMenuButtonClick = () => {

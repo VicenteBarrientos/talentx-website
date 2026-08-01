@@ -1,12 +1,5 @@
-import type { Metadata } from "next";
-import PartnerProfilePage from "@/components/PartnerProfilePage";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Benjamin Mahave — TalentX Recruiting",
-  description:
-    "Benjamin Mahave, Co-Founder and Talent Partner at TalentX Recruiting.",
-};
-
-export default function BenjaminMahavePage() {
-  return <PartnerProfilePage partner="benjamin" />;
+export default function RetiredProfilePage() {
+  permanentRedirect("/meet-the-team/vicente-barrientos");
 }

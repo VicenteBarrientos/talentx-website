@@ -10,7 +10,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/who-we-are/benjamin-mahave",
-        destination: "/meet-the-team/benjamin-mahave",
+        destination: "/meet-the-team/vicente-barrientos",
+        permanent: true,
+      },
+      {
+        source: "/meet-the-team/benjamin-mahave",
+        destination: "/meet-the-team/vicente-barrientos",
         permanent: true,
       },
       {
