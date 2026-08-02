@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
 import { easeOut, revealViewport } from "@/lib/motion-presets";
@@ -165,12 +165,77 @@ function StatusPill({ status, label }: { status: ProjectStatus; label: string })
   );
 }
 
+// ─── Journey map ───────────────────────────────────────────────────────────────
+
+/** Winding trail drawn between two waypoints; it draws itself as you scroll past. */
+function TrailSegment({ index, reduced }: { index: number; reduced: boolean }) {
+  const bow = index % 2 === 0 ? 5 : 39;
+  const d = `M22 0 Q ${bow} 52 22 104`;
+
+  // Taller than the space it occupies: the tail runs under the next waypoint
+  // so the route reads as continuous instead of breaking between stops.
+  return (
+    <div className="pointer-events-none -mb-12 h-[104px]" aria-hidden="true">
+      <svg width="44" height="104" viewBox="0 0 44 104" fill="none">
+        <path
+          d={d}
+          className="stroke-indigo-300/60 dark:stroke-white/15"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray="2 7"
+        />
+        <motion.path
+          d={d}
+          className="stroke-indigo-500 dark:stroke-cyan-300"
+          strokeWidth="2"
+          strokeLinecap="round"
+          initial={reduced ? false : { pathLength: 0, opacity: 0 }}
+          whileInView={{ pathLength: 1, opacity: 1 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </svg>
+    </div>
+  );
+}
+
+/** A stop on the route: the project icon as its landmark, lit once you reach it. */
+function Waypoint({ icon, step, reduced }: { icon: React.ReactNode; step: number; reduced: boolean }) {
+  return (
+    <motion.div
+      className="absolute left-0 top-6 h-11 w-11"
+      initial={reduced ? false : { scale: 0.6, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      viewport={{ once: true, amount: 0.8 }}
+      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+    >
+      <motion.div
+        className="pointer-events-none absolute -inset-2 rounded-full bg-indigo-400/25 blur-lg dark:bg-cyan-300/25"
+        initial={reduced ? false : { opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.8 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+      />
+      <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/80 dark:ring-white/15">
+        {icon}
+      </div>
+      <span className="absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-indigo-600 text-[10px] font-bold text-white shadow dark:border-[#050816] dark:bg-cyan-400 dark:text-[#050816]">
+        {step}
+      </span>
+    </motion.div>
+  );
+}
+
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function VicentePortfolioPage() {
   const { t } = useLocale();
   const reduced = useReducedMotion() ?? false;
   const vp = t.vicentePortfolio;
+
+  // Parallax on the star field so the sky drifts slower than the route
+  const { scrollY } = useScroll();
+  const starsY = useTransform(scrollY, [0, 3000], [0, -220]);
 
   const PROJECTS: {
     id: string;
@@ -271,6 +336,16 @@ export default function VicentePortfolioPage() {
         </video>
         {/* Scrim: keeps text readable and tunes how much video shows per theme */}
         <div className="absolute inset-0 bg-white/85 dark:bg-[#050816]/70" />
+        {/* Star field, dark only — drifts slower than the page for depth */}
+        <motion.div
+          className="absolute inset-[-25%] hidden dark:block"
+          style={{
+            y: reduced ? 0 : starsY,
+            backgroundImage:
+              "radial-gradient(circle, rgba(165,243,252,0.30) 0 1px, transparent 1.6px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-transparent to-white/75 dark:from-[#050816]/85 dark:via-transparent dark:to-[#050816]/85" />
       </div>
 
@@ -351,22 +426,28 @@ export default function VicentePortfolioPage() {
             </p>
           </div>
 
-          <div className="grid gap-5">
-            {PROJECTS.map((project) => (
-              <motion.div
-                key={project.id}
-                initial={reduced ? false : { opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={revealViewport}
-                transition={easeOut}
-                className="h-full"
-              >
-                <div className="flex h-full flex-col rounded-3xl border border-zinc-200 bg-white/75 p-6 shadow-sm backdrop-blur-xl transition-colors hover:border-indigo-200 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-cyan-400/20 sm:p-7">
-                  <div className="flex items-start gap-4">
-                    <div className="h-11 w-11 shrink-0 overflow-hidden rounded-2xl">
-                      {project.icon}
-                    </div>
-                    <div className="min-w-0 flex-1">
+          {/* The route: each project is a stop, joined by a trail that draws as you scroll */}
+          <div className="relative">
+            {PROJECTS.map((project, index) => (
+              <div key={project.id}>
+                <TrailSegment index={index} reduced={reduced} />
+
+                <motion.div
+                  className="relative pl-14 sm:pl-[76px]"
+                  initial={reduced ? false : { opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={revealViewport}
+                  transition={easeOut}
+                >
+                  <Waypoint icon={project.icon} step={index + 1} reduced={reduced} />
+
+                  <div className="relative">
+                    {/* Glow under the island */}
+                    <div
+                      className="pointer-events-none absolute inset-x-8 -bottom-2 h-8 rounded-[50%] bg-indigo-500/20 blur-xl dark:bg-cyan-400/20"
+                      aria-hidden="true"
+                    />
+                    <div className="relative flex flex-col rounded-3xl border border-zinc-200 bg-white/75 p-5 shadow-lg backdrop-blur-xl transition-colors hover:border-indigo-200 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-cyan-400/20 sm:p-7">
                       <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
                         <h3 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">
                           {project.name}
@@ -376,41 +457,39 @@ export default function VicentePortfolioPage() {
                       <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
                         {project.tagline}
                       </p>
+
+                      <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+                        {project.description}
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {project.stack.map((tech) => (
+                          <span
+                            key={tech}
+                            className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+
+                      {project.href && (
+                        <div className="mt-5">
+                          <Link
+                            href={project.href}
+                            {...(project.external
+                              ? { target: "_blank", rel: "noopener noreferrer" }
+                              : {})}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/25 dark:bg-cyan-400/10 dark:text-cyan-200 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-400/15"
+                          >
+                            {vp.visitProject}
+                            {project.external ? <ExternalLinkIcon /> : <ArrowRightIcon />}
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </div>
-
-                  <div className="flex-1">
-                    <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-                      {project.description}
-                    </p>
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {project.stack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {project.href && (
-                    <div className="mt-5">
-                      <Link
-                        href={project.href}
-                        {...(project.external
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/25 dark:bg-cyan-400/10 dark:text-cyan-200 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-400/15"
-                      >
-                        {vp.visitProject}
-                        {project.external ? <ExternalLinkIcon /> : <ArrowRightIcon />}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             ))}
           </div>
         </motion.section>
