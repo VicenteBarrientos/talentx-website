@@ -36,11 +36,20 @@ export default function LocaleProvider({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-    const initial = isLocale(stored) ? stored : defaultLocale;
-    setLocaleState(initial);
-    document.documentElement.lang = initial;
-    setMounted(true);
+    let active = true;
+
+    queueMicrotask(() => {
+      if (!active) return;
+      const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
+      const initial = isLocale(stored) ? stored : defaultLocale;
+      setLocaleState(initial);
+      document.documentElement.lang = initial;
+      setMounted(true);
+    });
+
+    return () => {
+      active = false;
+    };
   }, [defaultLocale]);
 
   const setLocale = (nextLocale: Locale) => {
