@@ -139,8 +139,17 @@ export default function HeroNetworkBackground({
   const springY = useSpring(mouseY, { stiffness: 36, damping: 22, mass: 0.6 });
 
   useEffect(() => {
-    setPointerFine(window.matchMedia("(pointer: fine)").matches);
-    setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    let active = true;
+
+    queueMicrotask(() => {
+      if (!active) return;
+      setPointerFine(window.matchMedia("(pointer: fine)").matches);
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {

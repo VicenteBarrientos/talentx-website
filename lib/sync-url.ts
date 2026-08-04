@@ -5,7 +5,7 @@ export function appendSyncParams(
   url: string,
   params: { theme: ThemeMode; locale: Locale },
 ) {
-  let next = appendThemeToUrl(url, params.theme);
+  const next = appendThemeToUrl(url, params.theme);
   const parsed = new URL(next);
   parsed.searchParams.set("lang", params.locale);
   return parsed.toString();

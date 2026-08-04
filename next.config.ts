@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/resumex",
-        destination: "https://resume-x-yixz.vercel.app",
+        destination: "https://resumex.talentxrecruiting.com",
         permanent: false,
       },
     ];

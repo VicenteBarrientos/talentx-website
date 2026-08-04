@@ -32,7 +32,15 @@ export default function ThemedExternalLink({
   const reduced = useReducedMotion() ?? false;
 
   useEffect(() => {
-    setThemeMounted(true);
+    let active = true;
+
+    queueMicrotask(() => {
+      if (active) setThemeMounted(true);
+    });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const theme =
