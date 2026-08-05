@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isLocale } from "@/lib/locale-sync";
-import { isThemeMode } from "@/lib/theme-sync";
 
+/** TalentX is light-only; inbound `?theme=` is ignored. */
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host") ?? "";
   if (host.includes("vercel.app")) {
@@ -13,30 +13,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  const theme = request.nextUrl.searchParams.get("theme");
   const lang = request.nextUrl.searchParams.get("lang");
 
-  if (!isThemeMode(theme) && !isLocale(lang)) {
+  if (!isLocale(lang)) {
     return NextResponse.next();
   }
 
   const response = NextResponse.next();
-
-  if (isThemeMode(theme)) {
-    response.cookies.set("talentx-theme", theme, {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-      sameSite: "lax",
-    });
-  }
-
-  if (isLocale(lang)) {
-    response.cookies.set("talentx-locale", lang, {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-      sameSite: "lax",
-    });
-  }
+  response.cookies.set("talentx-locale", lang, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+  });
 
   return response;
 }

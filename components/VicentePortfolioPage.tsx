@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
 import { easeOut, revealViewport } from "@/lib/motion-presets";
@@ -21,14 +21,14 @@ const MAPULENGUA_URL = "https://mapulengua.vercel.app/";
 function FundoSmartIcon() {
   return (
     <svg viewBox="0 0 40 40" fill="none" className="h-full w-full" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" className="fill-emerald-100 dark:fill-emerald-400/20" />
+      <circle cx="20" cy="20" r="20" className="fill-emerald-100" />
       <path
         d="M10 25l3-11 9-3 8 6-2 11-13 1z"
-        className="fill-emerald-500/25 stroke-emerald-600 dark:fill-emerald-400/20 dark:stroke-emerald-300"
+        className="fill-emerald-500/25 stroke-emerald-600"
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      <circle cx="19" cy="19" r="2.8" className="fill-emerald-600 dark:fill-emerald-300" />
+      <circle cx="19" cy="19" r="2.8" className="fill-emerald-600" />
     </svg>
   );
 }
@@ -36,9 +36,9 @@ function FundoSmartIcon() {
 function CondoSyncIcon() {
   return (
     <svg viewBox="0 0 40 40" fill="none" className="h-full w-full" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" className="fill-sky-100 dark:fill-sky-400/20" />
-      <rect x="10" y="15" width="9" height="15" rx="1" className="fill-sky-300 dark:fill-sky-400/40" />
-      <rect x="20" y="10" width="10" height="20" rx="1" className="fill-sky-500 dark:fill-sky-400" />
+      <circle cx="20" cy="20" r="20" className="fill-sky-100" />
+      <rect x="10" y="15" width="9" height="15" rx="1" className="fill-sky-300" />
+      <rect x="20" y="10" width="10" height="20" rx="1" className="fill-sky-500" />
       <path
         d="M22.5 14h1.5M26 14h1.5M22.5 18h1.5M26 18h1.5M22.5 22h1.5M26 22h1.5"
         stroke="white"
@@ -47,7 +47,7 @@ function CondoSyncIcon() {
       />
       <path
         d="M12.5 19h1.5M15.5 19h1.5M12.5 23h1.5M15.5 23h1.5"
-        className="stroke-sky-600 dark:stroke-sky-200"
+        className="stroke-sky-600"
         strokeWidth="1.4"
         strokeLinecap="round"
       />
@@ -58,15 +58,15 @@ function CondoSyncIcon() {
 function TalentXIcon() {
   return (
     <svg viewBox="0 0 40 40" fill="none" className="h-full w-full" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" className="fill-cyan-100 dark:fill-cyan-400/20" />
+      <circle cx="20" cy="20" r="20" className="fill-cyan-100" />
       <path
         d="M14 28V18l6-6 6 6v10"
-        className="stroke-cyan-600 dark:stroke-cyan-400"
+        className="stroke-cyan-600"
         strokeWidth="1.8"
         strokeLinejoin="round"
       />
-      <rect x="17" y="22" width="6" height="6" rx="0.5" className="fill-cyan-500 dark:fill-cyan-400" />
-      <path d="M12 18h16" className="stroke-cyan-600 dark:stroke-cyan-400" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="17" y="22" width="6" height="6" rx="0.5" className="fill-cyan-500" />
+      <path d="M12 18h16" className="stroke-cyan-600" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -74,15 +74,15 @@ function TalentXIcon() {
 function ResumeXIcon() {
   return (
     <svg viewBox="0 0 40 40" fill="none" className="h-full w-full" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" className="fill-indigo-100 dark:fill-indigo-400/20" />
-      <rect x="12" y="10" width="16" height="20" rx="2" className="fill-indigo-200 dark:fill-indigo-400/30" />
+      <circle cx="20" cy="20" r="20" className="fill-brand-100" />
+      <rect x="12" y="10" width="16" height="20" rx="2" className="fill-brand-200" />
       <path
         d="M15 16h10M15 19h10M15 22h6"
-        className="stroke-indigo-500 dark:stroke-indigo-400"
+        className="stroke-brand-500"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      <circle cx="27" cy="27" r="5" className="fill-indigo-500 dark:fill-indigo-400" />
+      <circle cx="27" cy="27" r="5" className="fill-brand-500" />
       <path d="M25.5 27l1 1 2-2" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -91,10 +91,10 @@ function ResumeXIcon() {
 function OsornoFactoryIcon() {
   return (
     <svg viewBox="0 0 40 40" fill="none" className="h-full w-full" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" className="fill-violet-100 dark:fill-violet-400/20" />
-      <path d="M20 11l11 18H9l11-18z" className="fill-violet-500 dark:fill-violet-400" />
+      <circle cx="20" cy="20" r="20" className="fill-violet-100" />
+      <path d="M20 11l11 18H9l11-18z" className="fill-violet-500" />
       <path d="M20 11l4.2 6.9-2.1-1.1-2.1 1.1-2.1-1.1-2.1 1.1L20 11z" fill="white" />
-      <circle cx="20" cy="24.5" r="1.8" className="fill-violet-200 dark:fill-violet-900/60" />
+      <circle cx="20" cy="24.5" r="1.8" className="fill-violet-200" />
     </svg>
   );
 }
@@ -102,10 +102,10 @@ function OsornoFactoryIcon() {
 function MapulenguaIcon() {
   return (
     <svg viewBox="0 0 40 40" fill="none" className="h-full w-full" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" className="fill-amber-100 dark:fill-amber-400/20" />
+      <circle cx="20" cy="20" r="20" className="fill-amber-100" />
       <path
         d="M11 14a2 2 0 012-2h14a2 2 0 012 2v9a2 2 0 01-2 2h-8l-5 4v-4h-1a2 2 0 01-2-2v-9z"
-        className="fill-amber-500 dark:fill-amber-400"
+        className="fill-amber-500"
       />
       <path d="M16 17.5h8M16 20.5h5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
@@ -151,14 +151,14 @@ function GitHubIcon() {
 type ProjectStatus = "live" | "private" | "building";
 
 const STATUS_DOT: Record<ProjectStatus, string> = {
-  live: "bg-emerald-500 dark:bg-emerald-400",
-  private: "bg-zinc-400 dark:bg-zinc-500",
-  building: "bg-amber-500 dark:bg-amber-400",
+  live: "bg-emerald-500 ",
+  private: "bg-zinc-400 ",
+  building: "bg-amber-500 ",
 };
 
 function StatusPill({ status, label }: { status: ProjectStatus; label: string }) {
   return (
-    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400">
+    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-500">
       <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[status]}`} />
       {label}
     </span>
@@ -179,14 +179,14 @@ function TrailSegment({ index, reduced }: { index: number; reduced: boolean }) {
       <svg width="44" height="104" viewBox="0 0 44 104" fill="none">
         <path
           d={d}
-          className="stroke-indigo-300/60 dark:stroke-white/15"
+          className="stroke-brand-300/60"
           strokeWidth="2"
           strokeLinecap="round"
           strokeDasharray="2 7"
         />
         <motion.path
           d={d}
-          className="stroke-indigo-500 dark:stroke-cyan-300"
+          className="stroke-brand-500"
           strokeWidth="2"
           strokeLinecap="round"
           initial={reduced ? false : { pathLength: 0, opacity: 0 }}
@@ -210,16 +210,16 @@ function Waypoint({ icon, step, reduced }: { icon: React.ReactNode; step: number
       transition={{ type: "spring", stiffness: 320, damping: 22 }}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-2 rounded-full bg-indigo-400/25 blur-lg dark:bg-cyan-300/25"
+        className="pointer-events-none absolute -inset-2 rounded-full bg-brand-400/25 blur-lg"
         initial={reduced ? false : { opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.8 }}
         transition={{ duration: 0.6, delay: 0.15 }}
       />
-      <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/80 dark:ring-white/15">
+      <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/80">
         {icon}
       </div>
-      <span className="absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-indigo-600 text-[10px] font-bold text-white shadow dark:border-[#050816] dark:bg-cyan-400 dark:text-[#050816]">
+      <span className="absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-brand-600 text-[10px] font-bold text-white shadow">
         {step}
       </span>
     </motion.div>
@@ -232,10 +232,6 @@ export default function VicentePortfolioPage() {
   const { t } = useLocale();
   const reduced = useReducedMotion() ?? false;
   const vp = t.vicentePortfolio;
-
-  // Parallax on the star field so the sky drifts slower than the route
-  const { scrollY } = useScroll();
-  const starsY = useTransform(scrollY, [0, 3000], [0, -220]);
 
   const PROJECTS: {
     id: string;
@@ -316,10 +312,10 @@ export default function VicentePortfolioPage() {
   ];
 
   return (
-    <div className="relative min-h-screen text-zinc-900 dark:text-white">
+    <div className="relative min-h-screen text-zinc-900">
       {/* Fixed video backdrop — the page scrolls over it */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-white dark:bg-[#050816]"
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#f1f3f6]"
         aria-hidden="true"
       >
         <video
@@ -334,19 +330,9 @@ export default function VicentePortfolioPage() {
           <source src="/videos/portfolio-bg.webm" type="video/webm" />
           <source src="/videos/portfolio-bg.mp4" type="video/mp4" />
         </video>
-        {/* Scrim: keeps text readable and tunes how much video shows per theme */}
-        <div className="absolute inset-0 bg-white/85 dark:bg-[#050816]/70" />
-        {/* Star field, dark only — drifts slower than the page for depth */}
-        <motion.div
-          className="absolute inset-[-25%] hidden dark:block"
-          style={{
-            y: reduced ? 0 : starsY,
-            backgroundImage:
-              "radial-gradient(circle, rgba(165,243,252,0.30) 0 1px, transparent 1.6px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-transparent to-white/75 dark:from-[#050816]/85 dark:via-transparent dark:to-[#050816]/85" />
+        {/* Scrim: keeps text readable over the video */}
+        <div className="absolute inset-0 bg-white/85" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-transparent to-white/75" />
       </div>
 
       <TopNav />
@@ -360,7 +346,7 @@ export default function VicentePortfolioPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={easeOut}
         >
-          <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-3xl border border-indigo-200 shadow-sm dark:border-white/10 sm:h-32 sm:w-32">
+          <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-3xl border border-brand-200 shadow-sm sm:h-32 sm:w-32">
             <Image
               src="/partners/vicente-barrientos.png"
               alt="Vicente Barrientos"
@@ -371,16 +357,16 @@ export default function VicentePortfolioPage() {
             />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-indigo-600 dark:text-cyan-300">
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-600">
               {vp.eyebrow}
             </p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
               Vicente Barrientos
             </h1>
-            <p className="mt-2 text-base font-medium text-indigo-700 dark:text-cyan-200">
+            <p className="mt-2 text-base font-medium text-brand-700">
               {vp.subtitle}
             </p>
-            <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-0.5 text-sm text-zinc-500">
               {vp.subtitleSub}
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
@@ -388,7 +374,7 @@ export default function VicentePortfolioPage() {
                 href={VICENTE_LINKEDIN}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/25 dark:bg-cyan-400/10 dark:text-cyan-200 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-400/15"
+                className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
               >
                 <LinkedInIcon />
                 LinkedIn
@@ -397,7 +383,7 @@ export default function VicentePortfolioPage() {
                 href={VICENTE_GITHUB}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:border-cyan-400/25 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-100"
+                className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
               >
                 <GitHubIcon />
                 GitHub
@@ -415,13 +401,13 @@ export default function VicentePortfolioPage() {
           transition={easeOut}
         >
           <div className="mb-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-600 dark:text-cyan-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">
               {vp.sections.projects.eyebrow}
             </p>
-            <h2 className="mt-1.5 text-2xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-3xl">
+            <h2 className="mt-1.5 text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
               {vp.sections.projects.title}
             </h2>
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600">
               {vp.intro}
             </p>
           </div>
@@ -444,28 +430,28 @@ export default function VicentePortfolioPage() {
                   <div className="relative">
                     {/* Glow under the island */}
                     <div
-                      className="pointer-events-none absolute inset-x-8 -bottom-2 h-8 rounded-[50%] bg-indigo-500/20 blur-xl dark:bg-cyan-400/20"
+                      className="pointer-events-none absolute inset-x-8 -bottom-2 h-8 rounded-[50%] bg-brand-500/20 blur-xl"
                       aria-hidden="true"
                     />
-                    <div className="relative flex flex-col rounded-3xl border border-zinc-200 bg-white/75 p-5 shadow-lg backdrop-blur-xl transition-colors hover:border-indigo-200 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-cyan-400/20 sm:p-7">
+                    <div className="relative flex flex-col rounded-3xl border border-zinc-200 bg-white/75 p-5 shadow-lg backdrop-blur-xl transition-colors hover:border-brand-200 sm:p-7">
                       <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
-                        <h3 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">
+                        <h3 className="text-lg font-bold tracking-tight text-zinc-900">
                           {project.name}
                         </h3>
                         <StatusPill status={project.status} label={vp.status[project.status]} />
                       </div>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+                      <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-zinc-500">
                         {project.tagline}
                       </p>
 
-                      <p className="mt-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+                      <p className="mt-4 text-sm leading-relaxed text-zinc-600">
                         {project.description}
                       </p>
                       <div className="mt-4 flex flex-wrap gap-1.5">
                         {project.stack.map((tech) => (
                           <span
                             key={tech}
-                            className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400"
+                            className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-600"
                           >
                             {tech}
                           </span>
@@ -479,7 +465,7 @@ export default function VicentePortfolioPage() {
                             {...(project.external
                               ? { target: "_blank", rel: "noopener noreferrer" }
                               : {})}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100 dark:border-cyan-400/25 dark:bg-cyan-400/10 dark:text-cyan-200 dark:hover:border-cyan-300/40 dark:hover:bg-cyan-400/15"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
                           >
                             {vp.visitProject}
                             {project.external ? <ExternalLinkIcon /> : <ArrowRightIcon />}

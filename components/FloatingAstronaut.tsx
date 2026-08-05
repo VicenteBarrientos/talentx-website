@@ -107,7 +107,7 @@ export default function FloatingAstronaut({ className }: { className?: string })
           <linearGradient id="visor_grad" x1="70" y1="62" x2="130" y2="110" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#1e4080" />
             <stop offset="50%" stopColor="#0d2a5e" />
-            <stop offset="100%" stopColor="#050816" />
+            <stop offset="100%" stopColor="#080f1b" />
           </linearGradient>
         </defs>
       </svg>

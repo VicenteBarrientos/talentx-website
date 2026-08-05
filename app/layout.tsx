@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import LocaleProvider from "@/components/LocaleProvider";
 import LocaleSync from "@/components/LocaleSync";
-import ThemeProvider from "@/components/ThemeProvider";
-import ThemeSync from "@/components/ThemeSync";
 import { TALENTX_URL } from "@/lib/site-urls";
 import { localeInitScript } from "@/lib/locale-sync";
-import { themeInitScript } from "@/lib/theme-sync";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -61,17 +58,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <script dangerouslySetInnerHTML={{ __html: localeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <ThemeProvider defaultTheme="dark">
-          <LocaleProvider defaultLocale="en">
-            <ThemeSync />
-            <LocaleSync />
-            {children}
-          </LocaleProvider>
-        </ThemeProvider>
+        <LocaleProvider defaultLocale="en">
+          <LocaleSync />
+          {children}
+        </LocaleProvider>
       </body>
     </html>
   );

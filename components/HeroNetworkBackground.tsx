@@ -191,27 +191,27 @@ export default function HeroNetworkBackground({
       aria-hidden="true"
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_70%_40%,rgba(56,189,248,0.08),transparent_55%)] dark:bg-[radial-gradient(ellipse_80%_60%_at_70%_40%,rgba(34,211,238,0.14),transparent_58%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_85%_65%,rgba(59,130,246,0.06),transparent_60%)] dark:bg-[radial-gradient(ellipse_50%_40%_at_85%_65%,rgba(59,130,246,0.12),transparent_62%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_70%_40%,rgba(29,53,89,0.08),transparent_55%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_85%_65%,rgba(62,100,145,0.06),transparent_60%)]" />
 
       <svg
-        className="absolute inset-0 h-full w-full opacity-70 dark:opacity-100"
+        className="absolute inset-0 h-full w-full opacity-70"
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid slice"
         role="presentation"
       >
         <defs>
           <linearGradient id="tx-edge-strong" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgb(99, 102, 241)" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="rgb(34, 211, 238)" stopOpacity="0.55" />
+            <stop offset="0%" stopColor="rgb(29, 53, 89)" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="rgb(62, 100, 145)" stopOpacity="0.55" />
           </linearGradient>
           <linearGradient id="tx-edge-soft" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="rgb(129, 140, 248)" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="rgb(56, 189, 248)" stopOpacity="0.28" />
+            <stop offset="0%" stopColor="rgb(110, 138, 174)" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="rgb(62, 100, 145)" stopOpacity="0.28" />
           </linearGradient>
           <radialGradient id="tx-node-glow">
-            <stop offset="0%" stopColor="rgb(165, 243, 252)" stopOpacity="0.95" />
-            <stop offset="100%" stopColor="rgb(34, 211, 238)" stopOpacity="0.2" />
+            <stop offset="0%" stopColor="rgb(198, 211, 228)" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="rgb(62, 100, 145)" stopOpacity="0.2" />
           </radialGradient>
           <filter id="tx-soft-glow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="0.8" result="blur" />
@@ -286,7 +286,7 @@ export default function HeroNetworkBackground({
                     cx={node.x}
                     cy={node.y}
                     r={node.r}
-                    fill={node.hub ? "rgb(165, 243, 252)" : "rgb(125, 211, 252)"}
+                    fill={node.hub ? "rgb(29, 53, 89)" : "rgb(62, 100, 145)"}
                     initial={{ opacity: node.hub ? 0.85 : 0.55 }}
                     animate={
                       reduced
@@ -315,8 +315,8 @@ export default function HeroNetworkBackground({
         ))}
       </svg>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/20 dark:from-[#050816] dark:via-[#050816]/88 dark:to-[#050816]/35" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/80 dark:to-[#050816]/90" />
+      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/80" />
     </div>
   );
 }
