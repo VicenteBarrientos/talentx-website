@@ -482,11 +482,13 @@ export default function VicentePortfolioPage() {
     description: string;
     stack: string[];
     status: ProjectStatus;
+    shot?: string;
     href?: string;
     external?: boolean;
   }[] = [
     {
       id: "fundosmart",
+      shot: "/images/projects/fundosmart.webp",
       name: "FundoSmart",
       icon: <FundoSmartIcon />,
       tagline: vp.projects.fundosmart.tagline,
@@ -498,6 +500,7 @@ export default function VicentePortfolioPage() {
     },
     {
       id: "condosync",
+      shot: "/images/projects/condosync.webp",
       name: "CondoSync",
       icon: <CondoSyncIcon />,
       tagline: vp.projects.condosync.tagline,
@@ -509,6 +512,7 @@ export default function VicentePortfolioPage() {
     },
     {
       id: "talentx",
+      shot: "/images/projects/talentx.webp",
       name: "TalentX",
       icon: <TalentXIcon />,
       tagline: vp.projects.talentx.tagline,
@@ -519,6 +523,7 @@ export default function VicentePortfolioPage() {
     },
     {
       id: "resumex",
+      shot: "/images/projects/resumex.webp",
       name: "ResumeX",
       icon: <ResumeXIcon />,
       tagline: vp.projects.resumex.tagline,
@@ -530,6 +535,7 @@ export default function VicentePortfolioPage() {
     },
     {
       id: "osornofactory",
+      shot: "/images/projects/osornofactory.webp",
       name: "OsornoFactory",
       icon: <OsornoFactoryIcon />,
       tagline: vp.projects.osornofactory.tagline,
@@ -541,6 +547,7 @@ export default function VicentePortfolioPage() {
     },
     {
       id: "mapulengua",
+      shot: "/images/projects/mapulengua.webp",
       name: "Mapulengua",
       icon: <MapulenguaIcon />,
       tagline: vp.projects.mapulengua.tagline,
@@ -819,6 +826,19 @@ export default function VicentePortfolioPage() {
                       <p className="mt-4 max-w-3xl text-sm leading-relaxed text-slate-300 sm:text-base">
                         {project.description}
                       </p>
+
+                      {project.shot && (
+                        <div className="relative mt-6 aspect-[16/10] overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03] shadow-[0_28px_70px_-34px_rgba(0,0,0,0.9)]">
+                          <Image
+                            src={project.shot}
+                            alt={`${project.name} landing page`}
+                            fill
+                            sizes="(min-width: 1024px) 640px, 90vw"
+                            className="object-cover object-top"
+                          />
+                        </div>
+                      )}
+
                       <div className="mt-6 flex flex-wrap gap-2">
                         {project.stack.map((tech) => (
                           <span

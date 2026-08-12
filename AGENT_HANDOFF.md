@@ -59,9 +59,6 @@ to match git, deploy from GitHub, not from your folder.
   promises a team bio and delivers a product portfolio. A dedicated `/portfolio`
   route, with a short recruiting bio left at the old URL, would serve both
   audiences. Not decided.
-- **Product screenshots.** The six stops are text only, so a visitor never sees any
-  of the products. All six have public URLs, so the shots can be captured and kept
-  current. Highest-value addition on the table; proposed, not started.
 - **Per-project technical detail.** Considered as collapsibles. Caveat before
   building it: the journey's scroll math (`PROJECT_CENTERS`, `SCRUB_SCROLL_STOPS`)
   assumes stable section heights, and anything that expands in place shifts every
@@ -102,7 +99,31 @@ ffmpeg -i src.mp4 -vf "scale=1264:720:flags=lanczos,fps=12" \
 Gemini/Veo output carries a sparkle watermark in the bottom-right; crop it off
 before encoding. Grok output does not.
 
+### Project screenshots
+
+`public/images/projects/<id>.webp`, one per project, wired through the `shot`
+field on `PROJECTS`. **Do not hand-edit them** — rerun the capture so every card
+keeps the same frame:
+
+```bash
+npm run shots          # CHROME_PATH=... if Chrome is not in the usual place
+```
+
+It drives an installed Chrome via puppeteer-core (no browser download) at dpr 1,
+because the cards render these ~640px wide and dpr 2 quadruples the bytes for no
+visible gain. Roughly 300 KB for the six on disk; Next re-encodes to AVIF at the
+displayed size, so a visitor fetches about 84 KB, lazily.
+
+Refresh them whenever a product's landing page changes — a stale screenshot is
+worse than none.
+
 ## Log
+
+### 2026-08-12 — Claude: screenshots on every stop
+
+Each project card now shows its live landing page. Adds `npm run shots` plus
+`puppeteer-core` as a devDependency so the images stay reproducible rather than
+being a one-off capture.
 
 ### 2026-08-12 — Claude: new backdrop footage
 

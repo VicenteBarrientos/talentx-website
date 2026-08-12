@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "shots": "node scripts/capture-project-shots.mjs"
   },
   "dependencies": {
     "cobe": "^2.0.1",
@@ -22,6 +23,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "puppeteer-core": "^25.6.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
