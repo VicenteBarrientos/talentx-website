@@ -2,11 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
 import { easeOut, revealViewport } from "@/lib/motion-presets";
 import { RESUMEX_URL } from "@/lib/site-urls";
+import styles from "./VicentePortfolioPage.module.css";
 
 const VICENTE_LINKEDIN = "https://www.linkedin.com/in/vicente-barrientos/";
 const VICENTE_GITHUB = "https://github.com/VicenteBarrientos";
@@ -15,6 +24,62 @@ const FUNDOSMART_URL = "https://fundosmart.com/";
 const CONDOSYNC_URL = "https://www.condosync.cl";
 const OSORNOFACTORY_URL = "https://osorno-ai-forge.vercel.app/";
 const MAPULENGUA_URL = "https://mapulengua.vercel.app/";
+
+const JOURNEY_STOPS = [
+  0, 0.16, 0.26, 0.31, 0.41, 0.45, 0.55, 0.59, 0.69, 0.73, 0.83, 0.87,
+  0.97, 1,
+];
+const WORLD_SCALE = [
+  1.03, 1.23, 1.23, 1.28, 1.28, 1.24, 1.24, 1.3, 1.3, 1.26, 1.26, 1.2,
+  1.2, 1.05,
+];
+const WORLD_X = [
+  "0%", "8%", "8%", "-7%", "-7%", "3%", "3%", "-9%", "-9%", "7%",
+  "7%", "-4%", "-4%", "0%",
+];
+const WORLD_Y = [
+  "0%", "-4%", "-4%", "2%", "2%", "-2%", "-2%", "-6%", "-6%", "4%",
+  "4%", "-3%", "-3%", "0%",
+];
+const PROJECT_CENTERS = [0.159, 0.326, 0.492, 0.659, 0.826, 0.992];
+const SCRUB_SCROLL_STOPS = [0, ...PROJECT_CENTERS, 1];
+const SCRUB_TIMES = [0, 0.85, 2.5, 4.15, 5.8, 7.45, 9.1, 10];
+const SCRUB_FRAME_DURATION = 1 / 12;
+const SCRUB_MEDIA_QUERY = "(min-width: 640px)";
+const MAP_MARKERS = [
+  { left: "12%", top: "72%" },
+  { left: "35%", top: "54%" },
+  { left: "54%", top: "57%" },
+  { left: "59%", top: "45%" },
+  { left: "74%", top: "45%" },
+  { left: "70%", top: "35%" },
+];
+
+type NavigatorWithConnection = Navigator & {
+  connection?: EventTarget & { saveData?: boolean };
+};
+
+function subscribeToScrubCapability(onStoreChange: () => void) {
+  const mediaQuery = window.matchMedia(SCRUB_MEDIA_QUERY);
+  const connection = (navigator as NavigatorWithConnection).connection;
+
+  mediaQuery.addEventListener("change", onStoreChange);
+  connection?.addEventListener("change", onStoreChange);
+
+  return () => {
+    mediaQuery.removeEventListener("change", onStoreChange);
+    connection?.removeEventListener("change", onStoreChange);
+  };
+}
+
+function getScrubCapabilitySnapshot() {
+  const connection = (navigator as NavigatorWithConnection).connection;
+  return window.matchMedia(SCRUB_MEDIA_QUERY).matches && !connection?.saveData;
+}
+
+function getServerScrubCapabilitySnapshot() {
+  return false;
+}
 
 // ─── Project icons ─────────────────────────────────────────────────────────────
 
@@ -151,14 +216,14 @@ function GitHubIcon() {
 type ProjectStatus = "live" | "private" | "building";
 
 const STATUS_DOT: Record<ProjectStatus, string> = {
-  live: "bg-emerald-500 ",
+  live: "bg-emerald-400",
   private: "bg-zinc-400 ",
-  building: "bg-amber-500 ",
+  building: "bg-amber-400",
 };
 
 function StatusPill({ status, label }: { status: ProjectStatus; label: string }) {
   return (
-    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-500">
+    <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-black/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">
       <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[status]}`} />
       {label}
     </span>
@@ -167,71 +232,170 @@ function StatusPill({ status, label }: { status: ProjectStatus; label: string })
 
 // ─── Journey map ───────────────────────────────────────────────────────────────
 
-/** Winding trail drawn between two waypoints; it draws itself as you scroll past. */
-function TrailSegment({ index, reduced }: { index: number; reduced: boolean }) {
-  const bow = index % 2 === 0 ? 5 : 39;
-  const d = `M22 0 Q ${bow} 52 22 104`;
-
-  // Taller than the space it occupies: the tail runs under the next waypoint
-  // so the route reads as continuous instead of breaking between stops.
-  return (
-    <div className="pointer-events-none -mb-12 h-[104px]" aria-hidden="true">
-      <svg width="44" height="104" viewBox="0 0 44 104" fill="none">
-        <path
-          d={d}
-          className="stroke-brand-300/60"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeDasharray="2 7"
-        />
-        <motion.path
-          d={d}
-          className="stroke-brand-500"
-          strokeWidth="2"
-          strokeLinecap="round"
-          initial={reduced ? false : { pathLength: 0, opacity: 0 }}
-          whileInView={{ pathLength: 1, opacity: 1 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-        />
-      </svg>
-    </div>
-  );
-}
-
-/** A stop on the route: the project icon as its landmark, lit once you reach it. */
-function Waypoint({ icon, step, reduced }: { icon: React.ReactNode; step: number; reduced: boolean }) {
-  return (
-    <motion.div
-      className="absolute left-0 top-6 h-11 w-11"
-      initial={reduced ? false : { scale: 0.6, opacity: 0 }}
-      whileInView={{ scale: 1, opacity: 1 }}
-      viewport={{ once: true, amount: 0.8 }}
-      transition={{ type: "spring", stiffness: 320, damping: 22 }}
-    >
-      <motion.div
-        className="pointer-events-none absolute -inset-2 rounded-full bg-brand-400/25 blur-lg"
-        initial={reduced ? false : { opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.8 }}
-        transition={{ duration: 0.6, delay: 0.15 }}
-      />
-      <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/80">
-        {icon}
-      </div>
-      <span className="absolute -bottom-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-brand-600 text-[10px] font-bold text-white shadow">
-        {step}
-      </span>
-    </motion.div>
-  );
-}
-
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function VicentePortfolioPage() {
-  const { t } = useLocale();
-  const reduced = useReducedMotion() ?? false;
+  const { t, mounted } = useLocale();
+  const prefersReducedMotion = useReducedMotion() ?? false;
+  const reduced = mounted && prefersReducedMotion;
+  const cameraEnabled = mounted && !prefersReducedMotion;
   const vp = t.vicentePortfolio;
+  const journeyRef = useRef<HTMLElement>(null);
+  const scrubVideoRef = useRef<HTMLVideoElement>(null);
+  const pendingScrubTimeRef = useRef(0);
+  const scrubSeekInFlightRef = useRef(false);
+  const scrubFrameCallbackRef = useRef<number | null>(null);
+  const scrubPaintFallbackRef = useRef<number | null>(null);
+  const scrubPaintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [activeProject, setActiveProject] = useState(0);
+  const [scrubReady, setScrubReady] = useState(false);
+  const [scrubFailed, setScrubFailed] = useState(false);
+  const scrubCapable = useSyncExternalStore(
+    subscribeToScrubCapability,
+    getScrubCapabilitySnapshot,
+    getServerScrubCapabilitySnapshot,
+  );
+  const scrubEligible = mounted && !prefersReducedMotion && scrubCapable;
+  const scrubActive = scrubEligible && scrubReady && !scrubFailed;
+  const { scrollYProgress } = useScroll({
+    target: journeyRef,
+    offset: ["start start", "end end"],
+  });
+  const journeyProgress = useSpring(scrollYProgress, {
+    stiffness: 130,
+    damping: 30,
+    mass: 0.24,
+  });
+  const worldScale = useTransform(
+    journeyProgress,
+    JOURNEY_STOPS,
+    WORLD_SCALE,
+  );
+  const worldX = useTransform(
+    journeyProgress,
+    JOURNEY_STOPS,
+    WORLD_X,
+  );
+  const worldY = useTransform(
+    journeyProgress,
+    JOURNEY_STOPS,
+    WORLD_Y,
+  );
+  const scrubTime = useTransform(
+    scrollYProgress,
+    SCRUB_SCROLL_STOPS,
+    SCRUB_TIMES,
+  );
+
+  useEffect(() => {
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+
+    return () => {
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    };
+  }, []);
+
+  const clampScrubTime = useCallback((video: HTMLVideoElement, requestedTime: number) => {
+    const maximumTime = Math.max(
+      0,
+      Math.min(SCRUB_TIMES.at(-1) ?? 0, video.duration - SCRUB_FRAME_DURATION),
+    );
+
+    const clampedTime = Math.min(maximumTime, Math.max(0, requestedTime));
+    return Math.round(clampedTime / SCRUB_FRAME_DURATION) * SCRUB_FRAME_DURATION;
+  }, []);
+
+  const seekToLatestScrubTime = useCallback(() => {
+    const video = scrubVideoRef.current;
+    if (
+      !scrubEligible ||
+      scrubFailed ||
+      !video ||
+      video.readyState < HTMLMediaElement.HAVE_METADATA ||
+      scrubSeekInFlightRef.current
+    ) {
+      return;
+    }
+
+    const nextTime = clampScrubTime(video, pendingScrubTimeRef.current);
+    if (Math.abs(video.currentTime - nextTime) <= SCRUB_FRAME_DURATION / 2) {
+      setScrubReady(true);
+      return;
+    }
+
+    scrubSeekInFlightRef.current = true;
+    video.currentTime = nextTime;
+  }, [clampScrubTime, scrubEligible, scrubFailed]);
+
+  const cancelScheduledScrubPaint = useCallback(() => {
+    const video = scrubVideoRef.current;
+    if (video && scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
+      video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
+    }
+    scrubFrameCallbackRef.current = null;
+
+    if (scrubPaintFallbackRef.current !== null) {
+      cancelAnimationFrame(scrubPaintFallbackRef.current);
+      scrubPaintFallbackRef.current = null;
+    }
+
+    if (scrubPaintTimeoutRef.current !== null) {
+      clearTimeout(scrubPaintTimeoutRef.current);
+      scrubPaintTimeoutRef.current = null;
+    }
+  }, []);
+
+  const continueAfterScrubFramePaint = useCallback((video: HTMLVideoElement) => {
+    cancelScheduledScrubPaint();
+
+    const flushLatest = () => {
+      if (scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
+        video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
+      }
+      scrubFrameCallbackRef.current = null;
+      scrubPaintFallbackRef.current = null;
+      if (scrubPaintTimeoutRef.current !== null) {
+        clearTimeout(scrubPaintTimeoutRef.current);
+        scrubPaintTimeoutRef.current = null;
+      }
+      scrubSeekInFlightRef.current = false;
+      setScrubReady(true);
+      seekToLatestScrubTime();
+    };
+
+    if ("requestVideoFrameCallback" in video) {
+      scrubFrameCallbackRef.current = video.requestVideoFrameCallback(flushLatest);
+      scrubPaintTimeoutRef.current = setTimeout(flushLatest, 120);
+      return;
+    }
+
+    scrubPaintFallbackRef.current = requestAnimationFrame(() => {
+      scrubPaintFallbackRef.current = requestAnimationFrame(flushLatest);
+    });
+  }, [cancelScheduledScrubPaint, seekToLatestScrubTime]);
+
+  useEffect(() => cancelScheduledScrubPaint, [cancelScheduledScrubPaint]);
+
+  useMotionValueEvent(scrubTime, "change", (requestedTime) => {
+    pendingScrubTimeRef.current = requestedTime;
+    seekToLatestScrubTime();
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    let nearest = 0;
+    let shortestDistance = Number.POSITIVE_INFINITY;
+
+    PROJECT_CENTERS.forEach((center, index) => {
+      const distance = Math.abs(progress - center);
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        nearest = index;
+      }
+    });
+
+    setActiveProject((current) => (current === nearest ? current : nearest));
+  });
 
   const PROJECTS: {
     id: string;
@@ -312,41 +476,154 @@ export default function VicentePortfolioPage() {
   ];
 
   return (
-    <div className="relative min-h-screen text-zinc-900">
+    <div className={`${styles.page} relative min-h-screen overflow-clip text-white`}>
       {/* Fixed video backdrop — the page scrolls over it */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#f1f3f6]"
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]"
         aria-hidden="true"
       >
-        <video
-          className="h-full w-full object-cover"
-          poster="/videos/portfolio-bg.jpg"
-          autoPlay={!reduced}
-          loop
-          muted
-          playsInline
-          preload="auto"
+        <motion.div
+          className={`${styles.world} absolute -inset-[12%]`}
+          style={cameraEnabled && !scrubActive ? { scale: worldScale, x: worldX, y: worldY } : undefined}
         >
-          <source src="/videos/portfolio-bg.webm" type="video/webm" />
-          <source src="/videos/portfolio-bg.mp4" type="video/mp4" />
-        </video>
-        {/* Scrim: keeps text readable over the video */}
-        <div className="absolute inset-0 bg-white/85" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-transparent to-white/75" />
+          <Image
+            src="/images/vicente-portfolio-world.webp"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[62%_center] sm:object-center"
+          />
+          {cameraEnabled && (!scrubEligible || scrubFailed) && (
+            <video
+              className={`${styles.atmosphere} absolute inset-0 h-full w-full object-cover object-[62%_center] sm:object-center`}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster="/images/vicente-portfolio-world.webp"
+            >
+              <source src="/videos/vicente-portfolio-world.mp4" type="video/mp4" />
+            </video>
+          )}
+          {!scrubActive && (
+            <div className={styles.mapMarkers}>
+              {PROJECTS.map((project, index) => (
+                <div
+                  key={project.id}
+                  className={`${styles.mapMarker} ${activeProject === index ? styles.mapMarkerActive : ""}`}
+                  style={MAP_MARKERS[index]}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{project.name}</strong>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+        {scrubEligible && !scrubFailed && (
+          <video
+            ref={scrubVideoRef}
+            className={`${styles.scrubVideo} ${scrubReady ? styles.scrubVideoReady : ""}`}
+            muted
+            playsInline
+            preload="auto"
+            poster="/images/vicente-portfolio-world.webp"
+            onLoadStart={() => {
+              cancelScheduledScrubPaint();
+              scrubSeekInFlightRef.current = false;
+              setScrubReady(false);
+            }}
+            onLoadedMetadata={(event) => {
+              const video = event.currentTarget;
+              video.pause();
+              const requestedTime = clampScrubTime(video, scrubTime.get());
+              pendingScrubTimeRef.current = requestedTime;
+              if (Math.abs(video.currentTime - requestedTime) > SCRUB_FRAME_DURATION / 2) {
+                seekToLatestScrubTime();
+              } else {
+                continueAfterScrubFramePaint(video);
+              }
+            }}
+            onSeeked={(event) => {
+              continueAfterScrubFramePaint(event.currentTarget);
+            }}
+            onError={() => {
+              cancelScheduledScrubPaint();
+              scrubSeekInFlightRef.current = false;
+              setScrubFailed(true);
+              setScrubReady(false);
+            }}
+          >
+            <source src="/videos/vicente-portfolio-traversal.mp4" type="video/mp4" />
+          </video>
+        )}
+        <div className={styles.stars} />
+        <div className={styles.scrim} />
+        <div className={styles.vignette} />
       </div>
 
-      <TopNav />
+      <nav
+        className={styles.routeRail}
+        aria-label={`${vp.sections.projects.title} navigation`}
+      >
+        <span className={styles.routeLine} aria-hidden="true">
+          <motion.span className={styles.routeFill} style={{ scaleY: scrollYProgress }} />
+        </span>
+        {PROJECTS.map((project, index) => (
+          <a
+            key={project.id}
+            href={`#project-${project.id}`}
+            onClick={() => setActiveProject(index)}
+            aria-label={`${index + 1} of ${PROJECTS.length}: ${project.name}`}
+            aria-current={activeProject === index ? "step" : undefined}
+            className={`${styles.routeLink} ${activeProject === index ? styles.routeLinkActive : ""}`}
+          >
+            <span className={styles.routeLabel}>{project.name}</span>
+            <span className={styles.routeDot} aria-hidden="true" />
+          </a>
+        ))}
+      </nav>
 
-      <main className="relative z-10 mx-auto max-w-3xl px-6 pb-24 pt-24 sm:pt-28">
+      <nav
+        className={styles.routeDock}
+        aria-label={`${vp.sections.projects.title} navigation`}
+      >
+        <span className={styles.routeCount} aria-hidden="true">
+          {String(activeProject + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
+        </span>
+        <span className={styles.routeDockName} aria-hidden="true">
+          {PROJECTS[activeProject]?.name}
+        </span>
+        <span className={styles.routeDockDots}>
+          {PROJECTS.map((project, index) => (
+            <a
+              key={project.id}
+              href={`#project-${project.id}`}
+              onClick={() => setActiveProject(index)}
+              aria-label={`${index + 1} of ${PROJECTS.length}: ${project.name}`}
+              aria-current={activeProject === index ? "step" : undefined}
+              className={`${styles.routeDockLink} ${activeProject === index ? styles.routeDockLinkActive : ""}`}
+            >
+              <span aria-hidden="true" />
+            </a>
+          ))}
+        </span>
+      </nav>
+
+      <TopNav variant="cinematic" />
+
+      <main className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28 lg:px-8">
 
         {/* ── Hero header ── */}
         <motion.div
-          className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left"
-          initial={reduced ? false : { opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={easeOut}
+          className={`${styles.glass} relative flex min-h-[68svh] flex-col items-center justify-center gap-6 rounded-[2rem] px-6 py-16 text-center sm:min-h-[70svh] sm:px-12 lg:px-20`}
+          initial={reduced ? false : { opacity: 0, y: 24, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ ...easeOut, duration: 0.75 }}
         >
-          <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-3xl border border-brand-200 shadow-sm sm:h-32 sm:w-32">
+          <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[1.6rem] border border-cyan-100/25 shadow-[0_18px_55px_-20px_rgba(67,194,226,0.75)] sm:h-28 sm:w-28">
             <Image
               src="/partners/vicente-barrientos.png"
               alt="Vicente Barrientos"
@@ -356,25 +633,29 @@ export default function VicentePortfolioPage() {
               priority
             />
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-600">
+          <div className="min-w-0 max-w-4xl">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200 sm:text-xs">
               {vp.eyebrow}
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Vicente Barrientos
+            <h1 className="mt-4 text-[clamp(3rem,8.4vw,7.4rem)] font-black uppercase leading-[0.86] tracking-[-0.065em] text-white">
+              <span className="block">Vicente</span>
+              <span className="block text-cyan-300">Barrientos</span>
             </h1>
-            <p className="mt-2 text-base font-medium text-brand-700">
+            <p className="mx-auto mt-7 max-w-3xl text-base font-semibold leading-relaxed text-slate-100 sm:text-lg">
               {vp.subtitle}
             </p>
-            <p className="mt-0.5 text-sm text-zinc-500">
+            <p className="mt-1 text-sm text-slate-400 sm:text-base">
               {vp.subtitleSub}
             </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+              {vp.intro}
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Link
                 href={VICENTE_LINKEDIN}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-200/30 bg-cyan-300 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#061321] shadow-[0_12px_35px_-16px_rgba(94,201,230,0.9)] transition hover:-translate-y-0.5 hover:bg-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
               >
                 <LinkedInIcon />
                 LinkedIn
@@ -383,75 +664,92 @@ export default function VicentePortfolioPage() {
                 href={VICENTE_GITHUB}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:border-cyan-100/35 hover:bg-cyan-200/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
               >
                 <GitHubIcon />
                 GitHub
               </Link>
             </div>
           </div>
+          <a
+            href="#portfolio-journey"
+            aria-label={vp.sections.projects.title}
+            className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 transition hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+          >
+            <span className={styles.scrollCue} aria-hidden="true" />
+          </a>
         </motion.div>
 
         {/* ── Projects ── */}
-        <motion.section
-          className="mt-14 sm:mt-16"
-          initial={reduced ? false : { opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={revealViewport}
-          transition={easeOut}
+        <section
+          ref={journeyRef}
+          id="portfolio-journey"
+          className="mt-[22svh] scroll-mt-24 sm:mt-[30svh]"
         >
-          <div className="mb-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">
-              {vp.sections.projects.eyebrow}
-            </p>
-            <h2 className="mt-1.5 text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
-              {vp.sections.projects.title}
-            </h2>
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600">
-              {vp.intro}
-            </p>
+          <div className="flex min-h-[100svh] items-center py-16">
+            <div className={`${styles.glass} w-full rounded-[2rem] px-6 py-12 text-center sm:px-12 sm:py-16`}>
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200 sm:text-xs">
+                {vp.sections.projects.eyebrow}
+              </p>
+              <h2 className="mt-4 text-[clamp(2.7rem,7vw,6rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white">
+                {vp.sections.projects.title}
+              </h2>
+              <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+                {vp.intro}
+              </p>
+            </div>
           </div>
 
           {/* The route: each project is a stop, joined by a trail that draws as you scroll */}
-          <div className="relative">
+          <div className="relative mx-auto max-w-5xl">
             {PROJECTS.map((project, index) => (
-              <div key={project.id}>
-                <TrailSegment index={index} reduced={reduced} />
+              <div
+                key={project.id}
+                className="flex min-h-[110svh] items-center py-16"
+              >
 
                 <motion.div
-                  className="relative pl-14 sm:pl-[76px]"
-                  initial={reduced ? false : { opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  id={`project-${project.id}`}
+                  className={`${styles.glass} relative w-full max-w-3xl scroll-mt-24 rounded-[2rem] p-4 sm:p-7 lg:p-9 ${index % 2 === 0 ? "ml-auto" : "mr-auto"}`}
+                  initial={reduced ? false : { opacity: 0, y: 28, scale: 0.985 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={revealViewport}
-                  transition={easeOut}
+                  transition={{ ...easeOut, duration: 0.7 }}
                 >
-                  <Waypoint icon={project.icon} step={index + 1} reduced={reduced} />
-
                   <div className="relative">
-                    {/* Glow under the island */}
                     <div
-                      className="pointer-events-none absolute inset-x-8 -bottom-2 h-8 rounded-[50%] bg-brand-500/20 blur-xl"
+                      className="pointer-events-none absolute inset-x-10 -bottom-3 h-10 rounded-[50%] bg-cyan-300/20 blur-2xl"
                       aria-hidden="true"
                     />
-                    <div className="relative flex flex-col rounded-3xl border border-zinc-200 bg-white/75 p-5 shadow-lg backdrop-blur-xl transition-colors hover:border-brand-200 sm:p-7">
-                      <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1.5">
-                        <h3 className="text-lg font-bold tracking-tight text-zinc-900">
+                    <div className={`${styles.projectCard} relative flex flex-col rounded-[1.55rem] p-6 sm:p-9`}>
+                      <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/15 shadow-[0_12px_36px_-16px_rgba(94,201,230,0.75)] sm:h-14 sm:w-14">
+                            {project.icon}
+                          </div>
+                          <div>
+                            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-200">
+                              {String(index + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
+                            </p>
+                            <h3 className="mt-1 text-[clamp(1.9rem,5vw,3.5rem)] font-black leading-none tracking-[-0.045em] text-white">
                           {project.name}
-                        </h3>
+                            </h3>
+                          </div>
+                        </div>
                         <StatusPill status={project.status} label={vp.status[project.status]} />
                       </div>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-zinc-500">
+                      <p className="mt-7 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200/85">
                         {project.tagline}
                       </p>
 
-                      <p className="mt-4 text-sm leading-relaxed text-zinc-600">
+                      <p className="mt-4 max-w-3xl text-sm leading-relaxed text-slate-300 sm:text-base">
                         {project.description}
                       </p>
-                      <div className="mt-4 flex flex-wrap gap-1.5">
+                      <div className="mt-6 flex flex-wrap gap-2">
                         {project.stack.map((tech) => (
                           <span
                             key={tech}
-                            className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-medium text-zinc-600"
+                            className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-slate-300"
                           >
                             {tech}
                           </span>
@@ -459,13 +757,13 @@ export default function VicentePortfolioPage() {
                       </div>
 
                       {project.href && (
-                        <div className="mt-5">
+                        <div className="mt-7">
                           <Link
                             href={project.href}
                             {...(project.external
                               ? { target: "_blank", rel: "noopener noreferrer" }
                               : {})}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
+                            className="inline-flex items-center gap-2 rounded-full border border-cyan-200/25 bg-cyan-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-100/45 hover:bg-cyan-300 hover:text-[#061321] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
                           >
                             {vp.visitProject}
                             {project.external ? <ExternalLinkIcon /> : <ArrowRightIcon />}
@@ -477,6 +775,44 @@ export default function VicentePortfolioPage() {
                 </motion.div>
               </div>
             ))}
+          </div>
+        </section>
+
+        <motion.section
+          className={`${styles.glass} mx-auto mt-[30svh] max-w-3xl rounded-[2rem] px-6 py-14 text-center sm:mt-[40svh] sm:px-12 sm:py-16`}
+          initial={reduced ? false : { opacity: 0, y: 28, scale: 0.985 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={revealViewport}
+          transition={{ ...easeOut, duration: 0.7 }}
+        >
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">
+            {vp.eyebrow}
+          </p>
+          <h2 className="mt-4 text-[clamp(2.5rem,7vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white">
+            Vicente <span className="text-cyan-300">Barrientos</span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
+            {vp.subtitleSub}
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link
+              href={VICENTE_LINKEDIN}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-200/30 bg-cyan-300 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#061321] transition hover:-translate-y-0.5 hover:bg-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+            >
+              <LinkedInIcon />
+              LinkedIn
+            </Link>
+            <Link
+              href={VICENTE_GITHUB}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:border-cyan-100/35 hover:bg-cyan-200/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+            >
+              <GitHubIcon />
+              GitHub
+            </Link>
           </div>
         </motion.section>
 

@@ -5,7 +5,7 @@ import { isLocale } from "@/lib/locale-sync";
 /** TalentX is light-only; inbound `?theme=` is ignored. */
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host") ?? "";
-  if (host.includes("vercel.app")) {
+  if (process.env.VERCEL_ENV === "production" && host.endsWith(".vercel.app")) {
     const url = request.nextUrl.clone();
     url.host = "talentxrecruiting.com";
     url.protocol = "https:";

@@ -79,7 +79,7 @@ const linkClassName =
 const submenuLinkClassName =
   "block px-5 py-2.5 pl-8 text-sm text-zinc-600 transition hover:bg-brand-50/70 hover:text-brand-700";
 
-export default function TopNav() {
+export default function TopNav({ variant = "light" }: { variant?: "light" | "cinematic" }) {
   const { t } = useLocale();
   const reduced = useReducedMotion() ?? false;
   const prefersHover = usePrefersHover();
@@ -133,6 +133,14 @@ export default function TopNav() {
     vicente: t.meetTheTeam.vicente.name,
   };
 
+  const cinematic = variant === "cinematic";
+  const menuLinkClassName = cinematic
+    ? "block px-5 py-3.5 text-sm font-medium text-slate-200 transition hover:bg-cyan-300/10 hover:text-white"
+    : linkClassName;
+  const menuSubmenuLinkClassName = cinematic
+    ? "block px-5 py-2.5 pl-8 text-sm text-slate-300 transition hover:bg-cyan-300/10 hover:text-white"
+    : submenuLinkClassName;
+
   const handleMenuButtonClick = () => {
     if (prefersHover === true) {
       setPinnedOpen((current) => !current);
@@ -160,7 +168,11 @@ export default function TopNav() {
         }}
       >
         <nav
-          className="flex items-center justify-between rounded-full border border-zinc-200/80 bg-white/75 px-4 py-2.5 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.12)] backdrop-blur-xl sm:px-5"
+          className={`flex items-center justify-between rounded-full px-4 py-2.5 backdrop-blur-xl sm:px-5 ${
+            cinematic
+              ? "border border-cyan-100/15 bg-[#061321]/70 shadow-[0_18px_60px_-24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.08)]"
+              : "border border-zinc-200/80 bg-white/75 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.12)]"
+          }`}
           aria-label={t.nav.menuAria}
         >
           <Link
@@ -168,22 +180,26 @@ export default function TopNav() {
             onClick={closeMenu}
             className="group flex min-w-0 items-center gap-2 pr-2 transition hover:opacity-80"
           >
-            <span className="text-sm font-semibold tracking-[0.22em] text-brand-600">
+            <span className={`text-sm font-semibold tracking-[0.22em] ${cinematic ? "text-white" : "text-brand-600"}`}>
               TALENTX
             </span>
-            <span className="hidden text-xs text-zinc-500 sm:inline">
+            <span className={`hidden text-xs sm:inline ${cinematic ? "text-slate-400" : "text-zinc-500"}`}>
               {t.nav.recruiting}
             </span>
           </Link>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <LanguageToggle />
+            <LanguageToggle variant={cinematic ? "cinematic" : "light"} />
             <button
               type="button"
               onClick={handleMenuButtonClick}
               aria-expanded={showMenu}
               aria-controls="talentx-nav-menu"
-              className="inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-zinc-50/80 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 sm:px-3.5 sm:text-sm"
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition sm:px-3.5 sm:text-sm ${
+                cinematic
+                  ? "border border-cyan-100/15 bg-white/[0.06] text-slate-200 hover:border-cyan-200/35 hover:bg-cyan-200/10 hover:text-white"
+                  : "border border-zinc-200/80 bg-zinc-50/80 text-zinc-700 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+              }`}
             >
               {t.nav.menu}
               <HamburgerIcon open={showMenu} />
@@ -199,12 +215,16 @@ export default function TopNav() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduced ? undefined : { opacity: 0, y: -6, scale: 0.98 }}
               transition={easeOut}
-              className="mt-2 overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/90 shadow-[0_16px_48px_-16px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+              className={`mt-2 overflow-hidden rounded-3xl backdrop-blur-xl ${
+                cinematic
+                  ? "border border-cyan-100/15 bg-[#061321]/90 shadow-[0_24px_70px_-28px_rgba(0,0,0,0.9)]"
+                  : "border border-zinc-200/80 bg-white/90 shadow-[0_16px_48px_-16px_rgba(0,0,0,0.18)]"
+              }`}
             >
-              <ul className="divide-y divide-zinc-200/80">
+              <ul className={cinematic ? "divide-y divide-white/10" : "divide-y divide-zinc-200/80"}>
                 {NAV_LINK_ITEMS.slice(0, 2).map((item) => (
                   <li key={item.key}>
-                    <Link href={item.href} onClick={closeMenu} className={linkClassName}>
+                    <Link href={item.href} onClick={closeMenu} className={menuLinkClassName}>
                       {itemLabels[item.key]}
                     </Link>
                   </li>
@@ -221,8 +241,12 @@ export default function TopNav() {
                     aria-controls="talentx-team-submenu"
                     className={`flex w-full items-center justify-between px-5 py-3.5 text-left text-sm font-medium transition ${
                       showTeamSubmenu
-                        ? "bg-brand-50/70 text-brand-700"
-                        : "text-zinc-700 hover:bg-brand-50/70 hover:text-brand-700"
+                        ? cinematic
+                          ? "bg-cyan-300/10 text-white"
+                          : "bg-brand-50/70 text-brand-700"
+                        : cinematic
+                          ? "text-slate-200 hover:bg-cyan-300/10 hover:text-white"
+                          : "text-zinc-700 hover:bg-brand-50/70 hover:text-brand-700"
                     }`}
                   >
                     <span>{t.nav.items.team}</span>
@@ -237,7 +261,7 @@ export default function TopNav() {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={reduced ? undefined : { opacity: 0, height: 0 }}
                         transition={easeOut}
-                        className="overflow-hidden border-t border-zinc-200/60 bg-zinc-50/60"
+                        className={`overflow-hidden border-t ${cinematic ? "border-white/10 bg-black/15" : "border-zinc-200/60 bg-zinc-50/60"}`}
                       >
                         {TEAM_MEMBERS.map((member, index) => (
                           <motion.li
@@ -249,7 +273,7 @@ export default function TopNav() {
                             <Link
                               href={member.href}
                               onClick={closeMenu}
-                              className={submenuLinkClassName}
+                              className={menuSubmenuLinkClassName}
                             >
                               {memberLabels[member.key]}
                             </Link>
@@ -262,14 +286,14 @@ export default function TopNav() {
 
                 {NAV_LINK_ITEMS.slice(2).map((item) => (
                   <li key={item.key}>
-                    <Link href={item.href} onClick={closeMenu} className={linkClassName}>
+                    <Link href={item.href} onClick={closeMenu} className={menuLinkClassName}>
                       {itemLabels[item.key]}
                     </Link>
                   </li>
                 ))}
 
                 <li>
-                  <Link href={RESUMEX_URL} onClick={closeMenu} className={linkClassName}>
+                  <Link href={RESUMEX_URL} onClick={closeMenu} className={menuLinkClassName}>
                     {t.nav.resumeX}
                   </Link>
                 </li>
