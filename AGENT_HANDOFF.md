@@ -10,6 +10,8 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ## Current state — 2026-08-12
 
+- Production is `45a77d4`, deployed from GitHub. `origin/main`, local and live all
+  agree — verified against the served assets, not assumed.
 - `main` is the only long-lived branch. Vercel deploys production from it.
 - The site is **light-only**. There is no theme switch, `next-themes` is gone, and
   there are no `dark:` utilities left. `lib/theme-sync.ts` survives solely to append
@@ -57,6 +59,13 @@ to match git, deploy from GitHub, not from your folder.
   promises a team bio and delivers a product portfolio. A dedicated `/portfolio`
   route, with a short recruiting bio left at the old URL, would serve both
   audiences. Not decided.
+- **Product screenshots.** The six stops are text only, so a visitor never sees any
+  of the products. All six have public URLs, so the shots can be captured and kept
+  current. Highest-value addition on the table; proposed, not started.
+- **Per-project technical detail.** Considered as collapsibles. Caveat before
+  building it: the journey's scroll math (`PROJECT_CENTERS`, `SCRUB_SCROLL_STOPS`)
+  assumes stable section heights, and anything that expands in place shifts every
+  stop after it. Fixed-height panels or a separate route avoid that.
 - **Marketing copy is clean.** Checked: no string in `lib/i18n/talentx.ts` mentions
   themes, so the repaint left no stale claims in user-facing text.
 
