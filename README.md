@@ -25,11 +25,12 @@
 ## Experience highlights
 
 - English and Spanish content with a client-side locale switcher
-- Light and dark themes with cross-site preference synchronization
-- Motion-based section reveals, scroll progress, cursor glow, and reduced-motion support
+- Single light palette — cool gray canvas with a navy brand accent, no theme switch
+- Motion-based section reveals, scroll progress, and reduced-motion support
 - Interactive globe built with Cobe
+- Scroll-driven portfolio route where the backdrop advances as you scroll, with a
+  lighter looping fallback for touch and reduced-motion visitors
 - Service, process, team, and contact sections designed for a single-page conversion flow
-- Dedicated partner portfolio pages with shared visual language
 - Open Graph and Twitter metadata for social sharing
 
 ## Routes
@@ -37,16 +38,18 @@
 | Route | Purpose |
 | --- | --- |
 | `/` | TalentX service overview, process, proof points, team, and contact calls to action. |
-| `/meet-the-team/vicente-barrientos` | Vicente's recruiting and product portfolio. |
-| `/meet-the-team/benjamin-mahave` | Benjamin's partner profile. |
+| `/meet-the-team/vicente-barrientos` | Vicente's product portfolio, as a scroll-driven journey. |
+| `/meet-the-team/benjamin-mahave` | Permanent redirect to Vicente's page. |
+| `/resumex` | Redirect to the ResumeX app. |
 
 ## Stack
 
 - Next.js 16 App Router and React 19
 - TypeScript and Tailwind CSS 4
-- Motion for interaction and transition primitives
+- Motion for interaction, scroll linking, and transition primitives
 - Cobe for the interactive globe
-- `next-themes` plus custom locale/theme synchronization
+- Custom locale synchronization (`lib/locale-sync.ts`); the outbound `?theme=`
+  contract in `lib/theme-sync.ts` is kept for ResumeX links only
 
 ## Local development
 
@@ -72,10 +75,13 @@ NEXT_PUBLIC_RESUMEX_URL="https://resumex.talentxrecruiting.com"
 | --- | --- |
 | `lib/i18n/talentx.ts` | English and Spanish marketing copy. |
 | `components/TalentXHome.tsx` | Main website composition and section order. |
-| `components/VicentePortfolioPage.tsx` | Vicente's project and experience presentation. |
+| `components/VicentePortfolioPage.tsx` | Portfolio journey: project list, scroll wiring, and media fallbacks. |
 | `components/PartnerProfilePage.tsx` | Shared partner-profile layout. |
 | `lib/site-urls.ts` | Canonical TalentX and ResumeX links. |
-| `public/` | Partner images, video background, and social artwork. |
+| `public/videos/` | Portfolio backdrop: `*-traversal.mp4` (scrubbed) and `*-world.mp4` (loop). |
+| `public/` | Partner images and social artwork. |
+
+See [`AGENT_HANDOFF.md`](./AGENT_HANDOFF.md) for current state and open work.
 
 Project statuses, affiliations, contact details, and external URLs are maintained as content in the repository. Review them before each deployment so the public portfolio remains current.
 

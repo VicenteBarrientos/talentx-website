@@ -45,7 +45,14 @@ const PROJECT_CENTERS = [0.159, 0.326, 0.492, 0.659, 0.826, 0.992];
 const SCRUB_SCROLL_STOPS = [0, ...PROJECT_CENTERS, 1];
 const SCRUB_TIMES = [0, 0.85, 2.5, 4.15, 5.8, 7.45, 9.1, 10];
 const SCRUB_FRAME_DURATION = 1 / 12;
-const SCRUB_MEDIA_QUERY = "(min-width: 640px)";
+// Pointer check keeps the 7.6 MB traversal off touch devices. A phone in
+// landscape clears 640px, and iOS Low Power Mode refuses to service seeks.
+const SCRUB_MEDIA_QUERY = "(min-width: 1024px) and (pointer: fine)";
+// A seek that never reports back means the decoder is not cooperating
+// (Low Power Mode is the common cause and raises no error). Two strikes
+// and we hand over to the looping world video.
+const SCRUB_SEEK_TIMEOUT_MS = 400;
+const SCRUB_SEEK_STRIKES = 2;
 const MAP_MARKERS = [
   { left: "12%", top: "72%" },
   { left: "35%", top: "54%" },
@@ -78,6 +85,23 @@ function getScrubCapabilitySnapshot() {
 }
 
 function getServerScrubCapabilitySnapshot() {
+  return false;
+}
+
+function subscribeToPageLoad(onStoreChange: () => void) {
+  if (document.readyState === "complete") {
+    return () => {};
+  }
+
+  window.addEventListener("load", onStoreChange, { once: true });
+  return () => window.removeEventListener("load", onStoreChange);
+}
+
+function getPageLoadSnapshot() {
+  return document.readyState === "complete";
+}
+
+function getServerPageLoadSnapshot() {
   return false;
 }
 
@@ -139,15 +163,15 @@ function TalentXIcon() {
 function ResumeXIcon() {
   return (
     <svg viewBox="0 0 40 40" fill="none" className="h-full w-full" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" className="fill-brand-100" />
-      <rect x="12" y="10" width="16" height="20" rx="2" className="fill-brand-200" />
+      <circle cx="20" cy="20" r="20" className="fill-rose-100" />
+      <rect x="12" y="10" width="16" height="20" rx="2" className="fill-rose-200" />
       <path
         d="M15 16h10M15 19h10M15 22h6"
-        className="stroke-brand-500"
+        className="stroke-rose-500"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      <circle cx="27" cy="27" r="5" className="fill-brand-500" />
+      <circle cx="27" cy="27" r="5" className="fill-rose-500" />
       <path d="M25.5 27l1 1 2-2" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -217,11 +241,17 @@ type ProjectStatus = "live" | "private" | "building";
 
 const STATUS_DOT: Record<ProjectStatus, string> = {
   live: "bg-emerald-400",
-  private: "bg-zinc-400 ",
+  private: "bg-zinc-400",
   building: "bg-amber-400",
 };
 
+// "Live" is the baseline here — every project ships and every card links out,
+// so six identical pills carry no information. Only flag the exceptions.
 function StatusPill({ status, label }: { status: ProjectStatus; label: string }) {
+  if (status === "live") {
+    return null;
+  }
+
   return (
     <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-black/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">
       <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[status]}`} />
@@ -247,16 +277,26 @@ export default function VicentePortfolioPage() {
   const scrubFrameCallbackRef = useRef<number | null>(null);
   const scrubPaintFallbackRef = useRef<number | null>(null);
   const scrubPaintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrubSeekWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrubSeekStrikesRef = useRef(0);
   const [activeProject, setActiveProject] = useState(0);
   const [scrubReady, setScrubReady] = useState(false);
   const [scrubFailed, setScrubFailed] = useState(false);
+  const pageLoaded = useSyncExternalStore(
+    subscribeToPageLoad,
+    getPageLoadSnapshot,
+    getServerPageLoadSnapshot,
+  );
   const scrubCapable = useSyncExternalStore(
     subscribeToScrubCapability,
     getScrubCapabilitySnapshot,
     getServerScrubCapabilitySnapshot,
   );
   const scrubEligible = mounted && !prefersReducedMotion && scrubCapable;
-  const scrubActive = scrubEligible && scrubReady && !scrubFailed;
+  // The poster is the LCP element; hold the 7.6 MB traversal until the rest of
+  // the page has finished loading so it does not compete for bandwidth.
+  const scrubMounted = scrubEligible && pageLoaded;
+  const scrubActive = scrubMounted && scrubReady && !scrubFailed;
   const { scrollYProgress } = useScroll({
     target: journeyRef,
     offset: ["start start", "end end"],
@@ -296,6 +336,7 @@ export default function VicentePortfolioPage() {
     };
   }, []);
 
+
   const clampScrubTime = useCallback((video: HTMLVideoElement, requestedTime: number) => {
     const maximumTime = Math.max(
       0,
@@ -305,6 +346,16 @@ export default function VicentePortfolioPage() {
     const clampedTime = Math.min(maximumTime, Math.max(0, requestedTime));
     return Math.round(clampedTime / SCRUB_FRAME_DURATION) * SCRUB_FRAME_DURATION;
   }, []);
+
+  const clearSeekWatchdog = useCallback(() => {
+    if (scrubSeekWatchdogRef.current !== null) {
+      clearTimeout(scrubSeekWatchdogRef.current);
+      scrubSeekWatchdogRef.current = null;
+    }
+  }, []);
+
+  // Lets the watchdog retry without making seekToLatestScrubTime self-referential.
+  const seekToLatestScrubTimeRef = useRef<(() => void) | null>(null);
 
   const seekToLatestScrubTime = useCallback(() => {
     const video = scrubVideoRef.current;
@@ -326,9 +377,33 @@ export default function VicentePortfolioPage() {
 
     scrubSeekInFlightRef.current = true;
     video.currentTime = nextTime;
-  }, [clampScrubTime, scrubEligible, scrubFailed]);
+
+    // Low Power Mode accepts the write and then never reports back, so the
+    // seek silently hangs instead of erroring. Time it out and give up after
+    // a couple of strikes rather than leaving a frozen frame on screen.
+    clearSeekWatchdog();
+    scrubSeekWatchdogRef.current = setTimeout(() => {
+      scrubSeekWatchdogRef.current = null;
+      scrubSeekInFlightRef.current = false;
+      scrubSeekStrikesRef.current += 1;
+
+      if (scrubSeekStrikesRef.current >= SCRUB_SEEK_STRIKES) {
+        setScrubFailed(true);
+        setScrubReady(false);
+        return;
+      }
+
+      seekToLatestScrubTimeRef.current?.();
+    }, SCRUB_SEEK_TIMEOUT_MS);
+  }, [clampScrubTime, clearSeekWatchdog, scrubEligible, scrubFailed]);
+
+  useEffect(() => {
+    seekToLatestScrubTimeRef.current = seekToLatestScrubTime;
+  }, [seekToLatestScrubTime]);
 
   const cancelScheduledScrubPaint = useCallback(() => {
+    clearSeekWatchdog();
+
     const video = scrubVideoRef.current;
     if (video && scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
       video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
@@ -344,7 +419,7 @@ export default function VicentePortfolioPage() {
       clearTimeout(scrubPaintTimeoutRef.current);
       scrubPaintTimeoutRef.current = null;
     }
-  }, []);
+  }, [clearSeekWatchdog]);
 
   const continueAfterScrubFramePaint = useCallback((video: HTMLVideoElement) => {
     cancelScheduledScrubPaint();
@@ -359,6 +434,8 @@ export default function VicentePortfolioPage() {
         clearTimeout(scrubPaintTimeoutRef.current);
         scrubPaintTimeoutRef.current = null;
       }
+      clearSeekWatchdog();
+      scrubSeekStrikesRef.current = 0;
       scrubSeekInFlightRef.current = false;
       setScrubReady(true);
       seekToLatestScrubTime();
@@ -373,7 +450,7 @@ export default function VicentePortfolioPage() {
     scrubPaintFallbackRef.current = requestAnimationFrame(() => {
       scrubPaintFallbackRef.current = requestAnimationFrame(flushLatest);
     });
-  }, [cancelScheduledScrubPaint, seekToLatestScrubTime]);
+  }, [cancelScheduledScrubPaint, clearSeekWatchdog, seekToLatestScrubTime]);
 
   useEffect(() => cancelScheduledScrubPaint, [cancelScheduledScrubPaint]);
 
@@ -522,7 +599,7 @@ export default function VicentePortfolioPage() {
             </div>
           )}
         </motion.div>
-        {scrubEligible && !scrubFailed && (
+        {scrubMounted && !scrubFailed && (
           <video
             ref={scrubVideoRef}
             className={`${styles.scrubVideo} ${scrubReady ? styles.scrubVideoReady : ""}`}
@@ -694,9 +771,6 @@ export default function VicentePortfolioPage() {
               <h2 className="mt-4 text-[clamp(2.7rem,7vw,6rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white">
                 {vp.sections.projects.title}
               </h2>
-              <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
-                {vp.intro}
-              </p>
             </div>
           </div>
 
