@@ -1,0 +1,424 @@
+.page {
+  isolation: isolate;
+  color-scheme: dark;
+  background: #061321;
+}
+
+.world {
+  will-change: transform;
+}
+
+.atmosphere {
+  opacity: 0.92;
+}
+
+.scrubVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+
+.scrubVideoReady {
+  opacity: 0.96;
+}
+
+.mapMarkers {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.mapMarker {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.85rem;
+  padding: 0.35rem 0.65rem 0.35rem 0.4rem;
+  border: 1px solid rgba(164, 228, 246, 0.2);
+  border-radius: 999px;
+  background: rgba(3, 17, 29, 0.72);
+  color: rgba(215, 241, 248, 0.58);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.28;
+  transform: translate(-50%, -50%) scale(0.82);
+  transition:
+    opacity 320ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 320ms ease,
+    color 320ms ease;
+  white-space: nowrap;
+}
+
+.mapMarker > span {
+  display: grid;
+  width: 1.15rem;
+  height: 1.15rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(100, 218, 244, 0.16);
+  color: #a8ecfb;
+}
+
+.mapMarkerActive {
+  border-color: rgba(153, 231, 249, 0.55);
+  color: #e9fbff;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  box-shadow:
+    0 0 0 8px rgba(81, 198, 226, 0.06),
+    0 0 34px rgba(80, 208, 238, 0.34);
+}
+
+.routeRail {
+  position: fixed;
+  z-index: 40;
+  top: 50%;
+  right: 1rem;
+  display: none;
+  flex-direction: column;
+  transform: translateY(-50%);
+}
+
+.routeLine {
+  position: absolute;
+  top: 1.375rem;
+  right: 1.31rem;
+  bottom: 1.375rem;
+  width: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.routeFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: top;
+  background: #7fe0f5;
+  box-shadow: 0 0 12px rgba(94, 201, 230, 0.95);
+}
+
+.routeLink {
+  position: relative;
+  display: flex;
+  min-width: 8.5rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  border-radius: 999px;
+  color: rgba(207, 232, 240, 0.46);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 180ms ease;
+}
+
+.routeLink:hover,
+.routeLink:focus-visible,
+.routeLinkActive {
+  color: #dff9ff;
+}
+
+.routeLink:focus-visible,
+.routeDockLink:focus-visible {
+  outline: 2px solid #8ee5f8;
+  outline-offset: 2px;
+}
+
+.routeLabel {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(3, 17, 29, 0.68);
+  opacity: 0;
+  transform: translateX(0.4rem);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.routeLink:hover .routeLabel,
+.routeLink:focus-visible .routeLabel,
+.routeLinkActive .routeLabel {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.routeDot {
+  position: relative;
+  z-index: 1;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 1rem;
+  border: 1px solid rgba(190, 234, 246, 0.45);
+  border-radius: 999px;
+  background: #0a2033;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.routeLinkActive .routeDot {
+  background: #8ee5f8;
+  box-shadow: 0 0 0 6px rgba(87, 209, 238, 0.12), 0 0 18px rgba(87, 209, 238, 0.85);
+  transform: scale(1.15);
+}
+
+.routeDock {
+  position: fixed;
+  z-index: 40;
+  bottom: 1rem;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.35rem 0.65rem 0.35rem 0.85rem;
+  border: 1px solid rgba(190, 225, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(3, 17, 29, 0.76);
+  color: #cff6ff;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+  transform: translateX(-50%);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.routeCount,
+.routeDockName {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.routeDockName {
+  min-width: 5.75rem;
+  max-width: 7.5rem;
+  overflow: hidden;
+  color: white;
+  text-overflow: ellipsis;
+}
+
+.routeDockDots {
+  display: flex;
+}
+
+.routeDockLink {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 999px;
+}
+
+.routeDockLink > span {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: rgba(190, 225, 235, 0.38);
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.routeDockLinkActive > span {
+  background: #8ee5f8;
+  box-shadow: 0 0 12px rgba(87, 209, 238, 0.9);
+  transform: scale(1.45);
+}
+
+.stars {
+  position: absolute;
+  inset: -10%;
+  opacity: 0.46;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(196, 244, 255, 0.9) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 72% 24%, rgba(196, 244, 255, 0.65) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 36% 72%, rgba(228, 161, 90, 0.7) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 88% 66%, rgba(196, 244, 255, 0.75) 0 1px, transparent 1.5px);
+  background-size: 210px 210px, 285px 285px, 330px 330px, 390px 390px;
+  animation: portfolio-stars 24s linear infinite alternate;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 52% 40%, transparent 0%, rgba(4, 15, 26, 0.06) 38%, rgba(4, 15, 26, 0.42) 100%),
+    linear-gradient(180deg, rgba(2, 10, 19, 0.38) 0%, rgba(3, 16, 28, 0.17) 42%, rgba(3, 13, 23, 0.55) 100%);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 180px 45px rgba(0, 5, 12, 0.68);
+}
+
+.glass {
+  border: 1px solid rgba(190, 225, 255, 0.15);
+  background:
+    linear-gradient(145deg, rgba(13, 38, 59, 0.73), rgba(5, 20, 34, 0.62)),
+    radial-gradient(circle at 75% 0%, rgba(94, 201, 230, 0.08), transparent 36%);
+  box-shadow:
+    0 34px 110px -42px rgba(0, 0, 0, 0.92),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.15);
+  backdrop-filter: blur(24px) saturate(1.15);
+}
+
+.projectCard {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(150deg, rgba(5, 22, 38, 0.88), rgba(3, 15, 27, 0.74)),
+    radial-gradient(circle at 12% 0%, rgba(94, 201, 230, 0.08), transparent 32%);
+  box-shadow:
+    0 24px 70px -42px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    border-color 260ms ease,
+    transform 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.projectCard:hover {
+  border-color: rgba(166, 230, 246, 0.28);
+  transform: translateY(-3px);
+  box-shadow:
+    0 30px 82px -42px rgba(0, 0, 0, 1),
+    0 0 46px -32px rgba(94, 201, 230, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+.scrollCue {
+  position: relative;
+  display: block;
+  width: 1.35rem;
+  height: 2.25rem;
+  border: 1px solid rgba(207, 244, 255, 0.34);
+  border-radius: 999px;
+}
+
+.scrollCue::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.45rem;
+  width: 0.2rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: #8edcf0;
+  box-shadow: 0 0 12px rgba(94, 201, 230, 0.95);
+  transform: translateX(-50%);
+  animation: portfolio-scroll-cue 1.8s ease-in-out infinite;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(6, 25, 42, 0.94);
+  }
+}
+
+@keyframes portfolio-stars {
+  to {
+    transform: translate3d(-1.5%, -2%, 0);
+  }
+}
+
+@keyframes portfolio-scroll-cue {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate(-50%, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, 0.65rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .mapMarkers {
+    display: none;
+  }
+
+  .vignette {
+    box-shadow: inset 0 0 100px 24px rgba(0, 5, 12, 0.62);
+  }
+
+  .glass {
+    -webkit-backdrop-filter: blur(12px) saturate(1.05);
+    backdrop-filter: blur(12px) saturate(1.05);
+  }
+
+  .routeDock {
+    gap: 0.25rem;
+    padding-right: 0.45rem;
+  }
+
+  .routeDockName {
+    display: none;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1279px) {
+  .routeDock {
+    display: flex;
+  }
+}
+
+@media (min-width: 1280px) {
+  .routeRail {
+    display: flex;
+  }
+
+  .routeDock {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stars,
+  .scrollCue::after {
+    animation: none;
+  }
+
+  .projectCard {
+    transition: none;
+  }
+
+  .mapMarker,
+  .routeLink,
+  .routeLabel,
+  .routeDot,
+  .routeDockLink > span {
+    transition: none;
+  }
+
+  .projectCard:hover {
+    transform: none;
+  }
+
+  .scrubVideo {
+    display: none;
+  }
+}
