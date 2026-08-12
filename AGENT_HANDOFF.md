@@ -59,14 +59,47 @@ to match git, deploy from GitHub, not from your folder.
   promises a team bio and delivers a product portfolio. A dedicated `/portfolio`
   route, with a short recruiting bio left at the old URL, would serve both
   audiences. Not decided.
-- **Per-project technical detail.** Considered as collapsibles. Caveat before
-  building it: the journey's scroll math (`PROJECT_CENTERS`, `SCRUB_SCROLL_STOPS`)
-  assumes stable section heights, and anything that expands in place shifts every
-  stop after it. Fixed-height panels or a separate route avoid that.
+- **Per-project technical detail.** Considered as collapsibles. See the scroll-math
+  note below before building it — anything that expands in place shifts every stop
+  after it.
 - **Marketing copy is clean.** Checked: no string in `lib/i18n/talentx.ts` mentions
   themes, so the repaint left no stale claims in user-facing text.
 
 ---
+
+## Scroll math — `PROJECT_CENTERS`
+
+These six numbers say where each card sits along the journey, as a fraction of its
+scroll range. The route rail, the `01 / 06` dock and the video's frame all derive
+from them, so if they drift the highlighted project stops matching the card you
+are reading.
+
+**They are correct as of 2026-08-12** — measured 0.162 / 0.330 / 0.496 / 0.662 /
+0.828 / 0.993 against constants of 0.159 / 0.326 / 0.492 / 0.659 / 0.826 / 0.992,
+a worst case of 22px over a ~7,000px journey. Adding the project screenshots moved
+them by that much and no more.
+
+**The trap when you verify this:** progress is measured against
+`#portfolio-journey`, and that section opens with a full-height header block
+before the first card. Measuring against the inner card wrapper instead makes
+every stop look hundreds of pixels early and invents a bug that is not there.
+Paste this in the console on the page to check honestly:
+
+```js
+const j = document.getElementById('portfolio-journey');
+const range = j.offsetHeight - innerHeight;
+const top = j.getBoundingClientRect().top + scrollY;
+[...document.querySelectorAll('[id^="project-"]')].map(c => {
+  const r = c.getBoundingClientRect();
+  return +(((r.top + scrollY + r.height / 2) - innerHeight / 2 - top) / range).toFixed(3);
+});
+```
+
+Re-tune the constants by hand when the numbers drift enough to matter. Measuring
+them from the DOM at runtime was tried and reverted: it works, but it replaces six
+verified values with a measurement that has to be right at mount, for a gain of
+22px today. Revisit that trade if content starts changing often — collapsible
+detail panels would be the trigger.
 
 ## Media
 
