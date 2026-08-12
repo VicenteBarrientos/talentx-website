@@ -53,12 +53,6 @@ to match git, deploy from GitHub, not from your folder.
 
 ## Open work
 
-- **The traversal video needs regenerating.** Two problems: it is a dusk/night
-  grade on a light site, and the camera lands on one island at ~3.7 s, so four of
-  the six stops resolve to the same glass building. The `*-world.mp4` framing —
-  wide aerial, whole archipelago, volcano on the horizon — is the composition to
-  keep. Wanted: a slow forward drift at constant altitude that never descends or
-  lands, in bright overcast daylight.
 - **Route placement.** The portfolio lives under `/meet-the-team/`, a path that
   promises a team bio and delivers a product portfolio. A dedicated `/portfolio`
   route, with a short recruiting bio left at the old URL, would serve both
@@ -68,7 +62,44 @@ to match git, deploy from GitHub, not from your folder.
 
 ---
 
+## Media
+
+All four portfolio assets must come from the **same footage**. They were once
+from two different generations, so the scene changed the moment the scrub took
+over from the poster.
+
+| File | Role |
+| --- | --- |
+| `videos/vicente-portfolio-traversal.mp4` | Desktop scrub. Must be exactly 10 s to match `SCRUB_TIMES`. |
+| `videos/vicente-portfolio-world.mp4` | Touch / fallback loop. Crossfade the seam or the forward flight cuts on repeat. |
+| `images/vicente-portfolio-world.webp` | Poster, and the LCP element. |
+| `images/vicente-portfolio-og.jpg` | Social card. |
+
+What makes a usable traversal: the camera holds altitude and keeps moving, so
+that all six stop times land somewhere visibly different. A clip that descends
+and settles on one landmark breaks the effect — the six stops collapse onto the
+same shot. Check by sampling at 0.85, 2.5, 4.15, 5.8, 7.45 and 9.1 s before
+encoding anything.
+
+Encode for scrubbing with dense keyframes; hazy, low-detail scenes cost roughly
+half what foliage and glass do at the same settings:
+
+```bash
+ffmpeg -i src.mp4 -vf "scale=1264:720:flags=lanczos,fps=12" \
+  -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p -profile:v main \
+  -x264-params keyint=2:min-keyint=2:scenecut=0 -movflags +faststart -an out.mp4
+```
+
+Gemini/Veo output carries a sparkle watermark in the bottom-right; crop it off
+before encoding. Grok output does not.
+
 ## Log
+
+### 2026-08-12 — Claude: new backdrop footage
+
+Swapped all four assets to a Gemini clip that holds altitude instead of landing
+on one pavilion. Desktop payload 7,788 → 3,954 KB, mobile 741 → 452 KB.
+Watermark cropped. Duration and dimensions unchanged, so no retuning.
 
 ### 2026-08-12 — Claude: harden the scrub, trim the portfolio
 
