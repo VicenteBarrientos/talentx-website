@@ -76,8 +76,9 @@ are reading.
 
 **They are correct as of 2026-08-12** — measured 0.162 / 0.330 / 0.496 / 0.662 /
 0.828 / 0.993 against constants of 0.159 / 0.326 / 0.492 / 0.659 / 0.826 / 0.992,
-a worst case of 22px over a ~7,000px journey. Adding the project screenshots moved
-them by that much and no more.
+a worst case of 30px over a ~6,000px journey. Two content changes in a row — adding
+the screenshots, then resizing them — moved the drift from 22px to 30px, which is
+why the constants are still the right call over runtime measurement.
 
 **The trap when you verify this:** progress is measured against
 `#portfolio-journey`, and that section opens with a full-height header block
@@ -166,6 +167,14 @@ document.scrollingElement.scrollTop = r.top + scrollY + r.height / 2 - innerHeig
 ```
 
 ## Log
+
+### 2026-08-13 — Claude: card height fix, verified live
+
+Shots are sized in svh now; at a fixed 16:10 the cards hit 910px and slid their
+own titles under the fixed nav on any laptop under ~1000px tall. Verified the
+whole journey against production in headless Chrome: video time, dock and rail
+all track the right card at each of the six stops, and every screenshot serves
+200 at w=640.
 
 ### 2026-08-12 — Claude: screenshots on every stop
 
