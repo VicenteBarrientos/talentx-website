@@ -9,7 +9,7 @@
 }
 
 .atmosphere {
-  opacity: 0.92;
+  opacity: 1;
 }
 
 .scrubVideo {
@@ -20,11 +20,11 @@
   object-fit: cover;
   object-position: center;
   opacity: 0;
-  transition: opacity 420ms ease;
+  transition: opacity 200ms ease;
 }
 
 .scrubVideoReady {
-  opacity: 0.96;
+  opacity: 1;
 }
 
 .mapMarkers {
