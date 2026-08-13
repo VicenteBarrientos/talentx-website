@@ -65,15 +65,26 @@ for (const target of TARGETS) {
 
   try {
     const response = await page.goto(target.url, { waitUntil: "networkidle2", timeout: 60_000 });
+    const status = response?.status() ?? 0;
+
+    // Never overwrite a good screenshot with an error page. A down site would
+    // otherwise be captured and committed as if it were the product.
+    if (status < 200 || status >= 300) {
+      failed += 1;
+      console.error(`${target.id.padEnd(14)} ${status}  kept the existing image`);
+      await page.close();
+      continue;
+    }
+
     // Let fonts, hero imagery and entrance animations settle before capturing.
     await new Promise((resolve) => setTimeout(resolve, 3500));
     await page.evaluate(() => window.scrollTo(0, 0));
     await new Promise((resolve) => setTimeout(resolve, 600));
     await page.screenshot({ path: join(OUT, `${target.id}.webp`), type: "webp", quality: 78 });
-    console.log(`${target.id.padEnd(14)} ${response?.status() ?? "?"}`);
+    console.log(`${target.id.padEnd(14)} ${status}`);
   } catch (error) {
     failed += 1;
-    console.error(`${target.id.padEnd(14)} FAILED  ${error.message}`);
+    console.error(`${target.id.padEnd(14)} FAILED  ${error.message}  kept the existing image`);
   }
 
   await page.close();
