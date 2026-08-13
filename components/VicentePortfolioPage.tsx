@@ -872,7 +872,42 @@ export default function VicentePortfolioPage() {
               <source src="/videos/vicente-portfolio-world.mp4" type="video/mp4" />
             </video>
           )}
-          {!scrubActive && (
+          {scrubMounted && !scrubFailed && (
+            <video
+              ref={scrubVideoRef}
+              className={`${styles.scrubVideo} ${scrubActive ? styles.scrubVideoReady : ""}`}
+              muted
+              playsInline
+              preload="auto"
+              poster="/images/vicente-portfolio-world.webp"
+              onLoadStart={() => {
+                cancelScheduledScrubPaint();
+                scrubSeekInFlightRef.current = false;
+                setScrubReady(false);
+              }}
+              onLoadedMetadata={(event) => {
+                const video = event.currentTarget;
+                video.pause();
+                const requestedTime = clampScrubTime(video, scrubTime.get());
+                pendingScrubTimeRef.current = requestedTime;
+                if (Math.abs(video.currentTime - requestedTime) > SCRUB_FRAME_DURATION / 2) {
+                  seekToLatestScrubTime();
+                }
+              }}
+              onSeeked={(event) => {
+                continueAfterScrubFramePaint(event.currentTarget);
+              }}
+              onError={() => {
+                cancelScheduledScrubPaint();
+                scrubSeekInFlightRef.current = false;
+                setScrubFailed(true);
+                setScrubReady(false);
+              }}
+            >
+              <source src="/videos/vicente-portfolio-traversal.mp4" type="video/mp4" />
+            </video>
+          )}
+          {!cameraEnabled && !scrubActive && (
             <div className={styles.mapMarkers}>
               {PROJECTS.map((project, index) => (
                 <div
@@ -887,41 +922,6 @@ export default function VicentePortfolioPage() {
             </div>
           )}
         </motion.div>
-        {scrubMounted && !scrubFailed && (
-          <video
-            ref={scrubVideoRef}
-            className={`${styles.scrubVideo} ${scrubActive ? styles.scrubVideoReady : ""}`}
-            muted
-            playsInline
-            preload="auto"
-            poster="/images/vicente-portfolio-world.webp"
-            onLoadStart={() => {
-              cancelScheduledScrubPaint();
-              scrubSeekInFlightRef.current = false;
-              setScrubReady(false);
-            }}
-            onLoadedMetadata={(event) => {
-              const video = event.currentTarget;
-              video.pause();
-              const requestedTime = clampScrubTime(video, scrubTime.get());
-              pendingScrubTimeRef.current = requestedTime;
-              if (Math.abs(video.currentTime - requestedTime) > SCRUB_FRAME_DURATION / 2) {
-                seekToLatestScrubTime();
-              }
-            }}
-            onSeeked={(event) => {
-              continueAfterScrubFramePaint(event.currentTarget);
-            }}
-            onError={() => {
-              cancelScheduledScrubPaint();
-              scrubSeekInFlightRef.current = false;
-              setScrubFailed(true);
-              setScrubReady(false);
-            }}
-          >
-            <source src="/videos/vicente-portfolio-traversal.mp4" type="video/mp4" />
-          </video>
-        )}
         <div className={styles.stars} />
         <div className={styles.scrim} />
         <div className={styles.vignette} />
