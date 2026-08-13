@@ -845,15 +845,24 @@ export default function VicentePortfolioPage() {
     <div className={`${styles.page} relative min-h-screen overflow-clip text-white`}>
       {/* Fixed video backdrop — the page scrolls over it */}
       <div
-        className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]"
+        className={`${styles.backdrop} ${journeyPhase === "before" ? styles.coverPhase : ""} pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]`}
         aria-hidden="true"
       >
-        <div className={`${styles.mediaStage} absolute -inset-[12%]`}>
+        <Image
+          src="/images/vicente-portfolio-studio-cover.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className={styles.coverImage}
+        />
+        <div
+          className={`${styles.mediaStage} ${journeyPhase !== "before" ? styles.mediaStageVisible : ""} absolute -inset-[12%]`}
+        >
           <Image
             src="/images/vicente-portfolio-opening.webp"
             alt=""
             fill
-            priority
             unoptimized
             sizes="100vw"
             className="object-cover object-[62%_center] sm:object-center"
@@ -946,7 +955,7 @@ export default function VicentePortfolioPage() {
       </div>
 
       <nav
-        className={styles.routeRail}
+        className={`${styles.routeRail} ${journeyPhase === "active" ? styles.routeNavVisible : ""}`}
         aria-label={`${vp.sections.projects.title} navigation`}
       >
         <span className={styles.routeLine} aria-hidden="true">
@@ -968,7 +977,7 @@ export default function VicentePortfolioPage() {
       </nav>
 
       <nav
-        className={styles.routeDock}
+        className={`${styles.routeDock} ${journeyPhase === "active" ? styles.routeNavVisible : ""}`}
         aria-label={`${vp.sections.projects.title} navigation`}
       >
         <span className={styles.routeCount} aria-hidden="true">
@@ -999,39 +1008,29 @@ export default function VicentePortfolioPage() {
 
         {/* ── Hero header ── */}
         <motion.div
-          className={`${styles.glass} relative flex min-h-[68svh] flex-col items-center justify-center gap-6 rounded-[2rem] px-6 py-16 text-center sm:min-h-[70svh] sm:px-12 lg:px-20`}
+          className={styles.hero}
           initial={reduced ? false : { opacity: 0, y: 24, scale: 0.985 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ ...easeOut, duration: 0.75 }}
         >
-          <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[1.6rem] border border-cyan-100/25 shadow-[0_18px_55px_-20px_rgba(67,194,226,0.75)] sm:h-28 sm:w-28">
-            <Image
-              src="/partners/vicente-barrientos.png"
-              alt="Vicente Barrientos"
-              fill
-              className="object-cover object-top"
-              sizes="128px"
-              priority
-            />
-          </div>
-          <div className="min-w-0 max-w-4xl">
+          <div className={styles.heroCopy}>
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200 sm:text-xs">
               {vp.eyebrow}
             </p>
-            <h1 className="mt-4 text-[clamp(3rem,8.4vw,7.4rem)] font-black uppercase leading-[0.86] tracking-[-0.065em] text-white">
+            <h1 className="mt-4 text-[clamp(2.8rem,6.1vw,5.6rem)] font-black uppercase leading-[0.86] tracking-[-0.065em] text-white">
               <span className="block">Vicente</span>
               <span className="block text-cyan-300">Barrientos</span>
             </h1>
-            <p className="mx-auto mt-7 max-w-3xl text-base font-semibold leading-relaxed text-slate-100 sm:text-lg">
+            <p className="mx-auto mt-7 max-w-3xl text-base font-semibold leading-relaxed text-slate-100 sm:text-lg lg:mx-0">
               {vp.subtitle}
             </p>
-            <p className="mt-1 text-sm text-slate-400 sm:text-base">
+            <p className="mt-1 text-sm text-slate-200 sm:text-base">
               {vp.subtitleSub}
             </p>
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-slate-100 sm:text-base lg:mx-0">
               {vp.intro}
             </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link
                 href={VICENTE_LINKEDIN}
                 target="_blank"
@@ -1055,7 +1054,7 @@ export default function VicentePortfolioPage() {
           <a
             href="#portfolio-journey"
             aria-label={vp.sections.projects.title}
-            className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 transition hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+            className={`${styles.heroScrollCue} absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 transition hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100`}
           >
             <span className={styles.scrollCue} aria-hidden="true" />
           </a>
@@ -1068,7 +1067,7 @@ export default function VicentePortfolioPage() {
           className="mt-[22svh] scroll-mt-24 sm:mt-[30svh]"
         >
           <div className="flex min-h-[100svh] items-center py-16">
-            <div className={`${styles.glass} w-full rounded-[2rem] px-6 py-12 text-center sm:px-12 sm:py-16`}>
+            <div className={`${styles.journeyIntro} mx-auto w-full max-w-5xl px-6 py-12 text-center sm:px-12 sm:py-16`}>
               <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200 sm:text-xs">
                 {vp.sections.projects.eyebrow}
               </p>

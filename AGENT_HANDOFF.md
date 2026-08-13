@@ -222,6 +222,27 @@ document.scrollingElement.scrollTop = r.top + scrollY + r.height / 2 - innerHeig
 
 ## Log
 
+### 2026-08-13 — Codex: Osorno studio cover and unboxed introductions
+
+- Built and approved from the isolated checkout
+  `C:\Users\hp\CS50\talentx-cover-preview` on branch
+  `agent/osorno-studio-cover`, based on production commit `b31b6a0`.
+- Adds `public/images/vicente-portfolio-studio-cover.webp` (1672x941, 296,524
+  bytes) as a distinct intro-only environment. Its generated source remains at
+  `C:\Users\hp\CS50\portfolio-assets\vicente-portfolio-osorno-studio-cover-v2.png`.
+- The separately generated seated avatar was deliberately left out of this
+  release. Its reusable transparent source remains at
+  `C:\Users\hp\CS50\portfolio-assets\vicente-avatar-seated-v1.png`.
+- The hero copy and the pre-project `What I Build` introduction are deliberately
+  unboxed text over their scenes: no glass background, border, blur, radius, or
+  card shadow. Project cards and the closing CTA retain their glass treatment.
+- The exact opening/destination stills and both existing videos are unchanged.
+  The studio gives way to the footage-matched opening layer only when the journey
+  becomes active; route navigation is hidden before and after the journey.
+- Verified locally at desktop/mobile breakpoints, including cover -> active world.
+  ESLint and the Next.js production build pass. Vicente approved deploying this
+  avatar-free version on 2026-08-13.
+
 ### 2026-08-13 — Codex: static bookends, dwell zones, seek recovery
 
 The backdrop becomes three explicit states, with opaque stills at both ends that
