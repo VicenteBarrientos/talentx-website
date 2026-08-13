@@ -8,46 +8,13 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
-## In progress — 2026-08-13, branch `agent/cinematic-card-depth`
-
-- The authoritative checkout is still `C:\Users\hp\Projects\talentx-website`.
-  This branch starts at `167953f`; it has not been published yet.
-- Background behavior is now hybrid: the 288 KB ambient world video moves in
-  the hero on desktop and remains the only video on touch/phone screens. Desktop
-  pauses it and crossfades to the scroll-scrub traversal only after the journey
-  starts; scrolling back to the hero resumes it. Reduced motion still uses the
-  poster and media failure still keeps semantic content available.
-- The six scrub destinations now have short dwell zones: the output timestamp is
-  repeated for ±0.032 journey progress around each card center, so the camera
-  travels between cards and holds while a card is read.
-- The old two-layer centered cards were replaced by a single, more transparent
-  glass case-study shell. Desktop uses an alternating 896 px lane with text and
-  product evidence side-by-side; mobile stacks the same DOM in reading order.
-  Only the screenshot/icon and a low-opacity cyan highlight react to a fine
-  pointer. Text, backdrop blur, keyboard focus and touch remain geometrically
-  stable; the effect is rAF-coalesced and disabled for reduced motion.
-- The watchdog no longer treats an in-progress seek as success merely because
-  `currentTime` already equals the requested value. It coalesces to one latest
-  target, waits up to multiple 800 ms windows, uses RVFC where Chrome services
-  it, and conservatively falls back to double-rAF when a throttled browser
-  suppresses RVFC. A 250 ms viewport sampler backs up Motion progress for direct
-  hash/rail jumps and backgrounded test tabs.
-- Local validation passed: ESLint; Next 16 production build; phone emulation
-  showed exactly one playing `vicente-portfolio-world.mp4`; a desktop forward
-  and reverse pass settled at 0.5 / 1.5 / 2.5 / 3.5 / 4.5 / 5.5 seconds with
-  the matching active project and retained the traversal at every stop.
-- Still open: the ambient 5-second file itself has a visible loop seam. It is
-  now more visible because desktop hero and phones actually play it continuously;
-  rebuild that asset before calling the cinematic background final.
-
 ## Current state — 2026-08-13
 
-- Production deploys from the current `origin/main`. Claude's functional baseline
-  audited on 2026-08-13 is `523cc5f`; later documentation-only commits may advance
-  the production hash without changing that runtime implementation.
-- The six cards, route dock and route rail align at their measured centers, but a
-  later production stress test found that the seek watchdog can abandon the scrub
-  video and permanently switch the session to the ambient loop. Treat this as P0.
+- Production deploys from the current `origin/main`.
+- The backdrop is a three-state experience: an opaque still before the journey,
+  the scroll-scrub traversal (desktop) or ambient loop (touch) during it, and an
+  opaque still after. Verified end to end on 2026-08-13 — the six stops land on
+  0.5 / 1.5 / 2.5 / 3.5 / 4.5 / 5.5 s with the dock and rail naming the right card.
 - `main` is the only long-lived branch. Vercel deploys production from it.
 - The site is **light-only**. There is no theme switch, `next-themes` is gone, and
   there are no `dark:` utilities left. `lib/theme-sync.ts` survives solely to append
@@ -89,37 +56,19 @@ push or merge that commit unchanged.
   `pointer: fine` as well as a width, because a phone in landscape clears any
   width gate, and iOS Low Power Mode refuses to service `currentTime` seeks with
   no error and no detection API. Touch devices get `*-world.mp4` instead.
-- **Seek discipline is load-bearing.** Exactly one seek may be in flight
-  (`scrubSeekInFlightRef`); iOS cancels seeks issued in rapid succession. The
-  current watchdog gives up after two 400 ms timeouts, but this policy also
-  abandons the scrub during reproducible desktop scrolling. Do not consider the
-  watchdog finished until the P0 below passes.
+- **Seek discipline is load-bearing.** Exactly one seek may be in flight; iOS
+  cancels seeks issued in rapid succession. An earlier watchdog gave up after two
+  400 ms timeouts, which also abandoned the scrub during ordinary desktop
+  scrolling — a slow byte-range fetch is not a broken decoder. The pipeline now
+  coalesces to the newest generation and waits for a presented frame. Stress test
+  before changing it: a 7 s continuous journey and eight rapid stop-to-stop jumps
+  must both keep the traversal.
 - **i18n shape must match.** `en` and `es` in `lib/i18n/talentx.ts` are typed as a
   union — if the two objects diverge in shape, TypeScript fails at build.
 - **Next.js 16 is not the Next you know.** See `AGENTS.md`.
 
 ## Open work
 
-- **P0 — scrub watchdog recovery.** In production at 1920x855, a seven-second
-  continuous journey ended on `vicente-portfolio-world.mp4` instead of the scrub
-  source. A second test jumping through project centers every 450 ms was still
-  seeking at project four and had switched to the ambient loop by project five.
-  The timeout retry compares `currentTime` with the requested value without also
-  requiring `!video.seeking` and a presented frame. Recover using confirmed
-  `requestVideoFrameCallback` presentation and the latest target; do not make two
-  merely slow seeks session-terminal. Acceptance: continuous scrolling and
-  repeated forward/reverse route jumps retain the six-second traversal, settle on
-  the latest target, and never remain stuck beyond 500 ms.
-- **P1 — rebuild the touch/fallback loop.** The current five-second world MP4 is
-  not seamless: first-to-last mean absolute pixel error is about 40/255 and the
-  final frame visibly cuts back to the opening frame. Crossfade an actual ending
-  segment into the opening segment and inspect the loop in motion.
-- **P1 — correct social metadata.** `vicente-portfolio-og.jpg` is 1200x630, while
-  `app/meet-the-team/vicente-barrientos/page.tsx` declares 1200x675.
-- **P2 — make screenshot refresh transactional.** `npm run shots` logs HTTP status
-  but writes the screenshot even for a 404, 500 or login page. Require a successful
-  response, write to staging, and replace committed images only after all targets
-  pass.
 - **Route placement.** The portfolio lives under `/meet-the-team/`, a path that
   promises a team bio and delivers a product portfolio. A dedicated `/portfolio`
   route, with a short recruiting bio left at the old URL, would serve both
@@ -176,9 +125,11 @@ over from the poster.
 | File | Role |
 | --- | --- |
 | `videos/vicente-portfolio-traversal.mp4` | Desktop scrub. 2,332,368 bytes, 1264x720, 12 fps, 73 frames / 6.083 s. `SCRUB_TIMES` currently ends at 6 s. |
-| `videos/vicente-portfolio-world.mp4` | Touch / fallback loop. 288,446 bytes, 1024x576, 24 fps / 5 s. The current seam hard-cuts and must be rebuilt. |
+| `videos/vicente-portfolio-world.mp4` | Touch / fallback loop. 296,607 bytes, 1024x576, 24 fps / 5 s. Seamless: the tail dissolves over the opening second. |
 | `images/vicente-portfolio-world.webp` | Poster and LCP element. 1364x777. |
-| `images/vicente-portfolio-og.jpg` | Social card. 1200x630; metadata currently declares the wrong height. |
+| `images/vicente-portfolio-og.jpg` | Social card. 53,036 bytes, 1200x675 — must match the size declared in the route metadata. |
+| `images/vicente-portfolio-opening.webp` | Exact first traversal frame, shown before the journey. 43,786 bytes, 1264x720. |
+| `images/vicente-portfolio-destination.webp` | Exact last traversal frame, shown after. 49,014 bytes, 1264x720. |
 
 What makes a usable traversal: the camera holds altitude and keeps moving, so
 that all six stop times land somewhere visibly different. A clip that descends
@@ -270,6 +221,27 @@ document.scrollingElement.scrollTop = r.top + scrollY + r.height / 2 - innerHeig
 ```
 
 ## Log
+
+### 2026-08-13 — Codex: static bookends, dwell zones, seek recovery
+
+The backdrop becomes three explicit states, with opaque stills at both ends that
+retire the translucent ghost frame. Each stop gains a dwell window so the footage
+rests on its frame instead of sliding past, which also lands the last stop on
+5.5 s exactly instead of drifting to 5.83. The seek pipeline coalesces to the
+newest generation and waits for presentation, retiring the P0: a 7 s continuous
+scroll and eight rapid stop-to-stop jumps both keep the traversal now.
+
+### 2026-08-13 — Claude: social card size, loop seam, screenshot guard
+
+Three defects of mine that the audit caught. The OG image was 1200x630 while the
+route declared 1200x675; regenerated at the declared size, which is the source
+frame's own 16:9, so no crop is involved any more. The ambient loop was never
+seamless despite a commit message and a handoff entry of mine claiming it was —
+the crossfade blended the tail toward later footage instead of back onto the
+head, so it hard-cut from volcano to archipelago every five seconds. Rebuilt
+properly: mean difference across the loop point falls from 34 to 6 of 255.
+`npm run shots` now refuses to overwrite an image unless the response is 2xx, so
+a site that is down can no longer be committed as if it were the product.
 
 ### 2026-08-13 — Codex: production audit of Claude's purpose-generated flight
 

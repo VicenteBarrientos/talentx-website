@@ -2,14 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   motion,
-  useMotionValueEvent,
   useReducedMotion,
   useScroll,
-  useSpring,
-  useTransform,
 } from "motion/react";
 import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
@@ -25,39 +22,25 @@ const CONDOSYNC_URL = "https://www.condosync.cl";
 const OSORNOFACTORY_URL = "https://osorno-ai-forge.vercel.app/";
 const MAPULENGUA_URL = "https://mapulengua.vercel.app/";
 
-const JOURNEY_STOPS = [
-  0, 0.16, 0.26, 0.31, 0.41, 0.45, 0.55, 0.59, 0.69, 0.73, 0.83, 0.87,
-  0.97, 1,
-];
-const WORLD_SCALE = [
-  1.03, 1.23, 1.23, 1.28, 1.28, 1.24, 1.24, 1.3, 1.3, 1.26, 1.26, 1.2,
-  1.2, 1.05,
-];
-const WORLD_X = [
-  "0%", "8%", "8%", "-7%", "-7%", "3%", "3%", "-9%", "-9%", "7%",
-  "7%", "-4%", "-4%", "0%",
-];
-const WORLD_Y = [
-  "0%", "-4%", "-4%", "2%", "2%", "-2%", "-2%", "-6%", "-6%", "4%",
-  "4%", "-3%", "-3%", "0%",
-];
 const PROJECT_CENTERS = [0.159, 0.326, 0.492, 0.659, 0.826, 0.992];
 const PROJECT_SCRUB_TIMES = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5];
 const SCRUB_HOLD = 0.032;
 const SCRUB_SCROLL_STOPS = [
   0,
-  ...PROJECT_CENTERS.flatMap((center) => [center - SCRUB_HOLD, center + SCRUB_HOLD]),
-  1,
+  ...PROJECT_CENTERS.flatMap((center) => [
+    Math.max(0, center - SCRUB_HOLD),
+    Math.min(1, center + SCRUB_HOLD),
+  ]),
 ];
 // Lead-in, the six stops, lead-out — in seconds, so this must match the
 // traversal clip's real duration. Currently a 6s flight.
 const SCRUB_TIMES = [
   0,
   ...PROJECT_SCRUB_TIMES.flatMap((time) => [time, time]),
-  6,
 ];
+const SCRUB_FINAL_TIME = 6;
 const SCRUB_FRAME_DURATION = 1 / 12;
-const JOURNEY_ACTIVE_THRESHOLD = 0.002;
+type JourneyPhase = "before" | "active" | "after";
 // Pointer check keeps the 2.33 MB seek-oriented traversal off touch devices.
 // Phones use the lightweight ambient loop instead of unreliable video seeks.
 const SCRUB_MEDIA_QUERY = "(min-width: 1024px) and (pointer: fine)";
@@ -367,6 +350,7 @@ export default function VicentePortfolioPage() {
   const cameraEnabled = mounted && !prefersReducedMotion;
   const vp = t.vicentePortfolio;
   const journeyRef = useRef<HTMLElement>(null);
+  const exitRef = useRef<HTMLDivElement>(null);
   const atmosphereVideoRef = useRef<HTMLVideoElement>(null);
   const scrubVideoRef = useRef<HTMLVideoElement>(null);
   const pendingScrubTimeRef = useRef(0);
@@ -377,9 +361,11 @@ export default function VicentePortfolioPage() {
   const scrubSeekWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrubPrimeAnimationFrameRef = useRef<number | null>(null);
   const scrubSeekStrikesRef = useRef(0);
+  const scrubSeekGenerationRef = useRef(0);
+  const scrubInFlightGenerationRef = useRef(0);
   const continueAfterScrubFramePaintRef = useRef<((video: HTMLVideoElement) => void) | null>(null);
   const [activeProject, setActiveProject] = useState(0);
-  const [journeyEntered, setJourneyEntered] = useState(false);
+  const [journeyPhase, setJourneyPhase] = useState<JourneyPhase>("before");
   const [scrubReady, setScrubReady] = useState(false);
   const [scrubFailed, setScrubFailed] = useState(false);
   const pageLoaded = useSyncExternalStore(
@@ -396,51 +382,32 @@ export default function VicentePortfolioPage() {
   // The poster is the LCP element; hold the traversal until the rest of
   // the page has finished loading so it does not compete for bandwidth.
   const scrubMounted = scrubEligible && pageLoaded;
-  const scrubActive = scrubMounted && scrubReady && !scrubFailed && journeyEntered;
+  const scrubVisible = scrubMounted && scrubReady && !scrubFailed && journeyPhase !== "before";
+  const atmosphereEnabled = cameraEnabled && (!scrubEligible || scrubFailed);
+  const atmosphereActive = atmosphereEnabled && journeyPhase === "active";
+  const atmosphereVisible = atmosphereEnabled && journeyPhase !== "before";
+  const showDestination = journeyPhase === "after";
   const { scrollYProgress } = useScroll({
     target: journeyRef,
     offset: ["start start", "end end"],
   });
-  const journeyProgress = useSpring(scrollYProgress, {
-    stiffness: 130,
-    damping: 30,
-    mass: 0.24,
-  });
-  const worldScale = useTransform(
-    journeyProgress,
-    JOURNEY_STOPS,
-    WORLD_SCALE,
-  );
-  const worldX = useTransform(
-    journeyProgress,
-    JOURNEY_STOPS,
-    WORLD_X,
-  );
-  const worldY = useTransform(
-    journeyProgress,
-    JOURNEY_STOPS,
-    WORLD_Y,
-  );
-  const scrubTime = useTransform(
-    scrollYProgress,
-    SCRUB_SCROLL_STOPS,
-    SCRUB_TIMES,
-  );
 
   useEffect(() => {
     const atmosphere = atmosphereVideoRef.current;
     if (!atmosphere) return;
 
-    if (scrubActive) {
+    if (!atmosphereActive) {
       atmosphere.pause();
+      if (journeyPhase === "before" && atmosphere.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        atmosphere.currentTime = 0;
+      }
       return;
     }
 
-    const playback = atmosphere.play();
-    playback?.catch(() => {
-      // Autoplay restrictions leave the poster visible; content remains usable.
+    atmosphere.play().catch(() => {
+      // Autoplay restrictions leave the exact opening still visible.
     });
-  }, [scrubActive]);
+  }, [atmosphereActive, journeyPhase]);
 
   useEffect(() => {
     const previousScrollBehavior = document.documentElement.style.scrollBehavior;
@@ -455,7 +422,7 @@ export default function VicentePortfolioPage() {
   const clampScrubTime = useCallback((video: HTMLVideoElement, requestedTime: number) => {
     const maximumTime = Math.max(
       0,
-      Math.min(SCRUB_TIMES.at(-1) ?? 0, video.duration - SCRUB_FRAME_DURATION),
+      Math.min(SCRUB_FINAL_TIME, video.duration - SCRUB_FRAME_DURATION),
     );
 
     const clampedTime = Math.min(maximumTime, Math.max(0, requestedTime));
@@ -514,6 +481,7 @@ export default function VicentePortfolioPage() {
     };
 
     const nextTime = clampScrubTime(video, pendingScrubTimeRef.current);
+    scrubInFlightGenerationRef.current = scrubSeekGenerationRef.current;
     scrubSeekInFlightRef.current = true;
 
     if (Math.abs(video.currentTime - nextTime) <= SCRUB_FRAME_DURATION / 2) {
@@ -570,10 +538,15 @@ export default function VicentePortfolioPage() {
         scrubPaintTimeoutRef.current = null;
       }
       clearSeekWatchdog();
+      const completedGeneration = scrubInFlightGenerationRef.current;
       scrubSeekStrikesRef.current = 0;
       scrubSeekInFlightRef.current = false;
       setScrubReady(true);
-      seekToLatestScrubTime();
+      queueMicrotask(() => {
+        if (completedGeneration !== scrubSeekGenerationRef.current) {
+          seekToLatestScrubTimeRef.current?.();
+        }
+      });
     };
 
     const confirmWithoutVideoFrameCallback = () => {
@@ -633,7 +606,7 @@ export default function VicentePortfolioPage() {
     }
 
     confirmWithoutVideoFrameCallback();
-  }, [cancelScheduledScrubPaint, clearSeekWatchdog, seekToLatestScrubTime]);
+  }, [cancelScheduledScrubPaint, clearSeekWatchdog]);
 
   useEffect(() => {
     continueAfterScrubFramePaintRef.current = continueAfterScrubFramePaint;
@@ -653,7 +626,6 @@ export default function VicentePortfolioPage() {
         scrubPrimeAnimationFrameRef.current = requestAnimationFrame(() => {
           video.pause();
           scrubPrimeAnimationFrameRef.current = null;
-          pendingScrubTimeRef.current = scrubTime.get();
           continueAfterScrubFramePaintRef.current?.(video);
         });
       } catch {
@@ -672,7 +644,7 @@ export default function VicentePortfolioPage() {
       }
       video.pause();
     };
-  }, [scrubFailed, scrubMounted, scrubReady, scrubTime]);
+  }, [scrubFailed, scrubMounted, scrubReady]);
 
   useEffect(() => () => {
     if (scrubPrimeAnimationFrameRef.current !== null) {
@@ -681,9 +653,6 @@ export default function VicentePortfolioPage() {
   }, []);
 
   const syncProgress = useCallback((progress: number) => {
-    const entered = progress > JOURNEY_ACTIVE_THRESHOLD;
-    setJourneyEntered((current) => (current === entered ? current : entered));
-
     let nearest = 0;
     let shortestDistance = Number.POSITIVE_INFINITY;
 
@@ -697,55 +666,95 @@ export default function VicentePortfolioPage() {
 
     setActiveProject((current) => (current === nearest ? current : nearest));
     pendingScrubTimeRef.current = mapRangeValue(progress, SCRUB_SCROLL_STOPS, SCRUB_TIMES);
+    scrubSeekGenerationRef.current += 1;
 
-    if (
-      progress > JOURNEY_ACTIVE_THRESHOLD &&
-      scrubMounted &&
-      !scrubFailed &&
-      !scrubSeekInFlightRef.current
-    ) {
-      setScrubReady(true);
-    }
     seekToLatestScrubTimeRef.current?.();
-  }, [scrubFailed, scrubMounted]);
+  }, []);
 
-  useMotionValueEvent(scrubTime, "change", (requestedTime) => {
+  const syncExitProgress = useCallback((progress: number) => {
+    const requestedTime = mapRangeValue(
+      progress,
+      [0, 1],
+      [PROJECT_SCRUB_TIMES.at(-1) ?? 0, SCRUB_FINAL_TIME],
+    );
     pendingScrubTimeRef.current = requestedTime;
-    seekToLatestScrubTime();
-  });
+    scrubSeekGenerationRef.current += 1;
+    seekToLatestScrubTimeRef.current?.();
+  }, []);
 
-  useMotionValueEvent(scrollYProgress, "change", syncProgress);
+  useLayoutEffect(() => {
+    let animationFrame: number | null = null;
 
-  useEffect(() => {
     const syncJourneyFromViewport = () => {
+      animationFrame = null;
       const journey = journeyRef.current;
       if (!journey) return;
 
       const bounds = journey.getBoundingClientRect();
-      const entered = bounds.top <= 1 && bounds.bottom > window.innerHeight;
-      if (!entered) {
-        setJourneyEntered(false);
+      if (bounds.top > 1) {
+        setJourneyPhase((current) => (current === "before" ? current : "before"));
+        syncProgress(0);
         return;
+      }
+
+      const exit = exitRef.current;
+      if (exit && exit.getBoundingClientRect().bottom <= window.innerHeight + 1) {
+        setJourneyPhase((current) => (current === "after" ? current : "after"));
+        setActiveProject(PROJECT_CENTERS.length - 1);
+        pendingScrubTimeRef.current = SCRUB_FINAL_TIME;
+        scrubSeekGenerationRef.current += 1;
+        seekToLatestScrubTimeRef.current?.();
+        return;
+      }
+
+      setJourneyPhase((current) => (current === "active" ? current : "active"));
+
+      if (exit) {
+        const exitBounds = exit.getBoundingClientRect();
+        if (exitBounds.top < window.innerHeight) {
+          const exitProgressValue = Math.min(
+            1,
+            Math.max(0, (window.innerHeight - exitBounds.top) / Math.max(1, exitBounds.height)),
+          );
+          setActiveProject(PROJECT_CENTERS.length - 1);
+          syncExitProgress(exitProgressValue);
+          return;
+        }
       }
 
       const progress = Math.min(1, Math.max(0, -bounds.top / Math.max(1, bounds.height - window.innerHeight)));
       syncProgress(progress);
     };
 
+    const scheduleSync = () => {
+      if (animationFrame !== null) return;
+      animationFrame = requestAnimationFrame(syncJourneyFromViewport);
+    };
+
     syncJourneyFromViewport();
-    const interval = window.setInterval(syncJourneyFromViewport, 250);
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync);
+    window.addEventListener("pageshow", scheduleSync);
 
     return () => {
-      window.clearInterval(interval);
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+      window.removeEventListener("pageshow", scheduleSync);
+      if (animationFrame !== null) cancelAnimationFrame(animationFrame);
     };
-  }, [syncProgress]);
+  }, [syncExitProgress, syncProgress]);
 
   useEffect(() => {
-    if (!journeyEntered || !scrubMounted || scrubFailed) return;
+    if (!scrubMounted || scrubFailed) return;
 
-    pendingScrubTimeRef.current = scrubTime.get();
+    if (journeyPhase === "before") {
+      pendingScrubTimeRef.current = 0;
+    } else if (journeyPhase === "after") {
+      pendingScrubTimeRef.current = SCRUB_FINAL_TIME;
+    }
+    scrubSeekGenerationRef.current += 1;
     seekToLatestScrubTimeRef.current?.();
-  }, [journeyEntered, scrubFailed, scrubMounted, scrubTime]);
+  }, [journeyPhase, scrubFailed, scrubMounted]);
 
   const PROJECTS: {
     id: string;
@@ -839,33 +848,34 @@ export default function VicentePortfolioPage() {
         className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]"
         aria-hidden="true"
       >
-        <motion.div
-          className={`${styles.world} absolute -inset-[12%]`}
-          style={cameraEnabled && (!scrubEligible || scrubFailed) ? { scale: worldScale, x: worldX, y: worldY } : undefined}
-        >
+        <div className={`${styles.mediaStage} absolute -inset-[12%]`}>
           <Image
-            src="/images/vicente-portfolio-world.webp"
+            src="/images/vicente-portfolio-opening.webp"
             alt=""
             fill
             priority
+            unoptimized
             sizes="100vw"
             className="object-cover object-[62%_center] sm:object-center"
           />
-          {cameraEnabled && (
+          {atmosphereEnabled && (
             <video
               ref={atmosphereVideoRef}
-              className={`${styles.atmosphere} absolute inset-0 h-full w-full object-cover object-[62%_center] sm:object-center`}
-              autoPlay
+              className={`${styles.atmosphereVideo} ${atmosphereVisible ? styles.atmosphereVideoVisible : ""} absolute inset-0 h-full w-full object-cover object-[62%_center] sm:object-center`}
               loop
               muted
               playsInline
               preload="metadata"
-              poster="/images/vicente-portfolio-world.webp"
+              poster="/images/vicente-portfolio-opening.webp"
               onCanPlay={(event) => {
-                if (scrubActive) return;
+                if (!atmosphereActive) {
+                  event.currentTarget.pause();
+                  return;
+                }
+
                 event.currentTarget.play().catch(() => {
                   // Low Power Mode and autoplay policy intentionally fall back
-                  // to the poster without affecting the content layer.
+                  // to the opening image without affecting the content layer.
                 });
               }}
             >
@@ -875,11 +885,11 @@ export default function VicentePortfolioPage() {
           {scrubMounted && !scrubFailed && (
             <video
               ref={scrubVideoRef}
-              className={`${styles.scrubVideo} ${scrubActive ? styles.scrubVideoReady : ""}`}
+              className={`${styles.scrubVideo} ${scrubVisible ? styles.scrubVideoReady : ""} object-[62%_center] sm:object-center`}
               muted
               playsInline
               preload="auto"
-              poster="/images/vicente-portfolio-world.webp"
+              poster="/images/vicente-portfolio-opening.webp"
               onLoadStart={() => {
                 cancelScheduledScrubPaint();
                 scrubSeekInFlightRef.current = false;
@@ -888,11 +898,9 @@ export default function VicentePortfolioPage() {
               onLoadedMetadata={(event) => {
                 const video = event.currentTarget;
                 video.pause();
-                const requestedTime = clampScrubTime(video, scrubTime.get());
+                const requestedTime = clampScrubTime(video, pendingScrubTimeRef.current);
                 pendingScrubTimeRef.current = requestedTime;
-                if (Math.abs(video.currentTime - requestedTime) > SCRUB_FRAME_DURATION / 2) {
-                  seekToLatestScrubTime();
-                }
+                seekToLatestScrubTime();
               }}
               onSeeked={(event) => {
                 continueAfterScrubFramePaint(event.currentTarget);
@@ -907,7 +915,15 @@ export default function VicentePortfolioPage() {
               <source src="/videos/vicente-portfolio-traversal.mp4" type="video/mp4" />
             </video>
           )}
-          {!cameraEnabled && !scrubActive && (
+          <Image
+            src="/images/vicente-portfolio-destination.webp"
+            alt=""
+            fill
+            unoptimized
+            sizes="100vw"
+            className={`${styles.destinationImage} ${showDestination ? styles.destinationImageVisible : ""} object-cover object-[62%_center] sm:object-center`}
+          />
+          {mounted && prefersReducedMotion && journeyPhase === "active" && (
             <div className={styles.mapMarkers}>
               {PROJECTS.map((project, index) => (
                 <div
@@ -921,8 +937,10 @@ export default function VicentePortfolioPage() {
               ))}
             </div>
           )}
-        </motion.div>
-        <div className={styles.stars} />
+        </div>
+        <div
+          className={`${styles.stars} ${!mounted || journeyPhase !== "active" ? styles.starsPaused : ""}`}
+        />
         <div className={styles.scrim} />
         <div className={styles.vignette} />
       </div>
@@ -1153,8 +1171,14 @@ export default function VicentePortfolioPage() {
           </div>
         </section>
 
+        <div
+          ref={exitRef}
+          className="h-[30svh] sm:h-[40svh]"
+          aria-hidden="true"
+        />
+
         <motion.section
-          className={`${styles.glass} mx-auto mt-[30svh] max-w-3xl rounded-[2rem] px-6 py-14 text-center sm:mt-[40svh] sm:px-12 sm:py-16`}
+          className={`${styles.glass} mx-auto max-w-3xl rounded-[2rem] px-6 py-14 text-center sm:px-12 sm:py-16`}
           initial={reduced ? false : { opacity: 0, y: 28, scale: 0.985 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={revealViewport}
