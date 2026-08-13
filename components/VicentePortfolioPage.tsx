@@ -42,19 +42,29 @@ const WORLD_Y = [
   "4%", "-3%", "-3%", "0%",
 ];
 const PROJECT_CENTERS = [0.159, 0.326, 0.492, 0.659, 0.826, 0.992];
-const SCRUB_SCROLL_STOPS = [0, ...PROJECT_CENTERS, 1];
+const PROJECT_SCRUB_TIMES = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5];
+const SCRUB_HOLD = 0.032;
+const SCRUB_SCROLL_STOPS = [
+  0,
+  ...PROJECT_CENTERS.flatMap((center) => [center - SCRUB_HOLD, center + SCRUB_HOLD]),
+  1,
+];
 // Lead-in, the six stops, lead-out — in seconds, so this must match the
 // traversal clip's real duration. Currently a 6s flight.
-const SCRUB_TIMES = [0, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6];
+const SCRUB_TIMES = [
+  0,
+  ...PROJECT_SCRUB_TIMES.flatMap((time) => [time, time]),
+  6,
+];
 const SCRUB_FRAME_DURATION = 1 / 12;
-// Pointer check keeps the 7.6 MB traversal off touch devices. A phone in
-// landscape clears 640px, and iOS Low Power Mode refuses to service seeks.
+const JOURNEY_ACTIVE_THRESHOLD = 0.002;
+// Pointer check keeps the 2.33 MB seek-oriented traversal off touch devices.
+// Phones use the lightweight ambient loop instead of unreliable video seeks.
 const SCRUB_MEDIA_QUERY = "(min-width: 1024px) and (pointer: fine)";
-// A seek that never reports back means the decoder is not cooperating
-// (Low Power Mode is the common cause and raises no error). Two strikes
-// and we hand over to the looping world video.
-const SCRUB_SEEK_TIMEOUT_MS = 400;
-const SCRUB_SEEK_STRIKES = 2;
+// A seek that never reports back means the decoder is not cooperating.
+// Give slow/throttled presentation several windows before using the loop.
+const SCRUB_SEEK_TIMEOUT_MS = 800;
+const SCRUB_SEEK_STRIKES = 6;
 const MAP_MARKERS = [
   { left: "12%", top: "72%" },
   { left: "35%", top: "54%" },
@@ -67,6 +77,72 @@ const MAP_MARKERS = [
 type NavigatorWithConnection = Navigator & {
   connection?: EventTarget & { saveData?: boolean };
 };
+
+function PointerDepthCard({ children }: { children: React.ReactNode }) {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const pointerRef = useRef({ x: 0.5, y: 0.18 });
+  const pointerFrameRef = useRef<number | null>(null);
+
+  const resetPointer = useCallback(() => {
+    if (pointerFrameRef.current !== null) {
+      cancelAnimationFrame(pointerFrameRef.current);
+      pointerFrameRef.current = null;
+    }
+
+    const card = frameRef.current;
+    card?.style.setProperty("--card-shift-x", "0px");
+    card?.style.setProperty("--card-shift-y", "0px");
+    card?.style.setProperty("--card-icon-shift-x", "0px");
+    card?.style.setProperty("--card-icon-shift-y", "0px");
+    card?.style.setProperty("--card-glow-x", "50%");
+    card?.style.setProperty("--card-glow-y", "18%");
+  }, []);
+
+  const movePointer = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (
+      event.pointerType !== "mouse" ||
+      !window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)").matches
+    ) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    pointerRef.current = {
+      x: Math.min(1, Math.max(0, (event.clientX - bounds.left) / bounds.width)),
+      y: Math.min(1, Math.max(0, (event.clientY - bounds.top) / bounds.height)),
+    };
+
+    if (pointerFrameRef.current !== null) return;
+
+    pointerFrameRef.current = requestAnimationFrame(() => {
+      pointerFrameRef.current = null;
+      const card = frameRef.current;
+      if (!card) return;
+
+      const { x, y } = pointerRef.current;
+      card.style.setProperty("--card-shift-x", `${(x - 0.5) * 7}px`);
+      card.style.setProperty("--card-shift-y", `${(y - 0.5) * 7}px`);
+      card.style.setProperty("--card-icon-shift-x", `${(0.5 - x) * 2.5}px`);
+      card.style.setProperty("--card-icon-shift-y", `${(0.5 - y) * 2.5}px`);
+      card.style.setProperty("--card-glow-x", `${x * 100}%`);
+      card.style.setProperty("--card-glow-y", `${y * 100}%`);
+    });
+  }, []);
+
+  useEffect(() => resetPointer, [resetPointer]);
+
+  return (
+    <div
+      ref={frameRef}
+      className={styles.projectFrame}
+      onPointerMove={movePointer}
+      onPointerLeave={resetPointer}
+      onPointerCancel={resetPointer}
+    >
+      {children}
+    </div>
+  );
+}
 
 function subscribeToScrubCapability(onStoreChange: () => void) {
   const mediaQuery = window.matchMedia(SCRUB_MEDIA_QUERY);
@@ -105,6 +181,24 @@ function getPageLoadSnapshot() {
 
 function getServerPageLoadSnapshot() {
   return false;
+}
+
+function mapRangeValue(input: number, inputs: number[], outputs: number[]) {
+  const clampedInput = Math.min(inputs.at(-1) ?? input, Math.max(inputs[0] ?? input, input));
+
+  for (let index = 1; index < inputs.length; index += 1) {
+    const upperInput = inputs[index];
+    if (clampedInput > upperInput) continue;
+
+    const lowerInput = inputs[index - 1];
+    const lowerOutput = outputs[index - 1];
+    const upperOutput = outputs[index];
+    const span = upperInput - lowerInput;
+    const ratio = span === 0 ? 1 : (clampedInput - lowerInput) / span;
+    return lowerOutput + (upperOutput - lowerOutput) * ratio;
+  }
+
+  return outputs.at(-1) ?? 0;
 }
 
 // ─── Project icons ─────────────────────────────────────────────────────────────
@@ -273,6 +367,7 @@ export default function VicentePortfolioPage() {
   const cameraEnabled = mounted && !prefersReducedMotion;
   const vp = t.vicentePortfolio;
   const journeyRef = useRef<HTMLElement>(null);
+  const atmosphereVideoRef = useRef<HTMLVideoElement>(null);
   const scrubVideoRef = useRef<HTMLVideoElement>(null);
   const pendingScrubTimeRef = useRef(0);
   const scrubSeekInFlightRef = useRef(false);
@@ -280,8 +375,11 @@ export default function VicentePortfolioPage() {
   const scrubPaintFallbackRef = useRef<number | null>(null);
   const scrubPaintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrubSeekWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrubPrimeAnimationFrameRef = useRef<number | null>(null);
   const scrubSeekStrikesRef = useRef(0);
+  const continueAfterScrubFramePaintRef = useRef<((video: HTMLVideoElement) => void) | null>(null);
   const [activeProject, setActiveProject] = useState(0);
+  const [journeyEntered, setJourneyEntered] = useState(false);
   const [scrubReady, setScrubReady] = useState(false);
   const [scrubFailed, setScrubFailed] = useState(false);
   const pageLoaded = useSyncExternalStore(
@@ -295,10 +393,10 @@ export default function VicentePortfolioPage() {
     getServerScrubCapabilitySnapshot,
   );
   const scrubEligible = mounted && !prefersReducedMotion && scrubCapable;
-  // The poster is the LCP element; hold the 7.6 MB traversal until the rest of
+  // The poster is the LCP element; hold the traversal until the rest of
   // the page has finished loading so it does not compete for bandwidth.
   const scrubMounted = scrubEligible && pageLoaded;
-  const scrubActive = scrubMounted && scrubReady && !scrubFailed;
+  const scrubActive = scrubMounted && scrubReady && !scrubFailed && journeyEntered;
   const { scrollYProgress } = useScroll({
     target: journeyRef,
     offset: ["start start", "end end"],
@@ -330,6 +428,21 @@ export default function VicentePortfolioPage() {
   );
 
   useEffect(() => {
+    const atmosphere = atmosphereVideoRef.current;
+    if (!atmosphere) return;
+
+    if (scrubActive) {
+      atmosphere.pause();
+      return;
+    }
+
+    const playback = atmosphere.play();
+    playback?.catch(() => {
+      // Autoplay restrictions leave the poster visible; content remains usable.
+    });
+  }, [scrubActive]);
+
+  useEffect(() => {
     const previousScrollBehavior = document.documentElement.style.scrollBehavior;
     document.documentElement.style.scrollBehavior = "auto";
 
@@ -356,7 +469,8 @@ export default function VicentePortfolioPage() {
     }
   }, []);
 
-  // Lets the watchdog retry without making seekToLatestScrubTime self-referential.
+  // Refs break the seek -> presentation -> latest-seek callback cycle without
+  // teaching React that every scroll frame is component state.
   const seekToLatestScrubTimeRef = useRef<(() => void) | null>(null);
 
   const seekToLatestScrubTime = useCallback(() => {
@@ -371,32 +485,48 @@ export default function VicentePortfolioPage() {
       return;
     }
 
+    const armSeekWatchdog = () => {
+      clearSeekWatchdog();
+
+      const checkSeek = () => {
+        scrubSeekWatchdogRef.current = null;
+
+        if (video.seeking) {
+          scrubSeekStrikesRef.current += 1;
+
+          if (scrubSeekStrikesRef.current >= SCRUB_SEEK_STRIKES) {
+            scrubSeekInFlightRef.current = false;
+            setScrubFailed(true);
+            setScrubReady(false);
+            return;
+          }
+
+          scrubSeekWatchdogRef.current = setTimeout(checkSeek, SCRUB_SEEK_TIMEOUT_MS);
+          return;
+        }
+
+        // Some browsers can miss `seeked`; still require a presented frame
+        // before unlocking the next coalesced seek.
+        continueAfterScrubFramePaintRef.current?.(video);
+      };
+
+      scrubSeekWatchdogRef.current = setTimeout(checkSeek, SCRUB_SEEK_TIMEOUT_MS);
+    };
+
     const nextTime = clampScrubTime(video, pendingScrubTimeRef.current);
+    scrubSeekInFlightRef.current = true;
+
     if (Math.abs(video.currentTime - nextTime) <= SCRUB_FRAME_DURATION / 2) {
-      setScrubReady(true);
+      if (video.seeking) {
+        armSeekWatchdog();
+      } else {
+        continueAfterScrubFramePaintRef.current?.(video);
+      }
       return;
     }
 
-    scrubSeekInFlightRef.current = true;
     video.currentTime = nextTime;
-
-    // Low Power Mode accepts the write and then never reports back, so the
-    // seek silently hangs instead of erroring. Time it out and give up after
-    // a couple of strikes rather than leaving a frozen frame on screen.
-    clearSeekWatchdog();
-    scrubSeekWatchdogRef.current = setTimeout(() => {
-      scrubSeekWatchdogRef.current = null;
-      scrubSeekInFlightRef.current = false;
-      scrubSeekStrikesRef.current += 1;
-
-      if (scrubSeekStrikesRef.current >= SCRUB_SEEK_STRIKES) {
-        setScrubFailed(true);
-        setScrubReady(false);
-        return;
-      }
-
-      seekToLatestScrubTimeRef.current?.();
-    }, SCRUB_SEEK_TIMEOUT_MS);
+    armSeekWatchdog();
   }, [clampScrubTime, clearSeekWatchdog, scrubEligible, scrubFailed]);
 
   useEffect(() => {
@@ -425,8 +555,11 @@ export default function VicentePortfolioPage() {
 
   const continueAfterScrubFramePaint = useCallback((video: HTMLVideoElement) => {
     cancelScheduledScrubPaint();
+    let settled = false;
 
     const flushLatest = () => {
+      if (settled) return;
+      settled = true;
       if (scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
         video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
       }
@@ -443,25 +576,114 @@ export default function VicentePortfolioPage() {
       seekToLatestScrubTime();
     };
 
-    if ("requestVideoFrameCallback" in video) {
+    const confirmWithoutVideoFrameCallback = () => {
+      if (settled) return;
+      scrubPaintTimeoutRef.current = null;
+
+      if (!video.seeking && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        scrubPaintFallbackRef.current = requestAnimationFrame(() => {
+          scrubPaintFallbackRef.current = requestAnimationFrame(flushLatest);
+        });
+        return;
+      }
+
+      scrubSeekStrikesRef.current += 1;
+
+      if (scrubSeekStrikesRef.current >= SCRUB_SEEK_STRIKES) {
+        settled = true;
+        scrubSeekInFlightRef.current = false;
+        setScrubFailed(true);
+        setScrubReady(false);
+        return;
+      }
+
+      scrubPaintTimeoutRef.current = setTimeout(
+        confirmWithoutVideoFrameCallback,
+        SCRUB_SEEK_TIMEOUT_MS,
+      );
+    };
+
+    const retryPresentation = () => {
+      if (settled) return;
+      if (scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
+        video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
+      }
+      scrubFrameCallbackRef.current = null;
+      scrubPaintTimeoutRef.current = null;
+      if (!video.seeking && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        // In backgrounded or throttled tabs Chrome may suppress RVFC entirely,
+        // even though the decoded frame is ready. Double-rAF is the conservative
+        // presentation fallback and avoids treating that as a media failure.
+        scrubPaintFallbackRef.current = requestAnimationFrame(() => {
+          scrubPaintFallbackRef.current = requestAnimationFrame(flushLatest);
+        });
+        return;
+      }
+
+      confirmWithoutVideoFrameCallback();
+    };
+
+    const supportsVideoFrameCallback =
+      typeof video.requestVideoFrameCallback === "function";
+
+    if (supportsVideoFrameCallback) {
       scrubFrameCallbackRef.current = video.requestVideoFrameCallback(flushLatest);
-      scrubPaintTimeoutRef.current = setTimeout(flushLatest, 120);
+      scrubPaintTimeoutRef.current = setTimeout(retryPresentation, SCRUB_SEEK_TIMEOUT_MS);
       return;
     }
 
-    scrubPaintFallbackRef.current = requestAnimationFrame(() => {
-      scrubPaintFallbackRef.current = requestAnimationFrame(flushLatest);
-    });
+    confirmWithoutVideoFrameCallback();
   }, [cancelScheduledScrubPaint, clearSeekWatchdog, seekToLatestScrubTime]);
+
+  useEffect(() => {
+    continueAfterScrubFramePaintRef.current = continueAfterScrubFramePaint;
+  }, [continueAfterScrubFramePaint]);
 
   useEffect(() => cancelScheduledScrubPaint, [cancelScheduledScrubPaint]);
 
-  useMotionValueEvent(scrubTime, "change", (requestedTime) => {
-    pendingScrubTimeRef.current = requestedTime;
-    seekToLatestScrubTime();
-  });
+  useEffect(() => {
+    if (!scrubMounted || scrubFailed || scrubReady) return;
 
-  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    const video = scrubVideoRef.current;
+    if (!video || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
+
+    const primeVideoFrameCallback = async () => {
+      try {
+        await video.play();
+        scrubPrimeAnimationFrameRef.current = requestAnimationFrame(() => {
+          video.pause();
+          scrubPrimeAnimationFrameRef.current = null;
+          pendingScrubTimeRef.current = scrubTime.get();
+          continueAfterScrubFramePaintRef.current?.(video);
+        });
+      } catch {
+        // Muted autoplay can still be blocked. The double-rAF confirmation in
+        // the presentation helper keeps the poster/fallback path functional.
+        continueAfterScrubFramePaintRef.current?.(video);
+      }
+    };
+
+    void primeVideoFrameCallback();
+
+    return () => {
+      if (scrubPrimeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(scrubPrimeAnimationFrameRef.current);
+        scrubPrimeAnimationFrameRef.current = null;
+      }
+      video.pause();
+    };
+  }, [scrubFailed, scrubMounted, scrubReady, scrubTime]);
+
+  useEffect(() => () => {
+    if (scrubPrimeAnimationFrameRef.current !== null) {
+      cancelAnimationFrame(scrubPrimeAnimationFrameRef.current);
+    }
+  }, []);
+
+  const syncProgress = useCallback((progress: number) => {
+    const entered = progress > JOURNEY_ACTIVE_THRESHOLD;
+    setJourneyEntered((current) => (current === entered ? current : entered));
+
     let nearest = 0;
     let shortestDistance = Number.POSITIVE_INFINITY;
 
@@ -474,7 +696,56 @@ export default function VicentePortfolioPage() {
     });
 
     setActiveProject((current) => (current === nearest ? current : nearest));
+    pendingScrubTimeRef.current = mapRangeValue(progress, SCRUB_SCROLL_STOPS, SCRUB_TIMES);
+
+    if (
+      progress > JOURNEY_ACTIVE_THRESHOLD &&
+      scrubMounted &&
+      !scrubFailed &&
+      !scrubSeekInFlightRef.current
+    ) {
+      setScrubReady(true);
+    }
+    seekToLatestScrubTimeRef.current?.();
+  }, [scrubFailed, scrubMounted]);
+
+  useMotionValueEvent(scrubTime, "change", (requestedTime) => {
+    pendingScrubTimeRef.current = requestedTime;
+    seekToLatestScrubTime();
   });
+
+  useMotionValueEvent(scrollYProgress, "change", syncProgress);
+
+  useEffect(() => {
+    const syncJourneyFromViewport = () => {
+      const journey = journeyRef.current;
+      if (!journey) return;
+
+      const bounds = journey.getBoundingClientRect();
+      const entered = bounds.top <= 1 && bounds.bottom > window.innerHeight;
+      if (!entered) {
+        setJourneyEntered(false);
+        return;
+      }
+
+      const progress = Math.min(1, Math.max(0, -bounds.top / Math.max(1, bounds.height - window.innerHeight)));
+      syncProgress(progress);
+    };
+
+    syncJourneyFromViewport();
+    const interval = window.setInterval(syncJourneyFromViewport, 250);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [syncProgress]);
+
+  useEffect(() => {
+    if (!journeyEntered || !scrubMounted || scrubFailed) return;
+
+    pendingScrubTimeRef.current = scrubTime.get();
+    seekToLatestScrubTimeRef.current?.();
+  }, [journeyEntered, scrubFailed, scrubMounted, scrubTime]);
 
   const PROJECTS: {
     id: string;
@@ -570,7 +841,7 @@ export default function VicentePortfolioPage() {
       >
         <motion.div
           className={`${styles.world} absolute -inset-[12%]`}
-          style={cameraEnabled && !scrubActive ? { scale: worldScale, x: worldX, y: worldY } : undefined}
+          style={cameraEnabled && (!scrubEligible || scrubFailed) ? { scale: worldScale, x: worldX, y: worldY } : undefined}
         >
           <Image
             src="/images/vicente-portfolio-world.webp"
@@ -580,8 +851,9 @@ export default function VicentePortfolioPage() {
             sizes="100vw"
             className="object-cover object-[62%_center] sm:object-center"
           />
-          {cameraEnabled && (!scrubEligible || scrubFailed) && (
+          {cameraEnabled && (
             <video
+              ref={atmosphereVideoRef}
               className={`${styles.atmosphere} absolute inset-0 h-full w-full object-cover object-[62%_center] sm:object-center`}
               autoPlay
               loop
@@ -589,6 +861,13 @@ export default function VicentePortfolioPage() {
               playsInline
               preload="metadata"
               poster="/images/vicente-portfolio-world.webp"
+              onCanPlay={(event) => {
+                if (scrubActive) return;
+                event.currentTarget.play().catch(() => {
+                  // Low Power Mode and autoplay policy intentionally fall back
+                  // to the poster without affecting the content layer.
+                });
+              }}
             >
               <source src="/videos/vicente-portfolio-world.mp4" type="video/mp4" />
             </video>
@@ -611,7 +890,7 @@ export default function VicentePortfolioPage() {
         {scrubMounted && !scrubFailed && (
           <video
             ref={scrubVideoRef}
-            className={`${styles.scrubVideo} ${scrubReady ? styles.scrubVideoReady : ""}`}
+            className={`${styles.scrubVideo} ${scrubActive ? styles.scrubVideoReady : ""}`}
             muted
             playsInline
             preload="auto"
@@ -628,8 +907,6 @@ export default function VicentePortfolioPage() {
               pendingScrubTimeRef.current = requestedTime;
               if (Math.abs(video.currentTime - requestedTime) > SCRUB_FRAME_DURATION / 2) {
                 seekToLatestScrubTime();
-              } else {
-                continueAfterScrubFramePaint(video);
               }
             }}
             onSeeked={(event) => {
@@ -784,7 +1061,7 @@ export default function VicentePortfolioPage() {
           </div>
 
           {/* The route: each project is a stop, joined by a trail that draws as you scroll */}
-          <div className="relative mx-auto max-w-5xl">
+          <div className="relative mx-auto max-w-6xl">
             {PROJECTS.map((project, index) => (
               <div
                 key={project.id}
@@ -793,85 +1070,83 @@ export default function VicentePortfolioPage() {
 
                 <motion.div
                   id={`project-${project.id}`}
-                  className={`${styles.glass} relative w-full max-w-3xl scroll-mt-24 rounded-[2rem] p-4 sm:p-7 lg:p-9 ${index % 2 === 0 ? "ml-auto" : "mr-auto"}`}
+                  className={`relative w-full max-w-4xl scroll-mt-24 ${index % 2 === 0 ? "mr-auto" : "ml-auto"}`}
                   initial={reduced ? false : { opacity: 0, y: 28, scale: 0.985 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={revealViewport}
                   transition={{ ...easeOut, duration: 0.7 }}
                 >
-                  <div className="relative">
-                    <div
-                      className="pointer-events-none absolute inset-x-10 -bottom-3 h-10 rounded-[50%] bg-cyan-300/20 blur-2xl"
-                      aria-hidden="true"
-                    />
-                    <div className={`${styles.projectCard} relative flex flex-col rounded-[1.55rem] p-6 sm:p-9`}>
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/15 shadow-[0_12px_36px_-16px_rgba(94,201,230,0.75)] sm:h-14 sm:w-14">
-                            {project.icon}
+                  <PointerDepthCard>
+                    <div className={styles.projectGlow} aria-hidden="true" />
+                    <div className={`${styles.projectCard} relative rounded-[1.75rem] p-5 sm:p-7 lg:p-8`}>
+                      <div className="grid gap-6 lg:grid-cols-[minmax(0,0.93fr)_minmax(0,1.07fr)] lg:items-stretch lg:gap-8">
+                        <div className="relative z-10 flex min-w-0 flex-col">
+                          <div className="flex flex-wrap items-start justify-between gap-4">
+                            <div className="flex min-w-0 items-center gap-4">
+                              <div className={`${styles.projectIcon} h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/15 shadow-[0_12px_36px_-16px_rgba(94,201,230,0.75)] sm:h-14 sm:w-14`}>
+                                {project.icon}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-200">
+                                  {String(index + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
+                                </p>
+                                <h3 className="mt-1 truncate text-[clamp(1.9rem,4vw,3.2rem)] font-black leading-none tracking-[-0.045em] text-white">
+                                  {project.name}
+                                </h3>
+                              </div>
+                            </div>
+                            <StatusPill status={project.status} label={vp.status[project.status]} />
                           </div>
-                          <div>
-                            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-200">
-                              {String(index + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
-                            </p>
-                            <h3 className="mt-1 text-[clamp(1.9rem,5vw,3.5rem)] font-black leading-none tracking-[-0.045em] text-white">
-                          {project.name}
-                            </h3>
+
+                          <p className="mt-7 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200/90">
+                            {project.tagline}
+                          </p>
+                          <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-[0.95rem]">
+                            {project.description}
+                          </p>
+
+                          <div className="mt-6 flex flex-wrap gap-2">
+                            {project.stack.map((tech) => (
+                              <span
+                                key={tech}
+                                className="rounded-full border border-white/12 bg-[#061321]/55 px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-slate-200"
+                              >
+                                {tech}
+                              </span>
+                            ))}
                           </div>
+
+                          {project.href && (
+                            <div className="mt-7 lg:mt-auto lg:pt-7">
+                              <Link
+                                href={project.href}
+                                {...(project.external
+                                  ? { target: "_blank", rel: "noopener noreferrer" }
+                                  : {})}
+                                className="inline-flex items-center gap-2 rounded-full border border-cyan-200/25 bg-cyan-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-100/45 hover:bg-cyan-300 hover:text-[#061321] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+                              >
+                                {vp.visitProject}
+                                {project.external ? <ExternalLinkIcon /> : <ArrowRightIcon />}
+                              </Link>
+                            </div>
+                          )}
                         </div>
-                        <StatusPill status={project.status} label={vp.status[project.status]} />
+
+                        {project.shot && (
+                          <div className={`${styles.projectMedia} relative min-h-48 overflow-hidden rounded-[1.25rem] border border-white/14 bg-white/[0.04] shadow-[0_28px_70px_-34px_rgba(0,0,0,0.95)] sm:min-h-56 lg:min-h-0`}>
+                            <Image
+                              src={project.shot}
+                              alt=""
+                              fill
+                              sizes="(min-width: 1024px) 430px, 90vw"
+                              className="object-cover object-top"
+                            />
+                            <div className={styles.projectMediaShade} aria-hidden="true" />
+                          </div>
+                        )}
                       </div>
-                      <p className="mt-7 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200/85">
-                        {project.tagline}
-                      </p>
-
-                      <p className="mt-4 max-w-3xl text-sm leading-relaxed text-slate-300 sm:text-base">
-                        {project.description}
-                      </p>
-
-                      {/* Height scales with the viewport rather than the card's width.
-                          A fixed aspect made the card 910px tall, and centring that at
-                          its stop slid the title under the fixed nav on any laptop
-                          shorter than ~1000px. */}
-                      {project.shot && (
-                        <div className="relative mt-6 h-[clamp(170px,24svh,300px)] overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03] shadow-[0_28px_70px_-34px_rgba(0,0,0,0.9)]">
-                          <Image
-                            src={project.shot}
-                            alt={`${project.name} landing page`}
-                            fill
-                            sizes="(min-width: 1024px) 640px, 90vw"
-                            className="object-cover object-top"
-                          />
-                        </div>
-                      )}
-
-                      <div className="mt-6 flex flex-wrap gap-2">
-                        {project.stack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-slate-300"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-
-                      {project.href && (
-                        <div className="mt-7">
-                          <Link
-                            href={project.href}
-                            {...(project.external
-                              ? { target: "_blank", rel: "noopener noreferrer" }
-                              : {})}
-                            className="inline-flex items-center gap-2 rounded-full border border-cyan-200/25 bg-cyan-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-100/45 hover:bg-cyan-300 hover:text-[#061321] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
-                          >
-                            {vp.visitProject}
-                            {project.external ? <ExternalLinkIcon /> : <ArrowRightIcon />}
-                          </Link>
-                        </div>
-                      )}
                     </div>
-                  </div>
+                  </PointerDepthCard>
                 </motion.div>
               </div>
             ))}
