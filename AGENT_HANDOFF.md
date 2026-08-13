@@ -150,6 +150,21 @@ displayed size, so a visitor fetches about 84 KB, lazily.
 Refresh them whenever a product's landing page changes — a stale screenshot is
 worse than none.
 
+**Card height is load-bearing.** A stop is reached by centring its card in the
+viewport, and the nav is fixed on top, so a card taller than roughly
+`viewport - 160px` slides its own title under the nav. Adding the screenshots at a
+fixed 16:10 aspect pushed cards to 910px and broke this on every laptop shorter
+than ~1000px. The shot is therefore sized in `svh`, not by aspect ratio. If you
+add anything to these cards, re-check clearance at 800px viewport height, which is
+a 1440x900 laptop once browser chrome is subtracted:
+
+```js
+const card = document.querySelector('[id^="project-"]');
+const r = card.getBoundingClientRect();
+document.scrollingElement.scrollTop = r.top + scrollY + r.height / 2 - innerHeight / 2;
+// then: title top must sit below the header's bottom
+```
+
 ## Log
 
 ### 2026-08-12 — Claude: screenshots on every stop

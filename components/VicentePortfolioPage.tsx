@@ -827,8 +827,12 @@ export default function VicentePortfolioPage() {
                         {project.description}
                       </p>
 
+                      {/* Height scales with the viewport rather than the card's width.
+                          A fixed aspect made the card 910px tall, and centring that at
+                          its stop slid the title under the fixed nav on any laptop
+                          shorter than ~1000px. */}
                       {project.shot && (
-                        <div className="relative mt-6 aspect-[16/10] overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03] shadow-[0_28px_70px_-34px_rgba(0,0,0,0.9)]">
+                        <div className="relative mt-6 h-[clamp(170px,24svh,300px)] overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03] shadow-[0_28px_70px_-34px_rgba(0,0,0,0.9)]">
                           <Image
                             src={project.shot}
                             alt={`${project.name} landing page`}
