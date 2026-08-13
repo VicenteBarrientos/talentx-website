@@ -8,6 +8,38 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## In progress — 2026-08-13, branch `agent/cinematic-card-depth`
+
+- The authoritative checkout is still `C:\Users\hp\Projects\talentx-website`.
+  This branch starts at `167953f`; it has not been published yet.
+- Background behavior is now hybrid: the 288 KB ambient world video moves in
+  the hero on desktop and remains the only video on touch/phone screens. Desktop
+  pauses it and crossfades to the scroll-scrub traversal only after the journey
+  starts; scrolling back to the hero resumes it. Reduced motion still uses the
+  poster and media failure still keeps semantic content available.
+- The six scrub destinations now have short dwell zones: the output timestamp is
+  repeated for ±0.032 journey progress around each card center, so the camera
+  travels between cards and holds while a card is read.
+- The old two-layer centered cards were replaced by a single, more transparent
+  glass case-study shell. Desktop uses an alternating 896 px lane with text and
+  product evidence side-by-side; mobile stacks the same DOM in reading order.
+  Only the screenshot/icon and a low-opacity cyan highlight react to a fine
+  pointer. Text, backdrop blur, keyboard focus and touch remain geometrically
+  stable; the effect is rAF-coalesced and disabled for reduced motion.
+- The watchdog no longer treats an in-progress seek as success merely because
+  `currentTime` already equals the requested value. It coalesces to one latest
+  target, waits up to multiple 800 ms windows, uses RVFC where Chrome services
+  it, and conservatively falls back to double-rAF when a throttled browser
+  suppresses RVFC. A 250 ms viewport sampler backs up Motion progress for direct
+  hash/rail jumps and backgrounded test tabs.
+- Local validation passed: ESLint; Next 16 production build; phone emulation
+  showed exactly one playing `vicente-portfolio-world.mp4`; a desktop forward
+  and reverse pass settled at 0.5 / 1.5 / 2.5 / 3.5 / 4.5 / 5.5 seconds with
+  the matching active project and retained the traversal at every stop.
+- Still open: the ambient 5-second file itself has a visible loop seam. It is
+  now more visible because desktop hero and phones actually play it continuously;
+  rebuild that asset before calling the cinematic background final.
+
 ## Current state — 2026-08-13
 
 - Production deploys from the current `origin/main`. Claude's functional baseline
