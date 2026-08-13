@@ -43,7 +43,9 @@ const WORLD_Y = [
 ];
 const PROJECT_CENTERS = [0.159, 0.326, 0.492, 0.659, 0.826, 0.992];
 const SCRUB_SCROLL_STOPS = [0, ...PROJECT_CENTERS, 1];
-const SCRUB_TIMES = [0, 0.85, 2.5, 4.15, 5.8, 7.45, 9.1, 10];
+// Lead-in, the six stops, lead-out — in seconds, so this must match the
+// traversal clip's real duration. Currently a 6s flight.
+const SCRUB_TIMES = [0, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6];
 const SCRUB_FRAME_DURATION = 1 / 12;
 // Pointer check keeps the 7.6 MB traversal off touch devices. A phone in
 // landscape clears 640px, and iOS Low Power Mode refuses to service seeks.

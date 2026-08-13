@@ -113,7 +113,7 @@ over from the poster.
 
 | File | Role |
 | --- | --- |
-| `videos/vicente-portfolio-traversal.mp4` | Desktop scrub. Must be exactly 10 s to match `SCRUB_TIMES`. |
+| `videos/vicente-portfolio-traversal.mp4` | Desktop scrub. Its duration and `SCRUB_TIMES` must agree — retime the constant when the clip changes length. Currently 6 s. |
 | `videos/vicente-portfolio-world.mp4` | Touch / fallback loop. Crossfade the seam or the forward flight cuts on repeat. |
 | `images/vicente-portfolio-world.webp` | Poster, and the LCP element. |
 | `images/vicente-portfolio-og.jpg` | Social card. |
@@ -121,8 +121,26 @@ over from the poster.
 What makes a usable traversal: the camera holds altitude and keeps moving, so
 that all six stop times land somewhere visibly different. A clip that descends
 and settles on one landmark breaks the effect — the six stops collapse onto the
-same shot. Check by sampling at 0.85, 2.5, 4.15, 5.8, 7.45 and 9.1 s before
-encoding anything.
+same shot. Sample the clip at the six stop times before encoding anything.
+
+**How to generate one that works.** Anchoring both a start and an end frame is
+what makes this reliable: two wide aerials at the same altitude force the model
+to travel between them, so it cannot descend and land the way a text-only prompt
+let it. Reuse frames from the current clip and the world stays consistent, which
+matters because all four assets have to match. Prompt that worked on Kling 3.0,
+first try:
+
+> Slow aerial flight across an archipelago of floating islands above a sea of
+> clouds at dusk. Deep blue and indigo tones, a snow-capped volcano on the
+> distant horizon, glowing cyan light trails linking the islands. The camera
+> drifts steadily forward at CONSTANT ALTITUDE, passing distinct islands on both
+> sides — never descending, never landing, never entering any structure. Wide
+> establishing shot held throughout. Calm, cinematic, atmospheric haze. No
+> people, no text, no logos, no interiors, no fast motion, no shake.
+
+Turn the prompt enhancer OFF — it paraphrases, and the altitude constraint is the
+one clause that must survive verbatim. Keep multi-shot off too: a cut is exactly
+where a scrubbing visitor parks when they stop scrolling.
 
 Encode for scrubbing with dense keyframes; hazy, low-detail scenes cost roughly
 half what foliage and glass do at the same settings:
