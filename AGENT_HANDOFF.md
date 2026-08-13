@@ -8,10 +8,13 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
-## Current state — 2026-08-12
+## Current state — 2026-08-13
 
-- Production is `45a77d4`, deployed from GitHub. `origin/main`, local and live all
+- Production is `6dda86e`, deployed from GitHub. `origin/main`, local and live all
   agree — verified against the served assets, not assumed.
+- The journey was walked end-to-end in headless Chrome on 2026-08-13: at each of
+  the six stops the video time, the `01 / 06` dock and the route rail all name the
+  card you are looking at.
 - `main` is the only long-lived branch. Vercel deploys production from it.
 - The site is **light-only**. There is no theme switch, `next-themes` is gone, and
   there are no `dark:` utilities left. `lib/theme-sync.ts` survives solely to append
@@ -74,11 +77,11 @@ scroll range. The route rail, the `01 / 06` dock and the video's frame all deriv
 from them, so if they drift the highlighted project stops matching the card you
 are reading.
 
-**They are correct as of 2026-08-12** — measured 0.162 / 0.330 / 0.496 / 0.662 /
-0.828 / 0.993 against constants of 0.159 / 0.326 / 0.492 / 0.659 / 0.826 / 0.992,
+**They are correct as of 2026-08-13** — measured 0.164 / 0.330 / 0.497 / 0.664 /
+0.830 / 0.997 against constants of 0.159 / 0.326 / 0.492 / 0.659 / 0.826 / 0.992,
 a worst case of 30px over a ~6,000px journey. Two content changes in a row — adding
-the screenshots, then resizing them — moved the drift from 22px to 30px, which is
-why the constants are still the right call over runtime measurement.
+the screenshots, then resizing them — moved the drift only from 22px to 30px, which
+is why the constants are still the right call over runtime measurement.
 
 **The trap when you verify this:** progress is measured against
 `#portfolio-journey`, and that section opens with a full-height header block
@@ -99,7 +102,7 @@ const top = j.getBoundingClientRect().top + scrollY;
 Re-tune the constants by hand when the numbers drift enough to matter. Measuring
 them from the DOM at runtime was tried and reverted: it works, but it replaces six
 verified values with a measurement that has to be right at mount, for a gain of
-22px today. Revisit that trade if content starts changing often — collapsible
+30px today. Revisit that trade if content starts changing often — collapsible
 detail panels would be the trigger.
 
 ## Media
