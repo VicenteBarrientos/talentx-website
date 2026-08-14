@@ -15,6 +15,22 @@
   object-position: center;
 }
 
+.coverVideo {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.coverVideoVisible {
+  opacity: 1;
+}
+
 .mediaStage {
   z-index: 1;
   isolation: isolate;
@@ -81,13 +97,9 @@
     transform 900ms cubic-bezier(0.22, 1, 0.36, 1) 180ms;
 }
 
-/* Desktop windows are wider than this artwork. A maximized browser on a 1080p
-   monitor is roughly 2.1:1 against art that is 1.78:1, so `cover` was hiding
-   about 18% of the scene, off the top and bottom. Past 16/9 the art switches to
-   `contain` — the whole picture, nothing cropped — and a blurred, softened copy
-   of the same file fills the leftover width so there are no letterbox bars.
-   Below 16/9, including every phone, `cover` still wins and these stay off:
-   `contain` on a portrait viewport would bar far more than it revealed. */
+/* Wide windows preserve the complete 16:9 artwork with intentional side
+   margins. A softened copy fills those margins so they feel integrated rather
+   than like empty letterbox bars. Portrait and standard windows remain cover. */
 .coverFill,
 .finaleFill {
   display: none;
@@ -111,12 +123,10 @@
   opacity: 1;
 }
 
-/* Past 16/9 every backdrop layer shows its whole frame instead of being cropped.
-   They must switch together: the opening still, the 73 journey frames and the
-   destination still are all cut from the same footage, so any of them fitted
-   differently would jump scale at a phase change. The journey frames are only
-   960x547 — with the stage no longer oversized, `contain` also drops their
-   upscale from 2.43x to about 1.6x, which is the sharpness gain. */
+/* Past 16/9 the footage-matched journey layers show their whole frame instead
+   of being cropped. They must switch together: the opening still, the 73
+   journey frames and the destination still are all cut from the same footage,
+   so fitting them differently would jump scale at a phase change. */
 @media (min-aspect-ratio: 16 / 9) {
   .coverFill,
   .finaleFill,
@@ -125,6 +135,7 @@
   }
 
   .coverImage,
+  .coverVideo,
   .finaleImage,
   .openingImage,
   .destinationImage,
@@ -730,7 +741,8 @@
 }
 
 @media (max-width: 900px) {
-  .coverImage {
+  .coverImage,
+  .coverVideo {
     object-position: 57% center;
   }
 

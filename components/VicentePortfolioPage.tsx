@@ -203,6 +203,21 @@ function getServerScrubCapabilitySnapshot() {
   return false;
 }
 
+function subscribeToDataSaver(onStoreChange: () => void) {
+  const connection = (navigator as NavigatorWithConnection).connection;
+
+  connection?.addEventListener("change", onStoreChange);
+  return () => connection?.removeEventListener("change", onStoreChange);
+}
+
+function getDataSaverSnapshot() {
+  return Boolean((navigator as NavigatorWithConnection).connection?.saveData);
+}
+
+function getServerDataSaverSnapshot() {
+  return false;
+}
+
 function subscribeToPageLoad(onStoreChange: () => void) {
   if (document.readyState === "complete") {
     return () => {};
@@ -412,6 +427,7 @@ export default function VicentePortfolioPage() {
   // Sampled once per drag, so the mapping cannot slide under the pointer if the
   // dock relayouts mid-gesture.
   const dockCentresRef = useRef<number[]>([]);
+  const coverVideoRef = useRef<HTMLVideoElement>(null);
   const atmosphereVideoRef = useRef<HTMLVideoElement>(null);
   const frameSurfaceRef = useRef<HTMLImageElement>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
@@ -420,6 +436,7 @@ export default function VicentePortfolioPage() {
   const showFrameForTimeRef = useRef<((time: number) => void) | null>(null);
   const [activeProject, setActiveProject] = useState(0);
   const [journeyPhase, setJourneyPhase] = useState<JourneyPhase>("before");
+  const [coverVideoReady, setCoverVideoReady] = useState(false);
   const [finaleReady, setFinaleReady] = useState(false);
   const [scrubReady, setScrubReady] = useState(false);
   const [scrubFailed, setScrubFailed] = useState(false);
@@ -433,6 +450,16 @@ export default function VicentePortfolioPage() {
     getScrubCapabilitySnapshot,
     getServerScrubCapabilitySnapshot,
   );
+  const dataSaver = useSyncExternalStore(
+    subscribeToDataSaver,
+    getDataSaverSnapshot,
+    getServerDataSaverSnapshot,
+  );
+  // Keep the priority image as the LCP element, then bring the decorative loop
+  // in after load. Reduced-motion, data-saver and autoplay failures continue to
+  // see the same complete studio artwork rather than an empty video surface.
+  const coverVideoEnabled = cameraEnabled && !dataSaver && pageLoaded;
+  const coverVideoActive = coverVideoEnabled && journeyPhase === "before";
   const scrubEligible = mounted && !prefersReducedMotion && scrubCapable;
   // The poster is the LCP element; hold the traversal until the rest of
   // the page has finished loading so it does not compete for bandwidth.
@@ -446,6 +473,20 @@ export default function VicentePortfolioPage() {
     target: journeyRef,
     offset: ["start start", "end end"],
   });
+
+  useEffect(() => {
+    const coverVideo = coverVideoRef.current;
+    if (!coverVideo) return;
+
+    if (!coverVideoActive) {
+      coverVideo.pause();
+      return;
+    }
+
+    coverVideo.play().catch(() => {
+      // The priority studio image remains visible when autoplay is unavailable.
+    });
+  }, [coverVideoActive]);
 
   useEffect(() => {
     const atmosphere = atmosphereVideoRef.current;
@@ -828,8 +869,8 @@ export default function VicentePortfolioPage() {
         className={`${styles.backdrop} ${journeyPhase === "before" ? styles.coverPhase : ""} ${journeyPhase === "after" ? styles.finalePhase : ""} pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#e2e6ec]`}
         aria-hidden="true"
       >
-        {/* Same src and sizes as the sharp copy below, so this reuses the
-            optimized file already being fetched rather than costing a download. */}
+        {/* Same src and sizes as the sharp copy below, so the softened side
+            fill reuses the optimized file rather than costing a download. */}
         <Image
           src="/images/vicente-portfolio-studio-cover.webp"
           alt=""
@@ -846,6 +887,34 @@ export default function VicentePortfolioPage() {
           sizes="100vw"
           className={styles.coverImage}
         />
+        {coverVideoEnabled && (
+          <video
+            ref={coverVideoRef}
+            className={`${styles.coverVideo} ${coverVideoReady && coverVideoActive ? styles.coverVideoVisible : ""}`}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster="/images/vicente-portfolio-studio-cover.webp"
+            onCanPlay={(event) => {
+              setCoverVideoReady(true);
+
+              if (!coverVideoActive) {
+                event.currentTarget.pause();
+                return;
+              }
+
+              event.currentTarget.play().catch(() => {
+                // Autoplay restrictions intentionally leave the still visible.
+              });
+            }}
+            onError={() => setCoverVideoReady(false)}
+            aria-hidden="true"
+          >
+            <source src="/videos/vicente-portfolio-studio-loop.mp4" type="video/mp4" />
+          </video>
+        )}
         <div
           className={`${styles.mediaStage} ${journeyPhase !== "before" ? styles.mediaStageVisible : ""} absolute inset-0`}
         >

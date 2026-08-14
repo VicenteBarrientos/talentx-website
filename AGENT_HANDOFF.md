@@ -8,6 +8,26 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-14 — Codex: animated Osorno studio intro
+
+- Rebased on the deployed `dc9ec1e` palette release, then added
+  `public/videos/vicente-portfolio-studio-loop.mp4` as the intro-only motion
+  layer. The 10.005 s source is 1280×720 H.264, 24 fps, fast-started and
+  2,381,027 bytes.
+- The existing studio WebP remains the priority LCP image, video poster and
+  complete fallback. The loop mounts only after window load, is muted and
+  `playsInline`, pauses outside the `before` phase, and is skipped for reduced
+  motion or data saver. The matched opening/journey/destination media is
+  unchanged.
+- On wide desktops the studio video and still use `contain`, preserving the
+  complete scene with intentional softened margins at the sides, as Vicente
+  requested. Phones retain the verified 57% `cover` focal point. Checked
+  playback at 1920×855, 1440×900 and 390×844; reduced motion leaves only the
+  still. `npm run lint` and `npm run build` pass.
+- Source caveat: the supplied MP4 contains a muted AAC track and its first/last
+  frames are close but not identical, so a small loop-boundary snap may remain.
+  Strip audio and regenerate/crossfade the seam if the clip is revised later.
+
 ## 2026-08-14 — Codex: portfolio palette unified with the homepage
 
 - Vicente asked for the portfolio to use the same colors as the TalentX main
