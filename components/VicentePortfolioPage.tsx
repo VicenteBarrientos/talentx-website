@@ -366,6 +366,7 @@ export default function VicentePortfolioPage() {
   const continueAfterScrubFramePaintRef = useRef<((video: HTMLVideoElement) => void) | null>(null);
   const [activeProject, setActiveProject] = useState(0);
   const [journeyPhase, setJourneyPhase] = useState<JourneyPhase>("before");
+  const [finaleReady, setFinaleReady] = useState(false);
   const [scrubReady, setScrubReady] = useState(false);
   const [scrubFailed, setScrubFailed] = useState(false);
   const pageLoaded = useSyncExternalStore(
@@ -845,7 +846,7 @@ export default function VicentePortfolioPage() {
     <div className={`${styles.page} relative min-h-screen overflow-clip text-white`}>
       {/* Fixed video backdrop — the page scrolls over it */}
       <div
-        className={`${styles.backdrop} ${journeyPhase === "before" ? styles.coverPhase : ""} pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]`}
+        className={`${styles.backdrop} ${journeyPhase === "before" ? styles.coverPhase : ""} ${journeyPhase === "after" ? styles.finalePhase : ""} pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]`}
         aria-hidden="true"
       >
         <Image
@@ -931,6 +932,15 @@ export default function VicentePortfolioPage() {
             unoptimized
             sizes="100vw"
             className={`${styles.destinationImage} ${showDestination ? styles.destinationImageVisible : ""} object-cover object-[62%_center] sm:object-center`}
+          />
+          <Image
+            src="/images/vicente-portfolio-finale.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            loading="eager"
+            onLoad={() => setFinaleReady(true)}
+            className={`${styles.finaleImage} ${showDestination && finaleReady ? styles.finaleImageVisible : ""}`}
           />
           {mounted && prefersReducedMotion && journeyPhase === "active" && (
             <div className={styles.mapMarkers}>
@@ -1177,7 +1187,7 @@ export default function VicentePortfolioPage() {
         />
 
         <motion.section
-          className={`${styles.glass} mx-auto max-w-3xl rounded-[2rem] px-6 py-14 text-center sm:px-12 sm:py-16`}
+          className={`${styles.finalOutro} max-w-3xl px-6 py-14 text-center sm:px-12 sm:py-16`}
           initial={reduced ? false : { opacity: 0, y: 28, scale: 0.985 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={revealViewport}
@@ -1189,10 +1199,10 @@ export default function VicentePortfolioPage() {
           <h2 className="mt-4 text-[clamp(2.5rem,7vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white">
             Vicente <span className="text-cyan-300">Barrientos</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
+          <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-slate-200 sm:text-base lg:mx-0">
             {vp.subtitleSub}
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
             <Link
               href={VICENTE_LINKEDIN}
               target="_blank"

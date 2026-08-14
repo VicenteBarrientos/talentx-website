@@ -8,6 +8,28 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-13 — Codex: high-speed lowrider finale release
+
+- Vicente approved the generated artwork and integrated page, then explicitly
+  authorized production deployment.
+- Added `public/images/vicente-portfolio-finale.webp` (1672×941, 182,268 bytes,
+  SHA-256 `5A325FDE284A2F193668CAD5117FF084A78A3F6B8CEDDA2FA4B4A1A5416F22A5`).
+  The full-quality generated source is kept outside git at
+  `C:\Users\hp\CS50\portfolio-assets\vicente-portfolio-lowrider-finale-v1.png`
+  (2,112,479 bytes, SHA-256
+  `159564CFFF846A6F3179C198F429CB604E09DBFB7FCB25D249DD69D543424030`).
+- The exact traversal endpoint remains `vicente-portfolio-destination.webp`.
+  The new scene is a separate z-layer that appears only in the `after` phase,
+  after the footage-matched endpoint settles. Do not replace the destination
+  still or use the finale as a video poster.
+- The finale crossfades in over 520 ms after a 180 ms endpoint hold and reverses
+  cleanly back into the scrub journey. Procedural stars are hidden in the finale,
+  the final name/summary/social actions are unboxed text over the dark left side
+  (no glass card), and the mobile crop is biased to 70%.
+- Verified locally at 1280×720 and 390×844, including reverse scroll.
+  `npm run lint` and `npm run build` pass. Production verification and the exact
+  deployed commit are recorded in the release commit/follow-up handoff.
+
 ## Current state — 2026-08-13
 
 - Production deploys from the current `origin/main`.
