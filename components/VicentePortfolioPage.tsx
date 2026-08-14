@@ -386,7 +386,7 @@ function StatusPill({ status, label }: { status: ProjectStatus; label: string })
   }
 
   return (
-    <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-black/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">
+    <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
       <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[status]}`} />
       {label}
     </span>
@@ -822,10 +822,10 @@ export default function VicentePortfolioPage() {
   ];
 
   return (
-    <div className={`${styles.page} relative min-h-screen overflow-clip text-white`}>
+    <div className={`${styles.page} relative min-h-screen overflow-clip text-zinc-950`}>
       {/* Fixed video backdrop — the page scrolls over it */}
       <div
-        className={`${styles.backdrop} ${journeyPhase === "before" ? styles.coverPhase : ""} ${journeyPhase === "after" ? styles.finalePhase : ""} pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]`}
+        className={`${styles.backdrop} ${journeyPhase === "before" ? styles.coverPhase : ""} ${journeyPhase === "after" ? styles.finalePhase : ""} pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#e2e6ec]`}
         aria-hidden="true"
       >
         {/* Same src and sizes as the sharp copy below, so this reuses the
@@ -1041,7 +1041,7 @@ export default function VicentePortfolioPage() {
         </span>
       </nav>
 
-      <TopNav variant="cinematic" />
+      <TopNav />
 
       <main className="relative z-10 mx-auto max-w-6xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28 lg:px-8">
 
@@ -1053,14 +1053,14 @@ export default function VicentePortfolioPage() {
           transition={{ ...easeOut, duration: 0.75 }}
         >
           <div className={styles.heroCopy}>
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200 sm:text-xs">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-100 sm:text-xs">
               <ScrambleText text={vp.eyebrow} active={cameraEnabled} />
             </p>
-            <h1 className="mt-4 text-[clamp(2.8rem,6.1vw,5.6rem)] font-black uppercase leading-[0.86] tracking-[-0.065em] text-white">
+            <h1 className={`${styles.displayHeading} mt-4 text-[clamp(2.8rem,6.1vw,5.6rem)] font-black uppercase leading-[0.86] tracking-[-0.065em] text-white`}>
               {["Vicente", "Barrientos"].map((line, index) => (
                 <span key={line} className={styles.heroLineMask}>
                   <motion.span
-                    className={`block ${index === 1 ? "text-cyan-300" : ""}`}
+                    className="block"
                     initial={reduced ? false : { y: "115%" }}
                     animate={{ y: "0%" }}
                     transition={{ duration: 0.95, delay: 0.12 + index * 0.11, ease: [0.22, 1, 0.36, 1] }}
@@ -1070,13 +1070,13 @@ export default function VicentePortfolioPage() {
                 </span>
               ))}
             </h1>
-            <p className="mx-auto mt-7 max-w-3xl text-base font-semibold leading-relaxed text-slate-100 sm:text-lg lg:mx-0">
+            <p className="mx-auto mt-7 max-w-3xl text-base font-semibold leading-relaxed text-white sm:text-lg lg:mx-0">
               {vp.subtitle}
             </p>
-            <p className="mt-1 text-sm text-slate-200 sm:text-base">
+            <p className="mt-1 text-sm text-brand-100 sm:text-base">
               {vp.subtitleSub}
             </p>
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-slate-100 sm:text-base lg:mx-0">
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-zinc-100 sm:text-base lg:mx-0">
               {vp.intro}
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
@@ -1084,7 +1084,7 @@ export default function VicentePortfolioPage() {
                 href={VICENTE_LINKEDIN}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-200/30 bg-cyan-300 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#061321] shadow-[0_12px_35px_-16px_rgba(94,201,230,0.9)] transition hover:-translate-y-0.5 hover:bg-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+                className="inline-flex items-center gap-2 rounded-full border border-brand-600 bg-brand-600 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_55px_-20px_rgba(29,53,89,0.55)] transition hover:-translate-y-0.5 hover:border-brand-700 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 <LinkedInIcon />
                 LinkedIn
@@ -1093,7 +1093,7 @@ export default function VicentePortfolioPage() {
                 href={VICENTE_GITHUB}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:border-cyan-100/35 hover:bg-cyan-200/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+                className="inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/75 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-zinc-700 transition hover:-translate-y-0.5 hover:border-brand-300 hover:bg-white hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 <GitHubIcon />
                 GitHub
@@ -1103,7 +1103,7 @@ export default function VicentePortfolioPage() {
           <a
             href="#portfolio-journey"
             aria-label={vp.sections.projects.title}
-            className={`${styles.heroScrollCue} absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 transition hover:text-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100`}
+            className={`${styles.heroScrollCue} absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-100 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
           >
             <span className={styles.scrollCue} aria-hidden="true" />
           </a>
@@ -1117,7 +1117,7 @@ export default function VicentePortfolioPage() {
         >
           <div className="flex min-h-[100svh] items-center py-16">
             <div className={`${styles.journeyIntro} mx-auto w-full max-w-5xl px-6 py-12 text-center sm:px-12 sm:py-16`}>
-              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200 sm:text-xs">
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-100 sm:text-xs">
                 {vp.sections.projects.eyebrow}
               </p>
               <h2 className="mt-4 text-[clamp(2.7rem,7vw,6rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white">
@@ -1149,14 +1149,14 @@ export default function VicentePortfolioPage() {
                         <div className="relative z-10 flex min-w-0 flex-col">
                           <div className="flex flex-wrap items-start justify-between gap-4">
                             <div className="flex min-w-0 items-center gap-4">
-                              <div className={`${styles.projectIcon} h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/15 shadow-[0_12px_36px_-16px_rgba(94,201,230,0.75)] sm:h-14 sm:w-14`}>
+                              <div className={`${styles.projectIcon} h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-brand-200 shadow-[0_12px_36px_-16px_rgba(29,53,89,0.35)] sm:h-14 sm:w-14`}>
                                 {project.icon}
                               </div>
                               <div className="min-w-0">
-                                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-200">
+                                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-600">
                                   {String(index + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
                                 </p>
-                                <h3 className="mt-1 truncate text-[clamp(1.9rem,4vw,3.2rem)] font-black leading-none tracking-[-0.045em] text-white">
+                                <h3 className="mt-1 truncate text-[clamp(1.9rem,4vw,3.2rem)] font-black leading-none tracking-[-0.045em] text-zinc-950">
                                   {project.name}
                                 </h3>
                               </div>
@@ -1164,10 +1164,10 @@ export default function VicentePortfolioPage() {
                             <StatusPill status={project.status} label={vp.status[project.status]} />
                           </div>
 
-                          <p className="mt-7 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-200/90">
+                          <p className="mt-7 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-600">
                             {project.tagline}
                           </p>
-                          <p className="mt-4 text-sm leading-relaxed text-slate-200 sm:text-[0.95rem]">
+                          <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-[0.95rem]">
                             {project.description}
                           </p>
 
@@ -1175,7 +1175,7 @@ export default function VicentePortfolioPage() {
                             {project.stack.map((tech) => (
                               <span
                                 key={tech}
-                                className="rounded-full border border-white/12 bg-[#061321]/55 px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-slate-200"
+                                className="rounded-full border border-brand-200 bg-brand-50/90 px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-zinc-700"
                               >
                                 {tech}
                               </span>
@@ -1189,7 +1189,7 @@ export default function VicentePortfolioPage() {
                                 {...(project.external
                                   ? { target: "_blank", rel: "noopener noreferrer" }
                                   : {})}
-                                className="inline-flex items-center gap-2 rounded-full border border-cyan-200/25 bg-cyan-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-100/45 hover:bg-cyan-300 hover:text-[#061321] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+                                className="inline-flex items-center gap-2 rounded-full border border-brand-600 bg-brand-600 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:border-brand-700 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                               >
                                 {vp.visitProject}
                                 {project.external ? <ExternalLinkIcon /> : <ArrowRightIcon />}
@@ -1232,13 +1232,13 @@ export default function VicentePortfolioPage() {
           viewport={revealViewport}
           transition={{ ...easeOut, duration: 0.7 }}
         >
-          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200">
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-100">
             {vp.eyebrow}
           </p>
-          <h2 className="mt-4 text-[clamp(2.5rem,7vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white">
-            Vicente <span className="text-cyan-300">Barrientos</span>
+          <h2 className={`${styles.displayHeading} mt-4 text-[clamp(2.5rem,7vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white`}>
+            Vicente Barrientos
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-slate-200 sm:text-base lg:mx-0">
+          <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-zinc-100 sm:text-base lg:mx-0">
             {vp.subtitleSub}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
@@ -1246,7 +1246,7 @@ export default function VicentePortfolioPage() {
               href={VICENTE_LINKEDIN}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-cyan-200/30 bg-cyan-300 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#061321] transition hover:-translate-y-0.5 hover:bg-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+              className="inline-flex items-center gap-2 rounded-full border border-brand-600 bg-brand-600 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:border-brand-700 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <LinkedInIcon />
               LinkedIn
@@ -1255,7 +1255,7 @@ export default function VicentePortfolioPage() {
               href={VICENTE_GITHUB}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:border-cyan-100/35 hover:bg-cyan-200/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100"
+              className="inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/75 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-zinc-700 transition hover:-translate-y-0.5 hover:border-brand-300 hover:bg-white hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <GitHubIcon />
               GitHub

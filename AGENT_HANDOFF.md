@@ -8,6 +8,27 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-14 — Codex: portfolio palette unified with the homepage
+
+- Vicente asked for the portfolio to use the same colors as the TalentX main
+  page. Repainted its navigation, cards and controls with the canonical light
+  canvas (`#f1f3f6` → `#e2e6ec`), navy primary (`#1d3559`), zinc text, white
+  glass surfaces and brand-blue borders.
+- Kept the cinematic artwork and all journey behavior intact at full opacity:
+  phase scrims are transparent and vignette washes are removed. Unboxed copy is
+  white with a restrained dark edge; project cards, screenshot plates, route
+  controls, map markers, buttons and chips use the homepage's light language.
+- Switched the shared navigation from its cinematic variant to the same light
+  variant used on the homepage. Strengthened focus rings and inactive route dots
+  for contrast; retained each project's distinct icon hue.
+- No content, dimensions, scroll constants, breakpoints, media requests, frame
+  sequencing or interaction logic changed. Visually checked at 1920×855 and
+  390×844, including a project card and the actual finale artwork. `npm run lint`
+  and `npm run build` pass.
+- Vicente explicitly authorized production deployment on 2026-08-14. This
+  entry's containing commit is the release intended for `origin/main` through
+  the repository's GitHub-connected Vercel production path.
+
 ## 2026-08-14 — Claude: interaction plan (in progress)
 
 Vicente asked for a more impressive page: more animation, more interactivity.
@@ -68,7 +89,7 @@ Work now happens on `feat/portfolio-interactions`, branched from `origin/main`.
   shaved. Only the `aria-hidden` copy of the eyebrow is ever scrambled; the real
   string sits beside it in an `sr-only` span, so assistive tech never reads a
   half-decoded word. Both are inert under reduced motion.
-- **P5 — Project shots zoomed out onto a dark plate. Code complete, visual check
+- **P5 — Project shots zoomed out onto a light brand plate. Code complete, visual check
   outstanding.** Vicente's read was that the screenshots felt too big, and the
   measurements agreed: the media box stretched to the height of the text column,
   which left it near-square (427x423 at 1440x900) against captures that are
@@ -78,10 +99,10 @@ Work now happens on `feat/portfolio-interactions`, branched from `origin/main`.
   landing page visible, nothing cropped. Mapulengua is a 1:1 mobile capture and
   letterboxes into the same box, which reads correctly for a phone-first app.
 
-  The plate behind it is now opaque `#02080f`. It has to be: the card gradient
-  runs down to 46% alpha in exactly that column, so the journey footage had been
-  showing through the product screenshots. Edges feather into the plate via an
-  inset shadow in the plate's own colour rather than a mask — no
+  The plate behind it stays opaque so the journey footage cannot show through
+  the product screenshots. The portfolio repaint changed it to brand-50
+  `#f2f5f9`, matching the homepage's cool light surfaces. Edges feather into the
+  plate via an inset shadow in the plate's own colour rather than a mask — no
   `-webkit-mask-composite` to get wrong in Safari, and it follows the rounded
   corners for free.
 
@@ -100,7 +121,7 @@ Work now happens on `feat/portfolio-interactions`, branched from `origin/main`.
   the page is for.
 
   Past `min-aspect-ratio: 16/9` every backdrop layer switches to `contain`, so
-  the whole scene is visible, with a blurred, darkened wash behind filling the
+  the whole scene is visible, with a blurred, softened wash behind filling the
   leftover width instead of letterbox bars. Below 16/9, including every phone,
   they all stay on `cover` and the washes are `display: none` — `contain` on a
   portrait viewport would bar far more than it revealed.
@@ -195,6 +216,10 @@ add no new blur.
 - The site is **light-only**. There is no theme switch, `next-themes` is gone, and
   there are no `dark:` utilities left. `lib/theme-sync.ts` survives solely to append
   `?theme=` to outbound ResumeX links.
+- The portfolio now shares the homepage's light canvas, navy accent, zinc text
+  and white surface palette across navigation, cards and controls. Its cinematic
+  artwork stays fully opaque with transparent phase scrims; unboxed copy is white
+  for contrast instead of inheriting a separate local dark theme.
 - `/meet-the-team/vicente-barrientos` is a scroll-driven portfolio: the backdrop
   advances as you scroll through six project stops.
 

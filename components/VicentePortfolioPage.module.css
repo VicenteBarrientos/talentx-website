@@ -1,7 +1,8 @@
 .page {
   isolation: isolate;
-  color-scheme: dark;
-  background: #061321;
+  color-scheme: light;
+  background-color: #e2e6ec;
+  background-image: linear-gradient(180deg, #f1f3f6 0%, #e2e6ec 100%);
 }
 
 .backdrop {
@@ -83,7 +84,7 @@
 /* Desktop windows are wider than this artwork. A maximized browser on a 1080p
    monitor is roughly 2.1:1 against art that is 1.78:1, so `cover` was hiding
    about 18% of the scene, off the top and bottom. Past 16/9 the art switches to
-   `contain` — the whole picture, nothing cropped — and a blurred, darkened copy
+   `contain` — the whole picture, nothing cropped — and a blurred, softened copy
    of the same file fills the leftover width so there are no letterbox bars.
    Below 16/9, including every phone, `cover` still wins and these stay off:
    `contain` on a portrait viewport would bar far more than it revealed. */
@@ -167,10 +168,10 @@
   gap: 0.45rem;
   min-height: 1.85rem;
   padding: 0.35rem 0.65rem 0.35rem 0.4rem;
-  border: 1px solid rgba(164, 228, 246, 0.2);
+  border: 1px solid rgba(198, 211, 228, 0.72);
   border-radius: 999px;
-  background: rgba(3, 17, 29, 0.72);
-  color: rgba(215, 241, 248, 0.58);
+  background: rgba(255, 255, 255, 0.78);
+  color: rgba(29, 53, 89, 0.62);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.55rem;
   font-weight: 700;
@@ -192,18 +193,18 @@
   height: 1.15rem;
   place-items: center;
   border-radius: 999px;
-  background: rgba(100, 218, 244, 0.16);
-  color: #a8ecfb;
+  background: rgba(227, 234, 242, 0.92);
+  color: #1d3559;
 }
 
 .mapMarkerActive {
-  border-color: rgba(153, 231, 249, 0.55);
-  color: #e9fbff;
+  border-color: rgba(110, 138, 174, 0.78);
+  color: #162a47;
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
   box-shadow:
-    0 0 0 8px rgba(81, 198, 226, 0.06),
-    0 0 34px rgba(80, 208, 238, 0.34);
+    0 0 0 8px rgba(62, 100, 145, 0.08),
+    0 12px 34px rgba(29, 53, 89, 0.22);
 }
 
 .routeRail {
@@ -229,7 +230,7 @@
   bottom: 1.375rem;
   width: 1px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(29, 53, 89, 0.18);
 }
 
 .routeFill {
@@ -237,8 +238,8 @@
   width: 100%;
   height: 100%;
   transform-origin: top;
-  background: #7fe0f5;
-  box-shadow: 0 0 12px rgba(94, 201, 230, 0.95);
+  background: #1d3559;
+  box-shadow: 0 0 12px rgba(62, 100, 145, 0.45);
 }
 
 .routeLink {
@@ -250,7 +251,7 @@
   justify-content: flex-end;
   gap: 0.6rem;
   border-radius: 999px;
-  color: rgba(207, 232, 240, 0.46);
+  color: rgba(29, 53, 89, 0.55);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.58rem;
   font-weight: 700;
@@ -262,19 +263,20 @@
 .routeLink:hover,
 .routeLink:focus-visible,
 .routeLinkActive {
-  color: #dff9ff;
+  color: #162a47;
 }
 
 .routeLink:focus-visible,
 .routeDockLink:focus-visible {
-  outline: 2px solid #8ee5f8;
+  outline: 2px solid #6e8aae;
   outline-offset: 2px;
 }
 
 .routeLabel {
   padding: 0.35rem 0.55rem;
+  border: 1px solid rgba(198, 211, 228, 0.82);
   border-radius: 999px;
-  background: rgba(3, 17, 29, 0.68);
+  background: rgba(255, 255, 255, 0.84);
   opacity: 0;
   transform: translateX(0.4rem);
   transition:
@@ -297,9 +299,9 @@
   width: 0.7rem;
   height: 0.7rem;
   margin-right: 1rem;
-  border: 1px solid rgba(190, 234, 246, 0.45);
+  border: 1px solid #6e8aae;
   border-radius: 999px;
-  background: #0a2033;
+  background: #f2f5f9;
   transition:
     background 180ms ease,
     box-shadow 180ms ease,
@@ -307,8 +309,8 @@
 }
 
 .routeLinkActive .routeDot {
-  background: #8ee5f8;
-  box-shadow: 0 0 0 6px rgba(87, 209, 238, 0.12), 0 0 18px rgba(87, 209, 238, 0.85);
+  background: #1d3559;
+  box-shadow: 0 0 0 6px rgba(62, 100, 145, 0.12), 0 0 18px rgba(29, 53, 89, 0.45);
   transform: scale(1.15);
 }
 
@@ -338,10 +340,10 @@
   min-width: 1.2rem;
   padding: 0.14rem 0.2rem;
   place-items: center;
-  border: 1px solid rgba(190, 234, 246, 0.26);
+  border: 1px solid rgba(198, 211, 228, 0.88);
   border-radius: 0.34rem;
-  background: rgba(3, 17, 29, 0.72);
-  color: rgba(207, 232, 240, 0.6);
+  background: rgba(255, 255, 255, 0.86);
+  color: rgba(29, 53, 89, 0.72);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.5rem;
   font-weight: 700;
@@ -359,13 +361,13 @@
   gap: 0.75rem;
   max-width: calc(100vw - 2rem);
   padding: 0.35rem 0.65rem 0.35rem 0.85rem;
-  border: 1px solid rgba(190, 225, 255, 0.16);
+  border: 1px solid rgba(198, 211, 228, 0.88);
   border-radius: 999px;
-  background: rgba(3, 17, 29, 0.76);
-  color: #cff6ff;
+  background: rgba(255, 255, 255, 0.86);
+  color: #1d3559;
   opacity: 0;
   pointer-events: none;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 16px 45px rgba(29, 53, 89, 0.18);
   transform: translateX(-50%);
   visibility: hidden;
   transition:
@@ -399,7 +401,7 @@
 .routeDockName {
   width: 7.5rem;
   overflow: hidden;
-  color: white;
+  color: #09090b;
   text-overflow: ellipsis;
 }
 
@@ -427,7 +429,7 @@
   width: 0.42rem;
   height: 0.42rem;
   border-radius: 999px;
-  background: rgba(190, 225, 235, 0.38);
+  background: #6e8aae;
   transition:
     background 180ms ease,
     box-shadow 180ms ease,
@@ -435,8 +437,8 @@
 }
 
 .routeDockLinkActive > span {
-  background: #8ee5f8;
-  box-shadow: 0 0 12px rgba(87, 209, 238, 0.9);
+  background: #1d3559;
+  box-shadow: 0 0 12px rgba(29, 53, 89, 0.5);
   transform: scale(1.45);
 }
 
@@ -444,12 +446,12 @@
   position: absolute;
   z-index: 1;
   inset: -10%;
-  opacity: 0.46;
+  opacity: 0.32;
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(196, 244, 255, 0.9) 0 1px, transparent 1.6px),
-    radial-gradient(circle at 72% 24%, rgba(196, 244, 255, 0.65) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 36% 72%, rgba(228, 161, 90, 0.7) 0 1px, transparent 1.7px),
-    radial-gradient(circle at 88% 66%, rgba(196, 244, 255, 0.75) 0 1px, transparent 1.5px);
+    radial-gradient(circle at 12% 18%, rgba(29, 53, 89, 0.32) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 72% 24%, rgba(62, 100, 145, 0.26) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 36% 72%, rgba(110, 138, 174, 0.24) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 88% 66%, rgba(29, 53, 89, 0.28) 0 1px, transparent 1.5px);
   background-size: 210px 210px, 285px 285px, 330px 330px, 390px 390px;
   animation: portfolio-stars 24s linear infinite alternate;
   transition: opacity 240ms ease;
@@ -467,36 +469,30 @@
   position: absolute;
   z-index: 1;
   inset: 0;
-  background:
-    radial-gradient(circle at 52% 40%, transparent 0%, rgba(4, 15, 26, 0.06) 38%, rgba(4, 15, 26, 0.42) 100%),
-    linear-gradient(180deg, rgba(2, 10, 19, 0.38) 0%, rgba(3, 16, 28, 0.17) 42%, rgba(3, 13, 23, 0.55) 100%);
+  background: transparent;
 }
 
 .vignette {
   position: absolute;
   z-index: 1;
   inset: 0;
-  box-shadow: inset 0 0 180px 45px rgba(0, 5, 12, 0.68);
+  box-shadow: none;
 }
 
 .coverPhase .scrim {
-  background:
-    linear-gradient(90deg, rgba(2, 9, 15, 0.54) 0%, rgba(2, 9, 15, 0.2) 49%, rgba(2, 9, 15, 0.04) 78%),
-    linear-gradient(180deg, rgba(2, 8, 14, 0.1), rgba(2, 8, 14, 0.31));
+  background: transparent;
 }
 
 .coverPhase .vignette {
-  box-shadow: inset 0 0 130px 26px rgba(0, 5, 10, 0.42);
+  box-shadow: none;
 }
 
 .finalePhase .scrim {
-  background:
-    linear-gradient(90deg, rgba(1, 8, 15, 0.34) 0%, rgba(1, 8, 15, 0.14) 44%, transparent 72%),
-    linear-gradient(180deg, rgba(1, 7, 13, 0.08) 0%, rgba(1, 7, 13, 0.12) 52%, rgba(1, 7, 13, 0.34) 100%);
+  background: transparent;
 }
 
 .finalePhase .vignette {
-  box-shadow: inset 0 0 120px 22px rgba(0, 4, 10, 0.46);
+  box-shadow: none;
 }
 
 .hero {
@@ -518,6 +514,12 @@
   text-shadow:
     0 2px 12px rgba(0, 0, 0, 0.88),
     0 12px 42px rgba(0, 0, 0, 0.78);
+}
+
+.displayHeading {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.78),
+    0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .heroScrollCue {
@@ -547,27 +549,27 @@
 }
 
 .glass {
-  border: 1px solid rgba(190, 225, 255, 0.15);
+  border: 1px solid rgba(198, 211, 228, 0.86);
   background:
-    linear-gradient(145deg, rgba(13, 38, 59, 0.73), rgba(5, 20, 34, 0.62)),
-    radial-gradient(circle at 75% 0%, rgba(94, 201, 230, 0.08), transparent 36%);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(242, 245, 249, 0.82)),
+    radial-gradient(circle at 75% 0%, rgba(227, 234, 242, 0.64), transparent 36%);
   box-shadow:
-    0 34px 110px -42px rgba(0, 0, 0, 0.92),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    0 30px 90px -44px rgba(29, 53, 89, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(29, 53, 89, 0.08);
   -webkit-backdrop-filter: blur(24px) saturate(1.15);
   backdrop-filter: blur(24px) saturate(1.15);
 }
 
 .projectCard {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(198, 211, 228, 0.88);
   background:
-    linear-gradient(118deg, rgba(4, 20, 34, 0.82) 0%, rgba(5, 21, 36, 0.67) 47%, rgba(4, 17, 29, 0.46) 100%),
-    radial-gradient(circle at 12% 0%, rgba(94, 201, 230, 0.12), transparent 34%);
+    linear-gradient(118deg, rgba(255, 255, 255, 0.93) 0%, rgba(250, 250, 250, 0.88) 47%, rgba(242, 245, 249, 0.82) 100%),
+    radial-gradient(circle at 12% 0%, rgba(227, 234, 242, 0.72), transparent 34%);
   box-shadow:
-    0 34px 90px -46px rgba(0, 0, 0, 0.98),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.24);
+    0 28px 80px -42px rgba(29, 53, 89, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 0 -1px 0 rgba(29, 53, 89, 0.08);
   -webkit-backdrop-filter: blur(18px) saturate(1.16);
   backdrop-filter: blur(18px) saturate(1.16);
   transition:
@@ -594,7 +596,7 @@
   left: 3rem;
   height: 2rem;
   border-radius: 50%;
-  background: rgba(94, 201, 230, 0.24);
+  background: rgba(62, 100, 145, 0.2);
   filter: blur(24px);
   content: "";
   opacity: 0.72;
@@ -609,7 +611,7 @@
   width: 12rem;
   height: 12rem;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(135, 229, 250, 0.2), rgba(73, 190, 219, 0.08) 34%, transparent 70%);
+  background: radial-gradient(circle, rgba(110, 138, 174, 0.22), rgba(62, 100, 145, 0.08) 34%, transparent 70%);
   opacity: 0;
   pointer-events: none;
   transform: translate3d(calc(var(--card-glow-x) - 50%), calc(var(--card-glow-y) - 50%), 0);
@@ -622,14 +624,12 @@
   transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* The shot's plate. It has to be near-opaque: the card's own gradient runs down
-   to 46% alpha exactly here, in its right-hand column, so without this the
-   journey footage showed through the product screenshots. Opaque also gives the
-   feathered edges below something flat to dissolve into. */
+/* The shot's plate stays opaque so the journey footage cannot show through the
+   product screenshots. It now uses the same cool brand surface as the homepage. */
 .projectShot {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #02080f;
-  box-shadow: 0 28px 70px -34px rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(198, 211, 228, 0.9);
+  background: #f2f5f9;
+  box-shadow: 0 24px 60px -34px rgba(29, 53, 89, 0.38);
 }
 
 /* The captures are 1440x900. This box used to stretch to the height of the text
@@ -648,18 +648,18 @@
 .projectMediaShade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 76%, rgba(2, 8, 15, 0.42));
-  box-shadow: inset 0 0 22px 9px #02080f;
+  background: linear-gradient(180deg, transparent 80%, rgba(242, 245, 249, 0.5));
+  box-shadow: inset 0 0 22px 9px #f2f5f9;
   pointer-events: none;
 }
 
 .projectFrame:hover .projectCard,
 .projectFrame:focus-within .projectCard {
-  border-color: rgba(166, 230, 246, 0.28);
+  border-color: rgba(110, 138, 174, 0.68);
   box-shadow:
-    0 30px 82px -42px rgba(0, 0, 0, 1),
-    0 0 46px -32px rgba(94, 201, 230, 0.8),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    0 30px 82px -42px rgba(29, 53, 89, 0.42),
+    0 0 46px -32px rgba(62, 100, 145, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
 }
 
 .projectFrame:hover::after,
@@ -686,7 +686,7 @@
   display: block;
   width: 1.35rem;
   height: 2.25rem;
-  border: 1px solid rgba(207, 244, 255, 0.34);
+  border: 1px solid rgba(227, 234, 242, 0.58);
   border-radius: 999px;
 }
 
@@ -698,8 +698,8 @@
   width: 0.2rem;
   height: 0.42rem;
   border-radius: 999px;
-  background: #8edcf0;
-  box-shadow: 0 0 12px rgba(94, 201, 230, 0.95);
+  background: #e3eaf2;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.78);
   transform: translateX(-50%);
   animation: portfolio-scroll-cue 1.8s ease-in-out infinite;
 }
@@ -707,7 +707,7 @@
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass,
   .projectCard {
-    background: rgba(6, 25, 42, 0.94);
+    background: rgba(255, 255, 255, 0.95);
   }
 }
 
@@ -759,7 +759,7 @@
   }
 
   .vignette {
-    box-shadow: inset 0 0 100px 24px rgba(0, 5, 12, 0.62);
+    box-shadow: none;
   }
 
   .glass {
@@ -768,7 +768,7 @@
   }
 
   .projectCard {
-    background: rgba(5, 22, 38, 0.82);
+    background: rgba(255, 255, 255, 0.9);
     -webkit-backdrop-filter: blur(10px) saturate(1.05);
     backdrop-filter: blur(10px) saturate(1.05);
   }
@@ -874,7 +874,6 @@
   }
 
   .finalePhase .scrim {
-    background:
-      linear-gradient(180deg, rgba(1, 7, 13, 0.06) 0%, rgba(1, 7, 13, 0.16) 42%, rgba(1, 7, 13, 0.62) 72%, rgba(1, 7, 13, 0.76) 100%);
+    background: transparent;
   }
 }
