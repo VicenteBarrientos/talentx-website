@@ -74,10 +74,6 @@ push or merge that commit unchanged.
   `X-Vercel-Cache: HIT`
   on both a head request and a mid-file range. Static assets in `/public` do get
   edge-cached. Fast Data Transfer is still billed per byte served.
-- **The scrub is desktop-only on purpose.** `SCRUB_MEDIA_QUERY` requires
-  `pointer: fine` as well as a width, because a phone in landscape clears any
-  width gate, and iOS Low Power Mode refuses to service `currentTime` seeks with
-  no error and no detection API. Touch devices get `*-world.mp4` instead.
 - **There is no video seeking any more.** The journey is a preloaded frame
   sequence, so the watchdog, strike counter, generation coalescing and
   presentation confirmation are all gone. If you are tempted to reintroduce a
