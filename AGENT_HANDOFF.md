@@ -8,6 +8,160 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-14 — Claude: interaction plan (in progress)
+
+Vicente asked for a more impressive page: more animation, more interactivity.
+This entry is the plan; items are struck off in the Log as they land.
+
+**Correction first.** The initial version of this plan was written against the
+`C:\Users\hp\CS50\talentx-website` checkout while it was 24 commits behind
+`origin/main`, so it proposed work that is already done or no longer exists:
+
+- *Repair the seek watchdog* — there is no video seeking any more. The journey
+  is a preloaded frame sequence.
+- *Fix the 640px eligibility boundary* — `SCRUB_MEDIA_QUERY` is now
+  `(min-width: 1024px) and (pointer: fine)`; the overlap is gone.
+- *Add pointer tilt and a cursor-tracked sheen to project cards* — shipped as
+  `PointerDepthCard`.
+- *Show the products instead of describing them* — shipped as `npm run shots`.
+
+The lesson is the one already at the top of this file: fetch before planning.
+Work now happens on `feat/portfolio-interactions`, branched from `origin/main`.
+
+**What is actually left, in order.**
+
+- **P1 — Keyboard navigation of the journey. Code complete, visual check
+  outstanding.** The rail and dock were anchors, so the only keyboard travel was
+  Tab. `J`/`K`, `N`/`P` and `1`–`6` now move stop to stop, ignoring presses that
+  carry a modifier or land in a field. Arrows, Page keys, Home/End and Space are
+  deliberately *not* bound: the journey is ~6,000px of readable cards, and taking
+  native scrolling away from keyboard-only visitors is too high a price for a
+  shortcut. Discoverable through a `J K` chip on the rail — which only renders at
+  ≥1280px, so it never reaches a device with no keyboard — and through
+  `aria-keyshortcuts` on the same nav. Navigation centres the target card, which
+  is how a stop is defined in the card-height note below, rather than using the
+  anchors' top-aligned position.
+- **P2 — Make the dock a control, not just a readout. Code complete, visual
+  check outstanding.** Dragging across the dots now flies the traversal. Each
+  dot's centre maps to its own `PROJECT_CENTERS` entry, so releasing over a dot
+  lands exactly on that stop instead of somewhere proportional to the dock's
+  width; past either end it clamps. Scrolling during a drag is deliberately
+  instant — a smooth animation lags behind the finger. Movement under 3px is
+  treated as a tap, so the existing anchors still work; beyond that a
+  `onClickCapture` guard stops the drag from also following the dot it ended on.
+  `touch-action: pan-y` keeps a vertical swipe that starts on the dock scrolling
+  the page. The anchors remain the accessible path; the drag is an enhancement.
+
+  This surfaced a **pre-existing bug, now fixed**: `.routeDockName` was sized
+  `min-width: 5.75rem / max-width: 7.5rem`, and the dock is centred with
+  `translateX(-50%)`, so the whole control shifted sideways whenever the active
+  project's name changed width — a visible wobble during ordinary scrolling, and
+  it moved the drag targets out from under the pointer. The label is now a fixed
+  `7.5rem`. Clipping behaviour is unchanged, since the old max was already 7.5rem.
+  Dot positions were also measured every pointermove; they are now sampled once
+  per drag, so no relayout can slide the mapping mid-gesture.
+- **P3 — Hero entrance. Code complete, visual check outstanding.** Each name line
+  rises from behind its own mask, and the mono eyebrow settles out of noise.
+  `leading-[0.86]` makes the h1's line box shorter than its capitals, so the mask
+  carries `0.14em` of padding cancelled by an equal negative margin — measured
+  clearance is 13.6px above the ink and 4.2px below it at 1440px, so nothing is
+  shaved. Only the `aria-hidden` copy of the eyebrow is ever scrambled; the real
+  string sits beside it in an `sr-only` span, so assistive tech never reads a
+  half-decoded word. Both are inert under reduced motion.
+- **P5 — Project shots zoomed out onto a dark plate. Code complete, visual check
+  outstanding.** Vicente's read was that the screenshots felt too big, and the
+  measurements agreed: the media box stretched to the height of the text column,
+  which left it near-square (427x423 at 1440x900) against captures that are
+  1440x900, so `object-cover` cropped **40% of each page's width away** and
+  magnified the remainder. The box now carries the captures' own `16/10` and
+  `lg:self-start` instead of stretching, with `object-contain` — 421x263, whole
+  landing page visible, nothing cropped. Mapulengua is a 1:1 mobile capture and
+  letterboxes into the same box, which reads correctly for a phone-first app.
+
+  The plate behind it is now opaque `#02080f`. It has to be: the card gradient
+  runs down to 46% alpha in exactly that column, so the journey footage had been
+  showing through the product screenshots. Edges feather into the plate via an
+  inset shadow in the plate's own colour rather than a mask — no
+  `-webkit-mask-composite` to get wrong in Safari, and it follows the rounded
+  corners for free.
+
+  Re-measured after the change: `PROJECT_CENTERS` drift is **0.164 / 0.330 /
+  0.497 / 0.664 / 0.830 / 0.997**, identical to the 2026-08-13 reading above, so
+  the stops did not move — card height is well under the `110svh` chapter, which
+  is what sets the journey's length. Title clearance holds at 1440x800
+  (116–151px) and at 375x812 (23–49px); cards are 427–507px against the ~640px
+  ceiling. The shots got 4px shorter on phones, so that margin improved slightly.
+
+- **P6 — Backdrop art no longer cropped on desktop. Code complete, visual check
+  outstanding.** Both bookend stills are 1672x941 (1.78:1) and were `object-fit:
+  cover`. A maximized browser on a 1080p monitor is about 2.1:1, so **18% of the
+  artwork was hidden** — 193px off the top and bottom at 1900x876. This is the
+  common desktop case, not an ultrawide edge case, and desktop is the audience
+  the page is for.
+
+  Past `min-aspect-ratio: 16/9` every backdrop layer switches to `contain`, so
+  the whole scene is visible, with a blurred, darkened wash behind filling the
+  leftover width instead of letterbox bars. Below 16/9, including every phone,
+  they all stay on `cover` and the washes are `display: none` — `contain` on a
+  portrait viewport would bar far more than it revealed.
+
+  **`.mediaStage` was `-inset-[12%]` and that had to go first.** The oversize
+  existed for the spring CSS camera that the frame sequence replaced; its
+  computed `transform` is now `none`, so it was purely vestigial — and it broke
+  the first attempt at this fix. Anything inside the stage was being fitted to a
+  2337x1086 box on a 1900x876 viewport, so `contain` on the finale still showed
+  only **81%**. With the stage back to `inset-0`, all four footage layers now
+  render 100% visible, and the layers that must agree do: opening 1538x876,
+  journey 1537x876, destination 1538x876, so nothing jumps scale at a phase
+  change. Verified at 1900x876 and 375x812.
+
+  **Sharpness.** The journey frames are 960x547. Across the oversized stage they
+  were upscaled **2.43x**; at `inset-0` with `contain` they are upscaled **1.6x**.
+  That is the whole quality gain, and it cost no bytes. If they are ever
+  regenerated larger, re-measure before assuming more resolution is needed.
+
+  The washes are second `next/image` elements sharing the *same* `src` and
+  `sizes` as their sharp copies, so they resolve to the same optimized URL —
+  verified as 2 distinct URLs across 4 `<img>` elements for the bookends, no
+  extra download. The stage's wash is the **opening still and never changes**:
+  blurring the live journey frame would re-blur the full viewport on every frame
+  swap during a scroll, which the compositor budget will not carry.
+
+  `object-fit` for these layers now lives in the CSS module rather than on
+  Tailwind `object-cover` utilities, so the wide-viewport override wins on
+  specificity instead of racing utility source order.
+
+  If the finale is ever regenerated, generating it at 2:1 or wider would retire
+  the blurred fill on most desktops. It is a standalone z-layer, not
+  footage-matched, so its aspect is free to change — unlike the opening and
+  destination stills, which must stay exact traversal frames.
+
+- **P4 — Per-project technical detail as an overlay. Not started; needs Vicente,
+  not an agent.** *Open work* already wants this and correctly rules out
+  collapsibles, because anything expanding in place shifts every stop after it. A
+  fixed-position overlay sidesteps that entirely: the flow never changes, so
+  `PROJECT_CENTERS` cannot drift. The mechanism is a couple of hours' work. The
+  blocker is the content — six projects' worth of technical detail, in English
+  and Spanish, making factual claims about shipped products on a page recruiters
+  read. Do not let an agent invent it.
+
+**Verifying this page in a hidden browser pane — read before trusting a result.**
+While the pane is not displayed, `document.visibilityState` is `hidden` and
+`requestAnimationFrame` never fires. Three things then look broken that are not:
+`scrollTo({behavior:'smooth'})` silently does nothing, the scroll→state sync
+never runs so the active project and backdrop frame appear frozen on stop 1, and
+screenshots time out. Verify handler logic by wrapping `window.scrollTo` and
+asserting on the calls, and verify geometry with `behavior:'auto'`. Anything
+frame-driven needs the pane actually on screen.
+
+**Constraints binding every item above.** Card height is load-bearing, so
+nothing new goes inside a project card — check clearance at 800px viewport
+height if that changes. Section heights must not move or the six constants
+drift. `en` and `es` are typed as a union, so new copy lands in both. Every
+item needs a reduced-motion branch, and the compositor is already carrying a
+fixed backdrop plus `backdrop-filter` cards — prefer transform and opacity,
+add no new blur.
+
 ## 2026-08-13 — Codex: high-speed lowrider finale release
 
 - Vicente approved the generated artwork and integrated page, then explicitly
@@ -95,7 +249,8 @@ push or merge that commit unchanged.
   audiences. Not decided.
 - **Per-project technical detail.** Considered as collapsibles. See the scroll-math
   note below before building it — anything that expands in place shifts every stop
-  after it.
+  after it. Now planned as a fixed-position overlay instead (P4, 2026-08-14),
+  which keeps the flow — and therefore the six constants — untouched.
 - **Marketing copy is clean.** Checked: no string in `lib/i18n/talentx.ts` mentions
   themes, so the repaint left no stale claims in user-facing text.
 
