@@ -46,8 +46,12 @@ type JourneyPhase = "before" | "active" | "after";
 const SCRUB_MEDIA_QUERY = "(min-width: 1024px) and (pointer: fine)";
 // A seek that never reports back means the decoder is not cooperating.
 // Give slow/throttled presentation several windows before using the loop.
-const SCRUB_SEEK_TIMEOUT_MS = 800;
-const SCRUB_SEEK_STRIKES = 6;
+// The journey is a preloaded frame sequence, not a scrubbed video: 73 stills at
+// 12 fps covering the same 6 s flight. Seeking a video was latency-bound and
+// showed only a quarter of the footage during a normal scroll.
+const JOURNEY_FRAME_COUNT = 73;
+const journeyFrameSrc = (index: number) =>
+  `/images/journey/f_${String(index + 1).padStart(3, "0")}.webp`;
 const MAP_MARKERS = [
   { left: "12%", top: "72%" },
   { left: "35%", top: "54%" },
@@ -352,18 +356,11 @@ export default function VicentePortfolioPage() {
   const journeyRef = useRef<HTMLElement>(null);
   const exitRef = useRef<HTMLDivElement>(null);
   const atmosphereVideoRef = useRef<HTMLVideoElement>(null);
-  const scrubVideoRef = useRef<HTMLVideoElement>(null);
+  const frameSurfaceRef = useRef<HTMLImageElement>(null);
+  const framesRef = useRef<HTMLImageElement[]>([]);
+  const currentFrameIndexRef = useRef(-1);
   const pendingScrubTimeRef = useRef(0);
-  const scrubSeekInFlightRef = useRef(false);
-  const scrubFrameCallbackRef = useRef<number | null>(null);
-  const scrubPaintFallbackRef = useRef<number | null>(null);
-  const scrubPaintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scrubSeekWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scrubPrimeAnimationFrameRef = useRef<number | null>(null);
-  const scrubSeekStrikesRef = useRef(0);
-  const scrubSeekGenerationRef = useRef(0);
-  const scrubInFlightGenerationRef = useRef(0);
-  const continueAfterScrubFramePaintRef = useRef<((video: HTMLVideoElement) => void) | null>(null);
+  const showFrameForTimeRef = useRef<((time: number) => void) | null>(null);
   const [activeProject, setActiveProject] = useState(0);
   const [journeyPhase, setJourneyPhase] = useState<JourneyPhase>("before");
   const [finaleReady, setFinaleReady] = useState(false);
@@ -420,238 +417,75 @@ export default function VicentePortfolioPage() {
   }, []);
 
 
-  const clampScrubTime = useCallback((video: HTMLVideoElement, requestedTime: number) => {
-    const maximumTime = Math.max(
-      0,
-      Math.min(SCRUB_FINAL_TIME, video.duration - SCRUB_FRAME_DURATION),
+  // Drawing a preloaded frame replaces seeking a video. The old pipeline was
+  // latency-bound: it issued a seek, waited for presentation, then jumped to the
+  // newest target — so a normal scroll showed 19 of the clip's 73 frames and
+  // lurched up to seven frames at a time. An image swap has no such ceiling.
+  const showFrameForTime = useCallback((requestedTime: number) => {
+    const surface = frameSurfaceRef.current;
+    const frames = framesRef.current;
+    if (!surface || frames.length === 0) return;
+
+    const index = Math.min(
+      frames.length - 1,
+      Math.max(0, Math.round(requestedTime / SCRUB_FRAME_DURATION)),
     );
+    if (index === currentFrameIndexRef.current) return;
 
-    const clampedTime = Math.min(maximumTime, Math.max(0, requestedTime));
-    return Math.round(clampedTime / SCRUB_FRAME_DURATION) * SCRUB_FRAME_DURATION;
+    const frame = frames[index];
+    if (!frame) return;
+
+    currentFrameIndexRef.current = index;
+    surface.src = frame.src;
   }, []);
 
-  const clearSeekWatchdog = useCallback(() => {
-    if (scrubSeekWatchdogRef.current !== null) {
-      clearTimeout(scrubSeekWatchdogRef.current);
-      scrubSeekWatchdogRef.current = null;
-    }
-  }, []);
+  useEffect(() => {
+    showFrameForTimeRef.current = showFrameForTime;
+  }, [showFrameForTime]);
 
-  // Refs break the seek -> presentation -> latest-seek callback cycle without
-  // teaching React that every scroll frame is component state.
-  const seekToLatestScrubTimeRef = useRef<(() => void) | null>(null);
+  // Preload and decode every frame before the journey may be scrubbed, so a
+  // swap during scroll is a pointer assignment and never a network round trip.
+  useEffect(() => {
+    if (!scrubMounted || scrubFailed) return;
 
-  const seekToLatestScrubTime = useCallback(() => {
-    const video = scrubVideoRef.current;
-    if (
-      !scrubEligible ||
-      scrubFailed ||
-      !video ||
-      video.readyState < HTMLMediaElement.HAVE_METADATA ||
-      scrubSeekInFlightRef.current
-    ) {
-      return;
-    }
+    let cancelled = false;
+    const loaded: HTMLImageElement[] = [];
 
-    const armSeekWatchdog = () => {
-      clearSeekWatchdog();
+    const preload = async () => {
+      try {
+        await Promise.all(
+          Array.from({ length: JOURNEY_FRAME_COUNT }, (_, i) => {
+            // `Image` here is next/image; the DOM constructor lives on window.
+            const image = new window.Image();
+            image.src = journeyFrameSrc(i);
+            loaded[i] = image;
+            return image.decode().catch(() => undefined);
+          }),
+        );
 
-      const checkSeek = () => {
-        scrubSeekWatchdogRef.current = null;
+        if (cancelled) return;
 
-        if (video.seeking) {
-          scrubSeekStrikesRef.current += 1;
-
-          if (scrubSeekStrikesRef.current >= SCRUB_SEEK_STRIKES) {
-            scrubSeekInFlightRef.current = false;
-            setScrubFailed(true);
-            setScrubReady(false);
-            return;
-          }
-
-          scrubSeekWatchdogRef.current = setTimeout(checkSeek, SCRUB_SEEK_TIMEOUT_MS);
+        if (loaded.some((image) => !image?.complete || image.naturalWidth === 0)) {
+          setScrubFailed(true);
           return;
         }
 
-        // Some browsers can miss `seeked`; still require a presented frame
-        // before unlocking the next coalesced seek.
-        continueAfterScrubFramePaintRef.current?.(video);
-      };
-
-      scrubSeekWatchdogRef.current = setTimeout(checkSeek, SCRUB_SEEK_TIMEOUT_MS);
-    };
-
-    const nextTime = clampScrubTime(video, pendingScrubTimeRef.current);
-    scrubInFlightGenerationRef.current = scrubSeekGenerationRef.current;
-    scrubSeekInFlightRef.current = true;
-
-    if (Math.abs(video.currentTime - nextTime) <= SCRUB_FRAME_DURATION / 2) {
-      if (video.seeking) {
-        armSeekWatchdog();
-      } else {
-        continueAfterScrubFramePaintRef.current?.(video);
-      }
-      return;
-    }
-
-    video.currentTime = nextTime;
-    armSeekWatchdog();
-  }, [clampScrubTime, clearSeekWatchdog, scrubEligible, scrubFailed]);
-
-  useEffect(() => {
-    seekToLatestScrubTimeRef.current = seekToLatestScrubTime;
-  }, [seekToLatestScrubTime]);
-
-  const cancelScheduledScrubPaint = useCallback(() => {
-    clearSeekWatchdog();
-
-    const video = scrubVideoRef.current;
-    if (video && scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
-      video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
-    }
-    scrubFrameCallbackRef.current = null;
-
-    if (scrubPaintFallbackRef.current !== null) {
-      cancelAnimationFrame(scrubPaintFallbackRef.current);
-      scrubPaintFallbackRef.current = null;
-    }
-
-    if (scrubPaintTimeoutRef.current !== null) {
-      clearTimeout(scrubPaintTimeoutRef.current);
-      scrubPaintTimeoutRef.current = null;
-    }
-  }, [clearSeekWatchdog]);
-
-  const continueAfterScrubFramePaint = useCallback((video: HTMLVideoElement) => {
-    cancelScheduledScrubPaint();
-    let settled = false;
-
-    const flushLatest = () => {
-      if (settled) return;
-      settled = true;
-      if (scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
-        video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
-      }
-      scrubFrameCallbackRef.current = null;
-      scrubPaintFallbackRef.current = null;
-      if (scrubPaintTimeoutRef.current !== null) {
-        clearTimeout(scrubPaintTimeoutRef.current);
-        scrubPaintTimeoutRef.current = null;
-      }
-      clearSeekWatchdog();
-      const completedGeneration = scrubInFlightGenerationRef.current;
-      scrubSeekStrikesRef.current = 0;
-      scrubSeekInFlightRef.current = false;
-      setScrubReady(true);
-      queueMicrotask(() => {
-        if (completedGeneration !== scrubSeekGenerationRef.current) {
-          seekToLatestScrubTimeRef.current?.();
-        }
-      });
-    };
-
-    const confirmWithoutVideoFrameCallback = () => {
-      if (settled) return;
-      scrubPaintTimeoutRef.current = null;
-
-      if (!video.seeking && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-        scrubPaintFallbackRef.current = requestAnimationFrame(() => {
-          scrubPaintFallbackRef.current = requestAnimationFrame(flushLatest);
-        });
-        return;
-      }
-
-      scrubSeekStrikesRef.current += 1;
-
-      if (scrubSeekStrikesRef.current >= SCRUB_SEEK_STRIKES) {
-        settled = true;
-        scrubSeekInFlightRef.current = false;
-        setScrubFailed(true);
-        setScrubReady(false);
-        return;
-      }
-
-      scrubPaintTimeoutRef.current = setTimeout(
-        confirmWithoutVideoFrameCallback,
-        SCRUB_SEEK_TIMEOUT_MS,
-      );
-    };
-
-    const retryPresentation = () => {
-      if (settled) return;
-      if (scrubFrameCallbackRef.current !== null && "cancelVideoFrameCallback" in video) {
-        video.cancelVideoFrameCallback(scrubFrameCallbackRef.current);
-      }
-      scrubFrameCallbackRef.current = null;
-      scrubPaintTimeoutRef.current = null;
-      if (!video.seeking && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-        // In backgrounded or throttled tabs Chrome may suppress RVFC entirely,
-        // even though the decoded frame is ready. Double-rAF is the conservative
-        // presentation fallback and avoids treating that as a media failure.
-        scrubPaintFallbackRef.current = requestAnimationFrame(() => {
-          scrubPaintFallbackRef.current = requestAnimationFrame(flushLatest);
-        });
-        return;
-      }
-
-      confirmWithoutVideoFrameCallback();
-    };
-
-    const supportsVideoFrameCallback =
-      typeof video.requestVideoFrameCallback === "function";
-
-    if (supportsVideoFrameCallback) {
-      scrubFrameCallbackRef.current = video.requestVideoFrameCallback(flushLatest);
-      scrubPaintTimeoutRef.current = setTimeout(retryPresentation, SCRUB_SEEK_TIMEOUT_MS);
-      return;
-    }
-
-    confirmWithoutVideoFrameCallback();
-  }, [cancelScheduledScrubPaint, clearSeekWatchdog]);
-
-  useEffect(() => {
-    continueAfterScrubFramePaintRef.current = continueAfterScrubFramePaint;
-  }, [continueAfterScrubFramePaint]);
-
-  useEffect(() => cancelScheduledScrubPaint, [cancelScheduledScrubPaint]);
-
-  useEffect(() => {
-    if (!scrubMounted || scrubFailed || scrubReady) return;
-
-    const video = scrubVideoRef.current;
-    if (!video || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
-
-    const primeVideoFrameCallback = async () => {
-      try {
-        await video.play();
-        scrubPrimeAnimationFrameRef.current = requestAnimationFrame(() => {
-          video.pause();
-          scrubPrimeAnimationFrameRef.current = null;
-          continueAfterScrubFramePaintRef.current?.(video);
-        });
+        framesRef.current = loaded;
+        currentFrameIndexRef.current = -1;
+        showFrameForTimeRef.current?.(pendingScrubTimeRef.current);
+        setScrubReady(true);
       } catch {
-        // Muted autoplay can still be blocked. The double-rAF confirmation in
-        // the presentation helper keeps the poster/fallback path functional.
-        continueAfterScrubFramePaintRef.current?.(video);
+        if (!cancelled) setScrubFailed(true);
       }
     };
 
-    void primeVideoFrameCallback();
+    void preload();
 
     return () => {
-      if (scrubPrimeAnimationFrameRef.current !== null) {
-        cancelAnimationFrame(scrubPrimeAnimationFrameRef.current);
-        scrubPrimeAnimationFrameRef.current = null;
-      }
-      video.pause();
+      cancelled = true;
     };
-  }, [scrubFailed, scrubMounted, scrubReady]);
+  }, [scrubFailed, scrubMounted, showFrameForTime]);
 
-  useEffect(() => () => {
-    if (scrubPrimeAnimationFrameRef.current !== null) {
-      cancelAnimationFrame(scrubPrimeAnimationFrameRef.current);
-    }
-  }, []);
 
   const syncProgress = useCallback((progress: number) => {
     let nearest = 0;
@@ -667,9 +501,8 @@ export default function VicentePortfolioPage() {
 
     setActiveProject((current) => (current === nearest ? current : nearest));
     pendingScrubTimeRef.current = mapRangeValue(progress, SCRUB_SCROLL_STOPS, SCRUB_TIMES);
-    scrubSeekGenerationRef.current += 1;
 
-    seekToLatestScrubTimeRef.current?.();
+    showFrameForTimeRef.current?.(pendingScrubTimeRef.current);
   }, []);
 
   const syncExitProgress = useCallback((progress: number) => {
@@ -679,8 +512,7 @@ export default function VicentePortfolioPage() {
       [PROJECT_SCRUB_TIMES.at(-1) ?? 0, SCRUB_FINAL_TIME],
     );
     pendingScrubTimeRef.current = requestedTime;
-    scrubSeekGenerationRef.current += 1;
-    seekToLatestScrubTimeRef.current?.();
+    showFrameForTimeRef.current?.(pendingScrubTimeRef.current);
   }, []);
 
   useLayoutEffect(() => {
@@ -703,8 +535,7 @@ export default function VicentePortfolioPage() {
         setJourneyPhase((current) => (current === "after" ? current : "after"));
         setActiveProject(PROJECT_CENTERS.length - 1);
         pendingScrubTimeRef.current = SCRUB_FINAL_TIME;
-        scrubSeekGenerationRef.current += 1;
-        seekToLatestScrubTimeRef.current?.();
+            showFrameForTimeRef.current?.(pendingScrubTimeRef.current);
         return;
       }
 
@@ -753,8 +584,7 @@ export default function VicentePortfolioPage() {
     } else if (journeyPhase === "after") {
       pendingScrubTimeRef.current = SCRUB_FINAL_TIME;
     }
-    scrubSeekGenerationRef.current += 1;
-    seekToLatestScrubTimeRef.current?.();
+    showFrameForTimeRef.current?.(pendingScrubTimeRef.current);
   }, [journeyPhase, scrubFailed, scrubMounted]);
 
   const PROJECTS: {
@@ -893,37 +723,15 @@ export default function VicentePortfolioPage() {
             </video>
           )}
           {scrubMounted && !scrubFailed && (
-            <video
-              ref={scrubVideoRef}
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              ref={frameSurfaceRef}
+              alt=""
+              aria-hidden="true"
+              src={journeyFrameSrc(0)}
+              decoding="sync"
               className={`${styles.scrubVideo} ${scrubVisible ? styles.scrubVideoReady : ""} object-[62%_center] sm:object-center`}
-              muted
-              playsInline
-              preload="auto"
-              poster="/images/vicente-portfolio-opening.webp"
-              onLoadStart={() => {
-                cancelScheduledScrubPaint();
-                scrubSeekInFlightRef.current = false;
-                setScrubReady(false);
-              }}
-              onLoadedMetadata={(event) => {
-                const video = event.currentTarget;
-                video.pause();
-                const requestedTime = clampScrubTime(video, pendingScrubTimeRef.current);
-                pendingScrubTimeRef.current = requestedTime;
-                seekToLatestScrubTime();
-              }}
-              onSeeked={(event) => {
-                continueAfterScrubFramePaint(event.currentTarget);
-              }}
-              onError={() => {
-                cancelScheduledScrubPaint();
-                scrubSeekInFlightRef.current = false;
-                setScrubFailed(true);
-                setScrubReady(false);
-              }}
-            >
-              <source src="/videos/vicente-portfolio-traversal.mp4" type="video/mp4" />
-            </video>
+            />
           )}
           <Image
             src="/images/vicente-portfolio-destination.webp"
