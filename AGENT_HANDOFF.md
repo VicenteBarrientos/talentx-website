@@ -8,6 +8,25 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-14 — Codex: canonical `/portfolio` route and recruiter SEO
+
+- Made `/portfolio` the canonical portfolio URL. Added direct permanent 308
+  redirects from the former Vicente route and all existing legacy team aliases;
+  query parameters are preserved and no redirect chains remain.
+- Reframed the rendered hero copy and metadata around truthful technical
+  recruiting, global talent acquisition, TalentX and Goodwin experience. Added
+  `ProfilePage`/`Person` JSON-LD, complete social metadata, canonical tags,
+  project-specific bilingual screenshot alt text, `robots.txt` and a sitemap.
+- Updated the shared navigation, README and vault references to the canonical
+  URL. No journey dimensions, stop positions, media, animation or interaction
+  logic changed.
+- Verified desktop and mobile layouts, EN/ES query handling, every project hash,
+  metadata/JSON-LD, crawl files, one-hop redirects and query preservation.
+  `npm run lint`, `npm run build` and `git diff --check` pass.
+- Vicente explicitly authorized production deployment on 2026-08-14. This
+  entry's containing commit is the release intended for `origin/main` through
+  the repository's GitHub-connected Vercel production path.
+
 ## 2026-08-14 — Codex: animated Osorno studio intro
 
 - Rebased on the deployed `dc9ec1e` palette release, then added
@@ -240,8 +259,9 @@ add no new blur.
   and white surface palette across navigation, cards and controls. Its cinematic
   artwork stays fully opaque with transparent phase scrims; unboxed copy is white
   for contrast instead of inheriting a separate local dark theme.
-- `/meet-the-team/vicente-barrientos` is a scroll-driven portfolio: the backdrop
-  advances as you scroll through six project stops.
+- `/portfolio` is the canonical scroll-driven recruiting profile and product
+  portfolio; the former `/meet-the-team/vicente-barrientos` URL permanently
+  redirects there. The backdrop advances as you scroll through six project stops.
 
 ### Before you review or edit — check what production is actually running
 
@@ -288,10 +308,6 @@ push or merge that commit unchanged.
 
 ## Open work
 
-- **Route placement.** The portfolio lives under `/meet-the-team/`, a path that
-  promises a team bio and delivers a product portfolio. A dedicated `/portfolio`
-  route, with a short recruiting bio left at the old URL, would serve both
-  audiences. Not decided.
 - **Per-project technical detail.** Considered as collapsibles. See the scroll-math
   note below before building it — anything that expands in place shifts every stop
   after it. Now planned as a fixed-position overlay instead (P4, 2026-08-14),

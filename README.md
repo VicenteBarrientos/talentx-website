@@ -38,8 +38,9 @@
 | Route | Purpose |
 | --- | --- |
 | `/` | TalentX service overview, process, proof points, team, and contact calls to action. |
-| `/meet-the-team/vicente-barrientos` | Vicente's product portfolio, as a scroll-driven journey. |
-| `/meet-the-team/benjamin-mahave` | Permanent redirect to Vicente's page. |
+| `/portfolio` | Vicente's recruiting profile and product portfolio, as a scroll-driven journey. |
+| `/meet-the-team/vicente-barrientos` | Permanent redirect to `/portfolio`. |
+| `/meet-the-team/benjamin-mahave` | Permanent redirect to `/portfolio`. |
 | `/resumex` | Redirect to the ResumeX app. |
 
 ## Stack

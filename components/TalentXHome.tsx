@@ -9,10 +9,9 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import ScrollProgress from "@/components/ScrollProgress";
 import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
-import { RESUMEX_URL } from "@/lib/site-urls";
+import { RESUMEX_URL, VICENTE_LINKEDIN_URL } from "@/lib/site-urls";
 
 const TALENTX_LINKEDIN = "https://www.linkedin.com/company/talentxrecruiting";
-const VICENTE_LINKEDIN = "https://www.linkedin.com/in/vicente-barrientos/";
 const CONTACT_EMAIL = "vicente@talentxrecruiting.com";
 const CONTACT_PHONE = "+1 929 737 0194";
 const CONTACT_PHONE_HREF = "tel:+19297370194";
@@ -131,7 +130,7 @@ export default function TalentXHome() {
                   <p className="tx-eyebrow">{t.meetTheTeam.eyebrow}</p>
                   <p className="mt-7 text-xl leading-9 text-zinc-700">{t.leadership.partners[0].bio}</p>
                   <p className="mt-5 leading-8 text-zinc-600">{t.leadership.partners[0].regions}</p>
-                  <MotionLink href={VICENTE_LINKEDIN} target="_blank" rel="noopener noreferrer" variant="secondary" className="tx-secondary-button mt-8 w-fit">{t.leadership.viewLinkedIn} <Arrow /></MotionLink>
+                  <MotionLink href={VICENTE_LINKEDIN_URL} target="_blank" rel="noopener noreferrer" variant="secondary" className="tx-secondary-button mt-8 w-fit">{t.leadership.viewLinkedIn} <Arrow /></MotionLink>
                 </div>
               </article>
             </RevealOnScroll>

@@ -70,7 +70,7 @@ const NAV_LINK_ITEMS = [
 const RESUMEX_URL = "/resumex";
 
 const TEAM_MEMBERS = [
-  { key: "vicente", href: "/meet-the-team/vicente-barrientos" },
+  { key: "vicente", href: "/portfolio" },
 ] as const;
 
 const linkClassName =

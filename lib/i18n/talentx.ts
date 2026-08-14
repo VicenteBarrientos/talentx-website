@@ -253,10 +253,11 @@ const en = {
   },
   vicentePortfolio: {
     eyebrow: "Portfolio",
-    subtitle: "Founder, TalentX Recruiting · Recruiting Partner at Goodwin",
-    subtitleSub: "Building AI-powered products from Osorno, Chile",
+    subtitle:
+      "Technical Recruiter · Founder, TalentX Recruiting · Recruiting Partner at Goodwin",
+    subtitleSub: "Global Talent Acquisition · AI Product Builder",
     intro:
-      "Six products I have designed, built, and shipped — spanning agtech, proptech, recruiting AI, and language education.",
+      "I partner with founders and hiring leaders on technical, business, and executive hiring across the U.S., Canada, LATAM, Europe, and Australia — and I build AI-powered products.",
     visitProject: "Visit project",
     sections: {
       projects: { eyebrow: "Tech creations", title: "What I build" },
@@ -269,31 +270,37 @@ const en = {
     projects: {
       fundosmart: {
         tagline: "Agtech · Livestock farm management",
+        shotAlt: "FundoSmart homepage showing cattle pasture below Osorno volcano",
         description:
           "A web platform to run cattle farms in southern Chile: paddock maps drawn as real polygons, a 360° record for every animal, milk production, breeding, health, and costs. Its centerpiece is an auditable importer that migrates years of history out of the legacy Cooprinsem systems while keeping every original file hashed and intact.",
       },
       condosync: {
         tagline: "Proptech · B2B SaaS",
+        shotAlt: "CondoSync homepage showing a condominium financial dashboard",
         description:
           "Common-expense software for condominium managers in Chile. It replaces fragile spreadsheets with a verified prorating engine, AI-assisted Excel import, a resident portal, online payments through Mercado Pago and Webpay, WhatsApp and email reminders, and automatic bank reconciliation.",
       },
       talentx: {
         tagline: "Recruiting · Brand and digital platform",
+        shotAlt: "TalentX Recruiting homepage with a global talent acquisition headline",
         description:
           "The site you are on right now. A bilingual, fully animated recruiting platform built to carry the TalentX brand — services, positioning, and proof that AI belongs inside talent acquisition rather than bolted onto it.",
       },
       resumex: {
         tagline: "AI · Job search workspace",
+        shotAlt: "ResumeX workspace showing resume and job-search tools",
         description:
           "An AI job-search workspace: it formats resumes, scores them against a job description, surfaces the real gaps, drafts tailored cover letters, finds openings, and auto-fills applications through a Chrome extension — with a tracker following every role from applied to offer.",
       },
       osornofactory: {
         tagline: "AI software studio",
+        shotAlt: "OsornoFactory homepage showing an AI agent workflow",
         description:
           "An AI software factory based in Osorno, Chile. It designs, builds, and ships production software through multi-agent engineering workflows: AI products, SaaS platforms, autonomous agents, internal tools, and fundable MVPs in weeks instead of quarters.",
       },
       mapulengua: {
         tagline: "Edtech · Indigenous language",
+        shotAlt: "Mapulengua welcome screen with its pudú guide",
         description:
           "A mobile-first app for learning Mapudungun in Spanish, structured as a journey down Chile through ten regions from Arica to Punta Arenas. Tap-first lessons, spaced repetition, XP, streaks, and achievements — guided by Küme the condor and a pudú — with content reviewed for cultural accuracy.",
       },
@@ -554,10 +561,11 @@ const es = {
   },
   vicentePortfolio: {
     eyebrow: "Portafolio",
-    subtitle: "Fundador, TalentX Recruiting · Recruiting Partner en Goodwin",
-    subtitleSub: "Construyendo productos con IA desde Osorno, Chile",
+    subtitle:
+      "Recruiter técnico · Fundador, TalentX Recruiting · Recruiting Partner en Goodwin",
+    subtitleSub: "Adquisición de talento global · Constructor de productos con IA",
     intro:
-      "Seis productos que he diseñado, construido y lanzado — entre agtech, proptech, IA para reclutamiento y educación.",
+      "Trabajo con fundadores y líderes de contratación en búsquedas técnicas, de negocios y ejecutivas en EE. UU., Canadá, LATAM, Europa y Australia — y construyo productos con IA.",
     visitProject: "Ver proyecto",
     sections: {
       projects: { eyebrow: "Creaciones tech", title: "Lo que construyo" },
@@ -570,31 +578,37 @@ const es = {
     projects: {
       fundosmart: {
         tagline: "Agtech · Gestión de predios ganaderos",
+        shotAlt: "Página de inicio de FundoSmart con ganado bajo el volcán Osorno",
         description:
           "Plataforma web para administrar predios ganaderos del sur de Chile: mapas de potreros dibujados como polígonos reales, ficha 360° de cada animal, producción lechera, reproducción, sanidad y costos. Su pieza central es un importador auditable que migra años de historia desde los sistemas legados de Cooprinsem, manteniendo cada archivo original íntegro y verificado.",
       },
       condosync: {
         tagline: "Proptech · SaaS B2B",
+        shotAlt: "Página de inicio de CondoSync con un panel financiero para condominios",
         description:
           "Software de gastos comunes para administradores de condominios en Chile. Reemplaza las planillas frágiles con un motor de prorrateo verificado, importación de Excel asistida por IA, portal de residentes, pagos en línea con Mercado Pago y Webpay, recordatorios por WhatsApp y correo, y conciliación bancaria automática.",
       },
       talentx: {
         tagline: "Recruiting · Marca y plataforma digital",
+        shotAlt: "Página de inicio de TalentX Recruiting con su propuesta de adquisición global de talento",
         description:
           "El sitio en el que estás ahora mismo. Una plataforma de reclutamiento bilingüe y completamente animada, construida para sostener la marca TalentX: servicios, posicionamiento y la prueba de que la IA es parte del reclutamiento, no un accesorio.",
       },
       resumex: {
         tagline: "IA · Workspace de búsqueda de empleo",
+        shotAlt: "Workspace de ResumeX con herramientas de currículum y búsqueda laboral",
         description:
           "Un workspace de búsqueda de empleo con IA: formatea currículums, los evalúa contra una descripción de cargo, muestra las brechas reales, redacta cartas de presentación a medida, busca ofertas y completa postulaciones con una extensión de Chrome — con un tracker que sigue cada proceso desde la postulación hasta la oferta.",
       },
       osornofactory: {
         tagline: "Fábrica de software de IA",
+        shotAlt: "Página de inicio de OsornoFactory con un flujo de agentes de IA",
         description:
           "Una fábrica de software de IA con base en Osorno, Chile. Diseña, construye y lanza software de producción con flujos de ingeniería multi-agente: productos de IA, plataformas SaaS, agentes autónomos, herramientas internas y MVPs financiables en semanas, no en trimestres.",
       },
       mapulengua: {
         tagline: "Edtech · Lengua originaria",
+        shotAlt: "Pantalla de bienvenida de Mapulengua con su guía pudú",
         description:
           "Una app mobile-first para aprender mapudungun desde el español, estructurada como un viaje por Chile a través de diez regiones, de Arica a Punta Arenas. Lecciones tap-first, repetición espaciada, XP, rachas y logros — guiados por Küme, el cóndor, y un pudú — con el contenido revisado por su exactitud cultural.",
       },

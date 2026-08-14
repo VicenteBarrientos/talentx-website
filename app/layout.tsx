@@ -29,6 +29,8 @@ export const metadata: Metadata = {
     title: "TalentX Recruiting — Global Talent Acquisition",
     description: siteDescription,
     type: "website",
+    siteName: "TalentX Recruiting",
+    locale: "en_US",
     images: [
       {
         url: "/images/talentx-og.png",
@@ -42,7 +44,12 @@ export const metadata: Metadata = {
     card: "summary",
     title: "TalentX Recruiting — Global Talent Acquisition",
     description: siteDescription,
-    images: ["/images/talentx-og.png"],
+    images: [
+      {
+        url: "/images/talentx-og.png",
+        alt: ogImageAlt,
+      },
+    ],
   },
 };
 

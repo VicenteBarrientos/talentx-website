@@ -11,11 +11,12 @@ import {
 import TopNav from "@/components/TopNav";
 import { useLocale } from "@/components/LocaleProvider";
 import { easeOut, revealViewport } from "@/lib/motion-presets";
-import { RESUMEX_URL } from "@/lib/site-urls";
+import {
+  RESUMEX_URL,
+  VICENTE_GITHUB_URL,
+  VICENTE_LINKEDIN_URL,
+} from "@/lib/site-urls";
 import styles from "./VicentePortfolioPage.module.css";
-
-const VICENTE_LINKEDIN = "https://www.linkedin.com/in/vicente-barrientos/";
-const VICENTE_GITHUB = "https://github.com/VicenteBarrientos";
 
 const FUNDOSMART_URL = "https://fundosmart.com/";
 const CONDOSYNC_URL = "https://www.condosync.cl";
@@ -786,12 +787,14 @@ export default function VicentePortfolioPage() {
     stack: string[];
     status: ProjectStatus;
     shot?: string;
+    shotAlt?: string;
     href?: string;
     external?: boolean;
   }[] = [
     {
       id: "fundosmart",
       shot: "/images/projects/fundosmart.webp",
+      shotAlt: vp.projects.fundosmart.shotAlt,
       name: "FundoSmart",
       icon: <FundoSmartIcon />,
       tagline: vp.projects.fundosmart.tagline,
@@ -804,6 +807,7 @@ export default function VicentePortfolioPage() {
     {
       id: "condosync",
       shot: "/images/projects/condosync.webp",
+      shotAlt: vp.projects.condosync.shotAlt,
       name: "CondoSync",
       icon: <CondoSyncIcon />,
       tagline: vp.projects.condosync.tagline,
@@ -816,6 +820,7 @@ export default function VicentePortfolioPage() {
     {
       id: "talentx",
       shot: "/images/projects/talentx.webp",
+      shotAlt: vp.projects.talentx.shotAlt,
       name: "TalentX",
       icon: <TalentXIcon />,
       tagline: vp.projects.talentx.tagline,
@@ -827,6 +832,7 @@ export default function VicentePortfolioPage() {
     {
       id: "resumex",
       shot: "/images/projects/resumex.webp",
+      shotAlt: vp.projects.resumex.shotAlt,
       name: "ResumeX",
       icon: <ResumeXIcon />,
       tagline: vp.projects.resumex.tagline,
@@ -839,6 +845,7 @@ export default function VicentePortfolioPage() {
     {
       id: "osornofactory",
       shot: "/images/projects/osornofactory.webp",
+      shotAlt: vp.projects.osornofactory.shotAlt,
       name: "OsornoFactory",
       icon: <OsornoFactoryIcon />,
       tagline: vp.projects.osornofactory.tagline,
@@ -851,6 +858,7 @@ export default function VicentePortfolioPage() {
     {
       id: "mapulengua",
       shot: "/images/projects/mapulengua.webp",
+      shotAlt: vp.projects.mapulengua.shotAlt,
       name: "Mapulengua",
       icon: <MapulenguaIcon />,
       tagline: vp.projects.mapulengua.tagline,
@@ -1150,7 +1158,7 @@ export default function VicentePortfolioPage() {
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link
-                href={VICENTE_LINKEDIN}
+                href={VICENTE_LINKEDIN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full border border-brand-600 bg-brand-600 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white shadow-[0_18px_55px_-20px_rgba(29,53,89,0.55)] transition hover:-translate-y-0.5 hover:border-brand-700 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -1159,7 +1167,7 @@ export default function VicentePortfolioPage() {
                 LinkedIn
               </Link>
               <Link
-                href={VICENTE_GITHUB}
+                href={VICENTE_GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/75 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-zinc-700 transition hover:-translate-y-0.5 hover:border-brand-300 hover:bg-white hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -1271,7 +1279,7 @@ export default function VicentePortfolioPage() {
                           <div className={`${styles.projectMedia} ${styles.projectShot} relative aspect-[16/10] overflow-hidden rounded-[1.25rem] lg:self-start`}>
                             <Image
                               src={project.shot}
-                              alt=""
+                              alt={project.shotAlt ?? ""}
                               fill
                               sizes="(min-width: 1024px) 430px, 90vw"
                               className="object-contain"
@@ -1312,7 +1320,7 @@ export default function VicentePortfolioPage() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
             <Link
-              href={VICENTE_LINKEDIN}
+              href={VICENTE_LINKEDIN_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-brand-600 bg-brand-600 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:-translate-y-0.5 hover:border-brand-700 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -1321,7 +1329,7 @@ export default function VicentePortfolioPage() {
               LinkedIn
             </Link>
             <Link
-              href={VICENTE_GITHUB}
+              href={VICENTE_GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/75 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-zinc-700 transition hover:-translate-y-0.5 hover:border-brand-300 hover:bg-white hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
