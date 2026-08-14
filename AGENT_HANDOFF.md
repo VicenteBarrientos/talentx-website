@@ -78,13 +78,15 @@ push or merge that commit unchanged.
   `pointer: fine` as well as a width, because a phone in landscape clears any
   width gate, and iOS Low Power Mode refuses to service `currentTime` seeks with
   no error and no detection API. Touch devices get `*-world.mp4` instead.
-- **Seek discipline is load-bearing.** Exactly one seek may be in flight; iOS
-  cancels seeks issued in rapid succession. An earlier watchdog gave up after two
-  400 ms timeouts, which also abandoned the scrub during ordinary desktop
-  scrolling — a slow byte-range fetch is not a broken decoder. The pipeline now
-  coalesces to the newest generation and waits for a presented frame. Stress test
-  before changing it: a 7 s continuous journey and eight rapid stop-to-stop jumps
-  must both keep the traversal.
+- **There is no video seeking any more.** The journey is a preloaded frame
+  sequence, so the watchdog, strike counter, generation coalescing and
+  presentation confirmation are all gone. If you are tempted to reintroduce a
+  scrubbed video, read the numbers in the 2026-08-13 log entry first.
+- **The touch gate is now a bandwidth choice, not a technical one.**
+  `SCRUB_MEDIA_QUERY` still restricts the journey to fine pointers, but its
+  original reason — iOS Low Power Mode refusing to service seeks — no longer
+  applies to drawing images. Measured cost of opening it: 904 KB at 480px,
+  1,192 KB at 640px, against 281 KB for the current ambient loop.
 - **i18n shape must match.** `en` and `es` in `lib/i18n/talentx.ts` are typed as a
   union — if the two objects diverge in shape, TypeScript fails at build.
 - **Next.js 16 is not the Next you know.** See `AGENTS.md`.
@@ -146,7 +148,8 @@ over from the poster.
 
 | File | Role |
 | --- | --- |
-| `videos/vicente-portfolio-traversal.mp4` | Desktop scrub. 2,332,368 bytes, 1264x720, 12 fps, 73 frames / 6.083 s. `SCRUB_TIMES` currently ends at 6 s. |
+| `videos/vicente-portfolio-traversal.mp4` | **Source only — never served.** The frame sequence and both bookend stills are derived from it. Keep it so they can be regenerated. |
+| `images/journey/f_001…073.webp` | The journey itself: 73 stills at 960px, 12 fps, one per frame of the 6 s flight. |
 | `videos/vicente-portfolio-world.mp4` | Touch / fallback loop. 296,607 bytes, 1024x576, 24 fps / 5 s. Seamless: the tail dissolves over the opening second. |
 | `images/vicente-portfolio-world.webp` | Poster and LCP element. 1364x777. |
 | `images/vicente-portfolio-og.jpg` | Social card. 53,036 bytes, 1200x675 — must match the size declared in the route metadata. |
