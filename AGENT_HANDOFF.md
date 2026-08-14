@@ -8,6 +8,28 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-14 — Codex: animated lowrider finale
+
+- Worked in the standalone `agent/finale-video-loop-v2` clone from current
+  `origin/main` (`5e8e01a`). No existing checkout was modified.
+- Replaced the static-only lowrider presentation with
+  `public/videos/vicente-portfolio-finale-loop.mp4`. The matching light WebP
+  remains underneath as the poster and complete fallback. The video mounts only
+  after the journey begins, plays in the finale, and pauses/resets when the user
+  scrolls back; reduced-motion, data-saver and autoplay-error paths keep the
+  still.
+- Prepared Vicente's supplied clip as a silent, fast-started 1280×720 H.264
+  loop: 24 fps, 9.500 s, 3,003,575 bytes. A 0.5 s overlap reduces the original
+  hard reset by about 83%; a brief lighthouse/cloud ghost remains during the
+  final half-second, while the car and occupants stay stable. The supplied
+  download was not altered.
+- Verified live playback at 1920×911, the 390×844 crop with no horizontal
+  overflow, reduced-motion fallback, and reverse-scroll pause/reset. `npm run
+  lint`, `npm run build` and `git diff --check` pass.
+- Vicente explicitly authorized production deployment on 2026-08-14. This
+  entry's containing commit is the release intended for `origin/main` through
+  the repository's GitHub-connected Vercel production path.
+
 ## 2026-08-14 — Codex: canonical `/portfolio` route and recruiter SEO
 
 - Made `/portfolio` the canonical portfolio URL. Added direct permanent 308
