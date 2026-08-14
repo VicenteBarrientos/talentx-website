@@ -429,6 +429,7 @@ export default function VicentePortfolioPage() {
   // dock relayouts mid-gesture.
   const dockCentresRef = useRef<number[]>([]);
   const coverVideoRef = useRef<HTMLVideoElement>(null);
+  const finaleVideoRef = useRef<HTMLVideoElement>(null);
   const atmosphereVideoRef = useRef<HTMLVideoElement>(null);
   const frameSurfaceRef = useRef<HTMLImageElement>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
@@ -438,6 +439,7 @@ export default function VicentePortfolioPage() {
   const [activeProject, setActiveProject] = useState(0);
   const [journeyPhase, setJourneyPhase] = useState<JourneyPhase>("before");
   const [coverVideoReady, setCoverVideoReady] = useState(false);
+  const [finaleVideoReady, setFinaleVideoReady] = useState(false);
   const [finaleReady, setFinaleReady] = useState(false);
   const [scrubReady, setScrubReady] = useState(false);
   const [scrubFailed, setScrubFailed] = useState(false);
@@ -470,6 +472,10 @@ export default function VicentePortfolioPage() {
   const atmosphereActive = atmosphereEnabled && journeyPhase === "active";
   const atmosphereVisible = atmosphereEnabled && journeyPhase !== "before";
   const showDestination = journeyPhase === "after";
+  // Mount after the journey begins so the finale never competes with the LCP
+  // image. The still remains the reduced-motion, data-saver and error fallback.
+  const finaleVideoEnabled = cameraEnabled && !dataSaver && pageLoaded && journeyPhase !== "before";
+  const finaleVideoActive = finaleVideoEnabled && showDestination;
   const { scrollYProgress } = useScroll({
     target: journeyRef,
     offset: ["start start", "end end"],
@@ -505,6 +511,23 @@ export default function VicentePortfolioPage() {
       // Autoplay restrictions leave the exact opening still visible.
     });
   }, [atmosphereActive, journeyPhase]);
+
+  useEffect(() => {
+    const finaleVideo = finaleVideoRef.current;
+    if (!finaleVideo) return;
+
+    if (!finaleVideoActive) {
+      finaleVideo.pause();
+      if (finaleVideo.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        finaleVideo.currentTime = 0;
+      }
+      return;
+    }
+
+    finaleVideo.play().catch(() => {
+      // Autoplay restrictions intentionally leave the matching still visible.
+    });
+  }, [finaleVideoActive]);
 
   useEffect(() => {
     const previousScrollBehavior = document.documentElement.style.scrollBehavior;
@@ -1005,6 +1028,33 @@ export default function VicentePortfolioPage() {
             onLoad={() => setFinaleReady(true)}
             className={`${styles.finaleImage} ${showDestination && finaleReady ? styles.finaleImageVisible : ""}`}
           />
+          {finaleVideoEnabled && (
+            <video
+              ref={finaleVideoRef}
+              className={`${styles.finaleVideo} ${finaleVideoActive && finaleVideoReady ? styles.finaleVideoVisible : ""}`}
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster="/images/vicente-portfolio-finale.webp"
+              onCanPlay={(event) => {
+                setFinaleVideoReady(true);
+
+                if (!finaleVideoActive) {
+                  event.currentTarget.pause();
+                  return;
+                }
+
+                event.currentTarget.play().catch(() => {
+                  // The matching still remains visible when autoplay is unavailable.
+                });
+              }}
+              onError={() => setFinaleVideoReady(false)}
+              aria-hidden="true"
+            >
+              <source src="/videos/vicente-portfolio-finale-loop.mp4" type="video/mp4" />
+            </video>
+          )}
           {mounted && prefersReducedMotion && journeyPhase === "active" && (
             <div className={styles.mapMarkers}>
               {PROJECTS.map((project, index) => (
