@@ -79,7 +79,8 @@ NEXT_PUBLIC_RESUMEX_URL="https://resumex.talentxrecruiting.com"
 | `components/VicentePortfolioPage.tsx` | Portfolio journey: project list, scroll wiring, and media fallbacks. |
 | `components/PartnerProfilePage.tsx` | Shared partner-profile layout. |
 | `lib/site-urls.ts` | Canonical TalentX and ResumeX links. |
-| `public/videos/` | Portfolio backdrop: `*-traversal.mp4` (scrubbed) and `*-world.mp4` (loop). |
+| `public/videos/` | Portfolio backdrop sources: the desktop journey master and touch/fallback loop. |
+| `public/images/journey/` | Preloaded WebP frame sequence that drives the desktop scroll journey. |
 | `public/` | Partner images and social artwork. |
 
 See [`AGENT_HANDOFF.md`](./AGENT_HANDOFF.md) for current state and open work.

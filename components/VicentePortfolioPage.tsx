@@ -24,7 +24,7 @@ const OSORNOFACTORY_URL = "https://osorno-ai-forge.vercel.app/";
 const MAPULENGUA_URL = "https://mapulengua.vercel.app/";
 
 const PROJECT_CENTERS = [0.159, 0.326, 0.492, 0.659, 0.826, 0.992];
-const PROJECT_SCRUB_TIMES = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5];
+const PROJECT_SCRUB_TIMES = [1.25, 3.75, 6.25, 8.75, 11.25, 13.75];
 const SCRUB_HOLD = 0.032;
 const SCRUB_SCROLL_STOPS = [
   0,
@@ -34,23 +34,23 @@ const SCRUB_SCROLL_STOPS = [
   ]),
 ];
 // Lead-in, the six stops, lead-out — in seconds, so this must match the
-// traversal clip's real duration. Currently a 6s flight.
+// traversal clip's real duration. Currently a 15s flight.
 const SCRUB_TIMES = [
   0,
   ...PROJECT_SCRUB_TIMES.flatMap((time) => [time, time]),
 ];
-const SCRUB_FINAL_TIME = 6;
+const SCRUB_FINAL_TIME = 15;
 const SCRUB_FRAME_DURATION = 1 / 12;
 type JourneyPhase = "before" | "active" | "after";
-// Pointer check keeps the 2.33 MB seek-oriented traversal off touch devices.
-// Phones use the lightweight ambient loop instead of unreliable video seeks.
+// Pointer check keeps the full preloaded frame set off touch devices. Phones use
+// the lightweight ambient loop; data-saver and reduced-motion keep a still.
 const SCRUB_MEDIA_QUERY = "(min-width: 1024px) and (pointer: fine)";
 // A seek that never reports back means the decoder is not cooperating.
 // Give slow/throttled presentation several windows before using the loop.
-// The journey is a preloaded frame sequence, not a scrubbed video: 73 stills at
-// 12 fps covering the same 6 s flight. Seeking a video was latency-bound and
+// The journey is a preloaded frame sequence, not a scrubbed video: 181 stills at
+// 12 fps covering the same 15 s flight. Seeking a video was latency-bound and
 // showed only a quarter of the footage during a normal scroll.
-const JOURNEY_FRAME_COUNT = 73;
+const JOURNEY_FRAME_COUNT = 181;
 const journeyFrameSrc = (index: number) =>
   `/images/journey/f_${String(index + 1).padStart(3, "0")}.webp`;
 const MAP_MARKERS = [
@@ -541,7 +541,7 @@ export default function VicentePortfolioPage() {
 
   // Drawing a preloaded frame replaces seeking a video. The old pipeline was
   // latency-bound: it issued a seek, waited for presentation, then jumped to the
-  // newest target — so a normal scroll showed 19 of the clip's 73 frames and
+  // newest target — so a normal scroll showed 19 of the old clip's 73 frames and
   // lurched up to seven frames at a time. An image swap has no such ceiling.
   const showFrameForTime = useCallback((requestedTime: number) => {
     const surface = frameSurfaceRef.current;

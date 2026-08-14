@@ -8,6 +8,33 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-14 — Codex: Grok map flight replaces the portfolio journey
+
+- Replaced the complete matched journey family from Vicente's supplied Grok
+  flight: traversal source, 181-frame desktop sequence, opening/destination
+  stills, poster and five-second touch/fallback loop. The studio intro and
+  lowrider finale remain separate and unchanged.
+- Preserved the 1280×720, 24 fps, 15.042 s original at
+  `C:\Users\hp\CS50\portfolio-assets\vicente-portfolio-grok-flight-v1.mp4`;
+  SHA-256 `2B4D675850D621E5D886E63915EC208881C0475CBF0F05B158988B7EED997EE4`.
+  It has no audio or visible watermark.
+- Retimed the six stops across the full flight at 1.25 / 3.75 / 6.25 / 8.75 /
+  11.25 / 13.75 s. They land on frames 016 / 046 / 076 / 106 / 136 / 166;
+  every stop is a distinct forward position, and frame 181 arrives at the
+  mountain city. The camera holds altitude throughout rather than landing early.
+- Desktop ships 181 WebPs at 960×540, 12 fps (8,357,280 bytes total). The
+  repository-only traversal master is 1280×720, 12 fps, 15.083 s and 7,028,738
+  bytes. The 1024×576 fallback loop is 24 fps, 5 s and 908,286 bytes; its tail
+  eases into the exact opening frame (mean decoded seam difference 5.2 / 255).
+- Added `scripts/build-portfolio-journey.py` so the interdependent assets are
+  regenerated together from one source instead of drifting across generations.
+- Verified all six desktop stops at 1920×911, the arrival/finale handoff and
+  reverse-scroll reset, plus the matched mobile loop at 390×844 with no overflow.
+  `npm run lint`, `npm run build` and `git diff --check` pass.
+- Vicente explicitly authorized production deployment on 2026-08-14. This
+  entry's containing commit is the release intended for `origin/main` through
+  the repository's GitHub-connected Vercel production path.
+
 ## 2026-08-14 — Codex: animated lowrider finale
 
 - Worked in the standalone `agent/finale-video-loop-v2` clone from current
@@ -197,7 +224,7 @@ Work now happens on `feat/portfolio-interactions`, branched from `origin/main`.
   journey 1537x876, destination 1538x876, so nothing jumps scale at a phase
   change. Verified at 1900x876 and 375x812.
 
-  **Sharpness.** The journey frames are 960x547. Across the oversized stage they
+  **Sharpness.** The journey frames are 960x540. Across the oversized stage they
   were upscaled **2.43x**; at `inset-0` with `contain` they are upscaled **1.6x**.
   That is the whole quality gain, and it cost no bytes. If they are ever
   regenerated larger, re-measure before assuming more resolution is needed.
@@ -272,7 +299,7 @@ add no new blur.
 - The backdrop is a three-state experience: an opaque still before the journey,
   the frame sequence (desktop) or ambient loop (touch) during it, and an
   opaque still after. Verified end to end on 2026-08-13 — the six stops land on
-  frames 007 / 019 / 031 / 043 / 055 / 067 with the dock and rail naming the right card.
+  frames 016 / 046 / 076 / 106 / 136 / 166 with the dock and rail naming the right card.
 - `main` is the only long-lived branch. Vercel deploys production from it.
 - The site is **light-only**. There is no theme switch, `next-themes` is gone, and
   there are no `dark:` utilities left. `lib/theme-sync.ts` survives solely to append
@@ -376,19 +403,19 @@ detail panels would be the trigger.
 
 ## Media
 
-All four portfolio assets must come from the **same footage**. They were once
+All matched journey assets must come from the **same footage**. They were once
 from two different generations, so the scene changed the moment the scrub took
 over from the poster.
 
 | File | Role |
 | --- | --- |
-| `videos/vicente-portfolio-traversal.mp4` | **Source only — never served.** The frame sequence and both bookend stills are derived from it. Keep it so they can be regenerated. |
-| `images/journey/f_001…073.webp` | The journey itself: 73 stills at 960px, 12 fps, one per frame of the 6 s flight. |
-| `videos/vicente-portfolio-world.mp4` | Touch / fallback loop. 296,607 bytes, 1024x576, 24 fps / 5 s. Seamless: the tail dissolves over the opening second. |
-| `images/vicente-portfolio-world.webp` | Poster and LCP element. 1364x777. |
+| `videos/vicente-portfolio-traversal.mp4` | **Source only — never served.** 7,028,738 bytes, 1280x720, 12 fps / 15.083 s. The frame sequence and both bookend stills derive from it. |
+| `images/journey/f_001…181.webp` | Desktop journey: 181 stills at 960x540, 12 fps / 15 s, 8,357,280 bytes total. |
+| `videos/vicente-portfolio-world.mp4` | Touch / fallback loop. 908,286 bytes, 1024x576, 24 fps / 5 s. The tail eases into the exact opening frame. |
+| `images/vicente-portfolio-world.webp` | Matched reference poster. 122,796 bytes, 1280x720; the current component mounts the exact opening still instead. |
 | `images/vicente-portfolio-og.jpg` | Social card. 53,036 bytes, 1200x675 — must match the size declared in the route metadata. |
-| `images/vicente-portfolio-opening.webp` | Exact first traversal frame, shown before the journey. 43,786 bytes, 1264x720. |
-| `images/vicente-portfolio-destination.webp` | Exact last traversal frame, shown after. 49,014 bytes, 1264x720. |
+| `images/vicente-portfolio-opening.webp` | Exact first traversal frame, shown before the journey. 155,170 bytes, 1280x720. |
+| `images/vicente-portfolio-destination.webp` | Exact last traversal frame, shown after. 155,856 bytes, 1280x720. |
 
 What makes a usable traversal: the camera holds altitude and keeps moving, so
 that all six stop times land somewhere visibly different. A clip that descends
@@ -414,30 +441,26 @@ Turn the prompt enhancer OFF — it paraphrases, and the altitude constraint is 
 one clause that must survive verbatim. Keep multi-shot off too: a cut is exactly
 where a scrubbing visitor parks when they stop scrolling.
 
-The current Kling 3.0 master exists only on the generation workstation at:
+The current Grok master is preserved outside Downloads at:
 
-`C:\Users\hp\Downloads\hf_20260813_143953_1556fcfc-9cda-4ffb-89cc-9ce2b09e4724.mp4`
+`C:\Users\hp\CS50\portfolio-assets\vicente-portfolio-grok-flight-v1.mp4`
 
 Its SHA-256 is
-`F0B873D8A8888C21CC3A28C060D84B28473F557110B0ACA2591CFC0C94B58776`.
-It is 1908x1084, H.264 Main, 24 fps, 145 frames / 6.0417 s, and has no
-audio. Downloads is volatile; preserve this master in durable storage before
-cleaning the workstation.
+`2B4D675850D621E5D886E63915EC208881C0475CBF0F05B158988B7EED997EE4`.
+It is 1280x720 H.264 High, 24 fps, 361 frames / 15.042 s, and has no audio.
+The source also carries an attached MJPEG cover; the builder deliberately selects
+the timed H.264 stream.
 
-Encode for scrubbing with dense keyframes; hazy, low-detail scenes cost roughly
-half what foliage and glass do at the same settings:
+Regenerate every matched derivative together with the repository script:
 
 ```bash
-ffmpeg -i src.mp4 -vf "scale=1264:720:flags=lanczos,fps=12" \
-  -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p -profile:v main \
-  -x264-params keyint=2:min-keyint=2:scenecut=0 -movflags +faststart -an out.mp4
+python scripts/build-portfolio-journey.py path/to/source.mp4
 ```
 
-The committed traversal produced by those settings is not all-intra: 37 of 73
-frames are keyframes and the file contains B-frames. Its dependency chain is
-short, but it is less deterministic for reverse seeking than the former GOP-1,
-no-B encode. Benchmark the repaired watchdog with this exact asset and compare a
-`bframes=0` or all-intra variant before changing encoding again.
+The current journey is a preloaded frame sequence, so the committed traversal is
+a regeneration master with a normal two-second GOP, not a seek-optimized runtime
+asset. Do not bring dense keyframes or browser video seeking back without first
+re-measuring the frame-sequence implementation it would replace.
 
 Gemini/Veo output carries a sparkle watermark in the bottom-right; crop it off
 before encoding. Grok output does not.

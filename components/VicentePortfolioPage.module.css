@@ -136,7 +136,7 @@
 }
 
 /* Past 16/9 the footage-matched journey layers show their whole frame instead
-   of being cropped. They must switch together: the opening still, the 73
+   of being cropped. They must switch together: the opening still, the 181
    journey frames and the destination still are all cut from the same footage,
    so fitting them differently would jump scale at a phase change. */
 @media (min-aspect-ratio: 16 / 9) {
