@@ -34,9 +34,9 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 - Production deploys from the current `origin/main`.
 - The backdrop is a three-state experience: an opaque still before the journey,
-  the scroll-scrub traversal (desktop) or ambient loop (touch) during it, and an
+  the frame sequence (desktop) or ambient loop (touch) during it, and an
   opaque still after. Verified end to end on 2026-08-13 — the six stops land on
-  0.5 / 1.5 / 2.5 / 3.5 / 4.5 / 5.5 s with the dock and rail naming the right card.
+  frames 007 / 019 / 031 / 043 / 055 / 067 with the dock and rail naming the right card.
 - `main` is the only long-lived branch. Vercel deploys production from it.
 - The site is **light-only**. There is no theme switch, `next-themes` is gone, and
   there are no `dark:` utilities left. `lib/theme-sync.ts` survives solely to append
@@ -108,7 +108,7 @@ push or merge that commit unchanged.
 ## Scroll math — `PROJECT_CENTERS`
 
 These six numbers say where each card sits along the journey, as a fraction of its
-scroll range. The route rail, the `01 / 06` dock and the video's frame all derive
+scroll range. The route rail, the `01 / 06` dock and the displayed frame all derive
 from them, so if they drift the highlighted project stops matching the card you
 are reading.
 
