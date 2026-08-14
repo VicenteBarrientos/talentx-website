@@ -131,6 +131,56 @@ function PointerDepthCard({ children }: { children: React.ReactNode }) {
   );
 }
 
+const SCRAMBLE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+// The eyebrow settles out of noise into its word. Only the aria-hidden copy is
+// ever scrambled — the real string stays in the DOM — so a screen reader can
+// never read a half-decoded word. Monospace plus a fixed length keeps the box
+// the same width throughout, so nothing around it moves.
+function ScrambleText({ text, active }: { text: string; active: boolean }) {
+  const [display, setDisplay] = useState(text);
+
+  useEffect(() => {
+    if (!active) return;
+
+    let step = 0;
+    const total = text.length * 3 + 6;
+
+    const interval = setInterval(() => {
+      step += 1;
+      const settled = Math.floor((step / total) * text.length);
+
+      if (step >= total) {
+        setDisplay(text);
+        clearInterval(interval);
+        return;
+      }
+
+      setDisplay(
+        text
+          .split("")
+          .map((character, index) =>
+            index < settled || character === " "
+              ? character
+              : SCRAMBLE_ALPHABET[Math.floor(Math.random() * SCRAMBLE_ALPHABET.length)],
+          )
+          .join(""),
+      );
+    }, 45);
+
+    return () => clearInterval(interval);
+  }, [active, text]);
+
+  // Reading through `active` rather than resetting state in the effect keeps the
+  // server render, reduced-motion and post-settle output identical to `text`.
+  return (
+    <>
+      <span aria-hidden="true">{active ? display : text}</span>
+      <span className="sr-only">{text}</span>
+    </>
+  );
+}
+
 function subscribeToScrubCapability(onStoreChange: () => void) {
   const mediaQuery = window.matchMedia(SCRUB_MEDIA_QUERY);
   const connection = (navigator as NavigatorWithConnection).connection;
@@ -355,6 +405,13 @@ export default function VicentePortfolioPage() {
   const vp = t.vicentePortfolio;
   const journeyRef = useRef<HTMLElement>(null);
   const exitRef = useRef<HTMLDivElement>(null);
+  const dockDotsRef = useRef<HTMLSpanElement>(null);
+  const dockDraggingRef = useRef(false);
+  const dockMovedRef = useRef(false);
+  const dockStartXRef = useRef(0);
+  // Sampled once per drag, so the mapping cannot slide under the pointer if the
+  // dock relayouts mid-gesture.
+  const dockCentresRef = useRef<number[]>([]);
   const atmosphereVideoRef = useRef<HTMLVideoElement>(null);
   const frameSurfaceRef = useRef<HTMLImageElement>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
@@ -587,6 +644,98 @@ export default function VicentePortfolioPage() {
     showFrameForTimeRef.current?.(pendingScrubTimeRef.current);
   }, [journeyPhase, scrubFailed, scrubMounted]);
 
+  // A stop is reached by centring its card, which is also how the scroll math
+  // is verified — so navigate to the same place the constants describe, rather
+  // than to the anchor's top-aligned position.
+  const scrollToStop = useCallback(
+    (index: number) => {
+      const cards = document.querySelectorAll<HTMLElement>('[id^="project-"]');
+      if (cards.length === 0) return;
+
+      const card = cards[Math.min(cards.length - 1, Math.max(0, index))];
+      if (!card) return;
+
+      const bounds = card.getBoundingClientRect();
+      window.scrollTo({
+        top: bounds.top + window.scrollY + bounds.height / 2 - window.innerHeight / 2,
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+      });
+    },
+    [prefersReducedMotion],
+  );
+
+  // Dragging across the dock flies the traversal. Each dot's centre maps to its
+  // own entry in PROJECT_CENTERS, so releasing over a dot lands on that stop
+  // rather than somewhere proportional to the dock's width. Scrolling is
+  // instant on purpose: a smooth animation would lag behind the finger.
+  const scrubDockToClientX = useCallback((clientX: number) => {
+    const journey = journeyRef.current;
+    const centres = dockCentresRef.current;
+    if (!journey || centres.length !== PROJECT_CENTERS.length) return;
+
+    const progress = mapRangeValue(clientX, centres, PROJECT_CENTERS);
+    const range = Math.max(1, journey.offsetHeight - window.innerHeight);
+    const top = journey.getBoundingClientRect().top + window.scrollY;
+
+    window.scrollTo({ top: top + progress * range, behavior: "auto" });
+  }, []);
+
+  const endDockDrag = useCallback((event: React.PointerEvent<HTMLSpanElement>) => {
+    if (!dockDraggingRef.current) return;
+    dockDraggingRef.current = false;
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+    } catch {
+      // Already released by the browser.
+    }
+  }, []);
+
+  // Travel the journey from the keyboard. Deliberately no arrows, Page keys,
+  // Home/End or Space: the journey is ~6,000px of readable cards, and taking
+  // those away would cost keyboard-only visitors line-by-line scrolling to buy
+  // a shortcut. J/K, N/P and 1-6 carry no native scrolling meaning.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT"
+      ) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+
+      if (key === "j" || key === "n") {
+        event.preventDefault();
+        scrollToStop(journeyPhase === "before" ? 0 : activeProject + 1);
+        return;
+      }
+
+      if (key === "k" || key === "p") {
+        event.preventDefault();
+        scrollToStop(journeyPhase === "after" ? activeProject : activeProject - 1);
+        return;
+      }
+
+      if (key >= "1" && key <= "9") {
+        event.preventDefault();
+        scrollToStop(Number(key) - 1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeProject, journeyPhase, scrollToStop]);
+
   const PROJECTS: {
     id: string;
     name: string;
@@ -679,6 +828,16 @@ export default function VicentePortfolioPage() {
         className={`${styles.backdrop} ${journeyPhase === "before" ? styles.coverPhase : ""} ${journeyPhase === "after" ? styles.finalePhase : ""} pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#061321]`}
         aria-hidden="true"
       >
+        {/* Same src and sizes as the sharp copy below, so this reuses the
+            optimized file already being fetched rather than costing a download. */}
+        <Image
+          src="/images/vicente-portfolio-studio-cover.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className={styles.coverFill}
+        />
         <Image
           src="/images/vicente-portfolio-studio-cover.webp"
           alt=""
@@ -688,15 +847,26 @@ export default function VicentePortfolioPage() {
           className={styles.coverImage}
         />
         <div
-          className={`${styles.mediaStage} ${journeyPhase !== "before" ? styles.mediaStageVisible : ""} absolute -inset-[12%]`}
+          className={`${styles.mediaStage} ${journeyPhase !== "before" ? styles.mediaStageVisible : ""} absolute inset-0`}
         >
+          {/* One static wash behind the whole stage. It is the opening still and
+              never changes, so it rasterizes once — blurring the live journey
+              frame instead would re-blur the viewport on every frame swap. */}
           <Image
             src="/images/vicente-portfolio-opening.webp"
             alt=""
             fill
             unoptimized
             sizes="100vw"
-            className="object-cover object-[62%_center] sm:object-center"
+            className={styles.stageFill}
+          />
+          <Image
+            src="/images/vicente-portfolio-opening.webp"
+            alt=""
+            fill
+            unoptimized
+            sizes="100vw"
+            className={`${styles.openingImage} object-[62%_center] sm:object-center`}
           />
           {atmosphereEnabled && (
             <video
@@ -739,7 +909,15 @@ export default function VicentePortfolioPage() {
             fill
             unoptimized
             sizes="100vw"
-            className={`${styles.destinationImage} ${showDestination ? styles.destinationImageVisible : ""} object-cover object-[62%_center] sm:object-center`}
+            className={`${styles.destinationImage} ${showDestination ? styles.destinationImageVisible : ""} object-[62%_center] sm:object-center`}
+          />
+          <Image
+            src="/images/vicente-portfolio-finale.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            loading="eager"
+            className={`${styles.finaleFill} ${showDestination && finaleReady ? styles.finaleFillVisible : ""}`}
           />
           <Image
             src="/images/vicente-portfolio-finale.webp"
@@ -775,6 +953,7 @@ export default function VicentePortfolioPage() {
       <nav
         className={`${styles.routeRail} ${journeyPhase === "active" ? styles.routeNavVisible : ""}`}
         aria-label={`${vp.sections.projects.title} navigation`}
+        aria-keyshortcuts="J K 1 2 3 4 5 6"
       >
         <span className={styles.routeLine} aria-hidden="true">
           <motion.span className={styles.routeFill} style={{ scaleY: scrollYProgress }} />
@@ -792,6 +971,12 @@ export default function VicentePortfolioPage() {
             <span className={styles.routeDot} aria-hidden="true" />
           </a>
         ))}
+        {/* Announced to assistive tech by aria-keyshortcuts above; this is the
+            sighted equivalent, and the rail only renders where a keyboard is. */}
+        <span className={styles.routeHint} aria-hidden="true">
+          <kbd>J</kbd>
+          <kbd>K</kbd>
+        </span>
       </nav>
 
       <nav
@@ -804,7 +989,43 @@ export default function VicentePortfolioPage() {
         <span className={styles.routeDockName} aria-hidden="true">
           {PROJECTS[activeProject]?.name}
         </span>
-        <span className={styles.routeDockDots}>
+        <span
+          ref={dockDotsRef}
+          className={styles.routeDockDots}
+          onPointerDown={(event) => {
+            dockDraggingRef.current = true;
+            dockMovedRef.current = false;
+            dockStartXRef.current = event.clientX;
+            dockCentresRef.current = Array.from(event.currentTarget.children, (dot) => {
+              const bounds = dot.getBoundingClientRect();
+              return bounds.left + bounds.width / 2;
+            });
+            // Capture keeps the drag alive past the dock's edges. Losing it is
+            // survivable — the drag just ends at the boundary — so never let a
+            // refusal take the handler down with it.
+            try {
+              event.currentTarget.setPointerCapture(event.pointerId);
+            } catch {
+              // Pointer already released, or capture unsupported.
+            }
+          }}
+          onPointerMove={(event) => {
+            if (!dockDraggingRef.current) return;
+            if (Math.abs(event.clientX - dockStartXRef.current) > 3) {
+              dockMovedRef.current = true;
+            }
+            if (!dockMovedRef.current) return;
+            scrubDockToClientX(event.clientX);
+          }}
+          onPointerUp={endDockDrag}
+          onPointerCancel={endDockDrag}
+          // A drag that ends over a dot must not also follow that dot's anchor.
+          onClickCapture={(event) => {
+            if (!dockMovedRef.current) return;
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
           {PROJECTS.map((project, index) => (
             <a
               key={project.id}
@@ -833,11 +1054,21 @@ export default function VicentePortfolioPage() {
         >
           <div className={styles.heroCopy}>
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-200 sm:text-xs">
-              {vp.eyebrow}
+              <ScrambleText text={vp.eyebrow} active={cameraEnabled} />
             </p>
             <h1 className="mt-4 text-[clamp(2.8rem,6.1vw,5.6rem)] font-black uppercase leading-[0.86] tracking-[-0.065em] text-white">
-              <span className="block">Vicente</span>
-              <span className="block text-cyan-300">Barrientos</span>
+              {["Vicente", "Barrientos"].map((line, index) => (
+                <span key={line} className={styles.heroLineMask}>
+                  <motion.span
+                    className={`block ${index === 1 ? "text-cyan-300" : ""}`}
+                    initial={reduced ? false : { y: "115%" }}
+                    animate={{ y: "0%" }}
+                    transition={{ duration: 0.95, delay: 0.12 + index * 0.11, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {line}
+                  </motion.span>
+                </span>
+              ))}
             </h1>
             <p className="mx-auto mt-7 max-w-3xl text-base font-semibold leading-relaxed text-slate-100 sm:text-lg lg:mx-0">
               {vp.subtitle}
@@ -968,13 +1199,13 @@ export default function VicentePortfolioPage() {
                         </div>
 
                         {project.shot && (
-                          <div className={`${styles.projectMedia} relative min-h-48 overflow-hidden rounded-[1.25rem] border border-white/14 bg-white/[0.04] shadow-[0_28px_70px_-34px_rgba(0,0,0,0.95)] sm:min-h-56 lg:min-h-0`}>
+                          <div className={`${styles.projectMedia} ${styles.projectShot} relative aspect-[16/10] overflow-hidden rounded-[1.25rem] lg:self-start`}>
                             <Image
                               src={project.shot}
                               alt=""
                               fill
                               sizes="(min-width: 1024px) 430px, 90vw"
-                              className="object-cover object-top"
+                              className="object-contain"
                             />
                             <div className={styles.projectMediaShade} aria-hidden="true" />
                           </div>

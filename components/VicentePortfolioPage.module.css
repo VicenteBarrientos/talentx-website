@@ -42,10 +42,27 @@
   opacity: 1 !important;
 }
 
+/* Object-fit lives here rather than on a Tailwind utility, so the wide-viewport
+   override below wins reliably instead of racing utility source order. */
+.openingImage {
+  object-fit: cover;
+  object-position: center;
+}
+
 .destinationImage {
   z-index: 2;
+  object-fit: cover;
   opacity: 0;
   transition: opacity 200ms ease;
+}
+
+.stageFill {
+  display: none;
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.08);
+  filter: blur(34px) saturate(1.04) brightness(0.5);
 }
 
 .destinationImageVisible {
@@ -53,7 +70,7 @@
 }
 
 .finaleImage {
-  z-index: 3;
+  z-index: 4;
   object-fit: cover;
   object-position: center;
   opacity: 0;
@@ -61,6 +78,58 @@
   transition:
     opacity 520ms cubic-bezier(0.22, 1, 0.36, 1) 180ms,
     transform 900ms cubic-bezier(0.22, 1, 0.36, 1) 180ms;
+}
+
+/* Desktop windows are wider than this artwork. A maximized browser on a 1080p
+   monitor is roughly 2.1:1 against art that is 1.78:1, so `cover` was hiding
+   about 18% of the scene, off the top and bottom. Past 16/9 the art switches to
+   `contain` — the whole picture, nothing cropped — and a blurred, darkened copy
+   of the same file fills the leftover width so there are no letterbox bars.
+   Below 16/9, including every phone, `cover` still wins and these stay off:
+   `contain` on a portrait viewport would bar far more than it revealed. */
+.coverFill,
+.finaleFill {
+  display: none;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.08);
+  filter: blur(34px) saturate(1.04) brightness(0.55);
+}
+
+.coverFill {
+  z-index: 0;
+}
+
+.finaleFill {
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1) 180ms;
+}
+
+.finaleFillVisible {
+  opacity: 1;
+}
+
+/* Past 16/9 every backdrop layer shows its whole frame instead of being cropped.
+   They must switch together: the opening still, the 73 journey frames and the
+   destination still are all cut from the same footage, so any of them fitted
+   differently would jump scale at a phase change. The journey frames are only
+   960x547 — with the stage no longer oversized, `contain` also drops their
+   upscale from 2.43x to about 1.6x, which is the sharpness gain. */
+@media (min-aspect-ratio: 16 / 9) {
+  .coverFill,
+  .finaleFill,
+  .stageFill {
+    display: block;
+  }
+
+  .coverImage,
+  .finaleImage,
+  .openingImage,
+  .destinationImage,
+  .scrubVideo {
+    object-fit: contain;
+  }
 }
 
 .finaleImageVisible {
@@ -243,6 +312,43 @@
   transform: scale(1.15);
 }
 
+/* The rail only renders at >=1280px, so this hint never reaches a device that
+   has no keyboard to offer. It arrives after the rail itself has settled. */
+.routeHint {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  margin-top: 0.7rem;
+  padding-right: 0.72rem;
+  opacity: 0;
+  transform: translateY(-0.25rem);
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease;
+}
+
+.routeNavVisible .routeHint {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 420ms;
+}
+
+.routeHint kbd {
+  display: grid;
+  min-width: 1.2rem;
+  padding: 0.14rem 0.2rem;
+  place-items: center;
+  border: 1px solid rgba(190, 234, 246, 0.26);
+  border-radius: 0.34rem;
+  background: rgba(3, 17, 29, 0.72);
+  color: rgba(207, 232, 240, 0.6);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
 .routeDock {
   position: fixed;
   z-index: 40;
@@ -286,9 +392,12 @@
   white-space: nowrap;
 }
 
+/* Fixed, not min/max: the dock is centred with translateX(-50%), so a label
+   that resizes with the project name shifts the whole control sideways every
+   time the active stop changes — visible as a wobble while scrolling, and it
+   used to move the drag targets out from under the pointer. */
 .routeDockName {
-  min-width: 5.75rem;
-  max-width: 7.5rem;
+  width: 7.5rem;
   overflow: hidden;
   color: white;
   text-overflow: ellipsis;
@@ -296,6 +405,14 @@
 
 .routeDockDots {
   display: flex;
+  cursor: grab;
+  /* pan-y keeps a vertical swipe that starts on the dock scrolling the page,
+     while a horizontal drag scrubs the journey. `none` would trap the swipe. */
+  touch-action: pan-y;
+}
+
+.routeDockDots:active {
+  cursor: grabbing;
 }
 
 .routeDockLink {
@@ -407,6 +524,20 @@
   z-index: 3;
 }
 
+/* Masks each name line so it rises from behind its own baseline. The h1 sets
+   leading-[0.86], which makes the line box shorter than the capitals, so the
+   mask needs headroom or it shaves their tops — the padding buys that headroom
+   and the negative margin gives the space back to the layout. Text shadows are
+   drawn outside the glyph box too, hence the horizontal breathing room. */
+.heroLineMask {
+  display: block;
+  overflow: hidden;
+  margin-top: -0.14em;
+  margin-left: -0.12em;
+  padding-top: 0.14em;
+  padding-left: 0.12em;
+}
+
 .journeyIntro {
   position: relative;
   z-index: 1;
@@ -491,12 +622,34 @@
   transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* The shot's plate. It has to be near-opaque: the card's own gradient runs down
+   to 46% alpha exactly here, in its right-hand column, so without this the
+   journey footage showed through the product screenshots. Opaque also gives the
+   feathered edges below something flat to dissolve into. */
+.projectShot {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #02080f;
+  box-shadow: 0 28px 70px -34px rgba(0, 0, 0, 0.95);
+}
+
+/* The captures are 1440x900. This box used to stretch to the height of the text
+   column, which left it near-square, so object-cover threw away ~40% of each
+   page's width and magnified what was left. Matching the capture's own 16:10
+   and switching to contain shows the whole landing page instead. */
+.projectShot img {
+  padding: 0.55rem;
+  object-fit: contain;
+}
+
+/* Feathers the image into the plate. An inset shadow in the plate's own colour
+   does this without a mask, so there is no -webkit-mask-composite to get wrong
+   in Safari, and it follows the container's rounded corners for free. Keep it
+   gentle — a screenshot that fades too far stops reading as a shipped product. */
 .projectMediaShade {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, rgba(4, 17, 29, 0.2), transparent 18%),
-    linear-gradient(180deg, transparent 72%, rgba(2, 11, 20, 0.34));
+  background: linear-gradient(180deg, transparent 76%, rgba(2, 8, 15, 0.42));
+  box-shadow: inset 0 0 22px 9px #02080f;
   pointer-events: none;
 }
 
@@ -672,8 +825,14 @@
   .routeLink,
   .routeLabel,
   .routeDot,
+  .routeHint,
   .routeDockLink > span {
     transition: none;
+  }
+
+  .routeHint {
+    opacity: 1;
+    transform: none;
   }
 
   .projectGlow {
