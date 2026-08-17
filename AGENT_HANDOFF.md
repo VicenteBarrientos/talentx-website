@@ -8,6 +8,22 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-17 — Codex: standalone portfolio live cutover prepared
+
+- Verified the production canary at the canonical TalentX URL: requests without
+  the cookie stayed on the parent route, while `portfolio-zone=standalone`
+  served the child with the corrected experience timeline, child-owned chunks,
+  canonical metadata, intact images, and no horizontal overflow.
+- Removed the cookie gates while retaining the `PORTFOLIO_ORIGIN` guard and the
+  same three scoped `beforeFiles` rewrites. Once deployed, `/portfolio`, its
+  child paths, and `/portfolio-static` will route to the standalone zone.
+- Updated the sitemap date and portfolio image to the child's versioned v2 path.
+- The old parent route and assets remain in this release as the rollback path.
+  Roll the child alias back, or unset `PORTFOLIO_ORIGIN` and redeploy TalentX,
+  before removing those files in a later cleanup. Lint, the production build
+  with the real child origin, an exact three-rewrite ungated manifest assertion,
+  and `git diff --check` pass. Production has not been changed by this commit.
+
 ## 2026-08-17 — Codex: standalone portfolio canary routing
 
 - Started from freshly fetched `origin/main` at `27fba24`; this change does not
