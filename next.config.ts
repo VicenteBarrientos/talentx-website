@@ -1,11 +1,6 @@
 import type { NextConfig } from "next";
 
 const portfolioOrigin = process.env.PORTFOLIO_ORIGIN?.replace(/\/$/, "");
-const portfolioCanary = {
-  type: "cookie" as const,
-  key: "portfolio-zone",
-  value: "standalone",
-};
 
 const nextConfig: NextConfig = {
   async redirects() {
@@ -44,17 +39,14 @@ const nextConfig: NextConfig = {
             {
               source: "/portfolio",
               destination: `${portfolioOrigin}/portfolio`,
-              has: [portfolioCanary],
             },
             {
               source: "/portfolio/:path+",
               destination: `${portfolioOrigin}/portfolio/:path+`,
-              has: [portfolioCanary],
             },
             {
               source: "/portfolio-static/:path+",
               destination: `${portfolioOrigin}/portfolio-static/:path+`,
-              has: [portfolioCanary],
             },
           ]
         : [],

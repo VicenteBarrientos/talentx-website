@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { TALENTX_URL } from "@/lib/site-urls";
 
-const lastModified = "2026-08-14";
+const lastModified = "2026-08-17";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: "monthly",
       priority: 0.9,
-      images: [`${TALENTX_URL}/images/vicente-portfolio-og.jpg`],
+      images: [`${TALENTX_URL}/portfolio/images/vicente-portfolio-og-v2.jpg`],
     },
   ];
 }
