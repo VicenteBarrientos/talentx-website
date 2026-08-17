@@ -270,13 +270,13 @@ export default function TopNav({ variant = "light" }: { variant?: "light" | "cin
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ ...easeOut, delay: reduced ? 0 : index * 0.05 }}
                           >
-                            <Link
+                            <a
                               href={member.href}
                               onClick={closeMenu}
                               className={menuSubmenuLinkClassName}
                             >
                               {memberLabels[member.key]}
-                            </Link>
+                            </a>
                           </motion.li>
                         ))}
                       </motion.ul>

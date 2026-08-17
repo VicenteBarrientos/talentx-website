@@ -8,6 +8,22 @@ Newest entry first. Keep entries short: what changed, what it broke, what is lef
 
 ---
 
+## 2026-08-17 — Codex: standalone portfolio canary routing
+
+- Started from freshly fetched `origin/main` at `27fba24`; this change does not
+  include the separate `f1df7ac` share-asset refresh.
+- Added disabled-by-default `beforeFiles` rewrites for `/portfolio`, its child
+  paths, and `/portfolio-static`. They require both `PORTFOLIO_ORIGIN` and the
+  same-origin cookie `portfolio-zone=standalone`.
+- Changed the TalentX `/portfolio` menu entry to a hard navigation so crossing
+  into the standalone Next.js zone performs a full page load.
+- Kept the sitemap on the parent-hosted `/images/vicente-portfolio-og.jpg`
+  during the cookie canary so crawlers without the cookie do not receive a 404.
+  Switch it to the child v2 path only in the final ungated cutover.
+- The existing parent route and assets remain the default and rollback path.
+  Lint, the production build with the real child origin, the emitted rewrite
+  manifest, and `git diff --check` pass. Production has not been changed.
+
 ## 2026-08-14 — Codex: Grok map flight replaces the portfolio journey
 
 - Replaced the complete matched journey family from Vicente's supplied Grok
